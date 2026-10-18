@@ -1,0 +1,13 @@
+{
+  "dataset": "TolongApp development sample",
+  "verified": false,
+  "note": "Sample points for building the app. These are NOT real evacuation centers. Replace with the official list from QC DRRMO (qcdrrmo@quezoncity.gov.ph) before any real use.",
+  "centers": [
+    { "id": "demo-01", "name": "Demo center 1", "facilityType": "school", "lat": 14.6537, "lng": 121.0480 },
+    { "id": "demo-02", "name": "Demo center 2", "facilityType": "coveredCourt", "lat": 14.6869, "lng": 121.1003 },
+    { "id": "demo-03", "name": "Demo center 3", "facilityType": "barangayHall", "lat": 14.7268, "lng": 121.0420 },
+    { "id": "demo-04", "name": "Demo center 4", "facilityType": "school", "lat": 14.6262, "lng": 121.0558 },
+    { "id": "demo-05", "name": "Demo center 5", "facilityType": "coveredCourt", "lat": 14.7360, "lng": 121.0630 },
+    { "id": "demo-06", "name": "Demo center 6", "facilityType": "other", "lat": 14.6700, "lng": 121.0180 }
+  ]
+}

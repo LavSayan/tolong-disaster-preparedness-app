@@ -1,0 +1,88 @@
+import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../features/auth/application/session.dart';
+import '../features/auth/presentation/login_screen.dart';
+import '../features/auth/presentation/password_screens.dart';
+import '../features/auth/presentation/register_screen.dart';
+import '../features/auth/presentation/splash_screen.dart';
+import '../features/auth/presentation/welcome_screen.dart';
+import '../features/guidebook/presentation/guidebook_screens.dart';
+import '../features/home/presentation/home_screen.dart';
+import '../features/household/presentation/profile_screen.dart';
+import '../features/more/more_screen.dart';
+import '../features/offline/offline_readiness_screen.dart';
+import '../features/onboarding/onboarding_screen.dart';
+import '../features/prepare/presentation/prepare_screen.dart';
+import '../features/readiness/presentation/readiness_screen.dart';
+import '../features/safe_places/presentation/offline_map_screen.dart';
+import '../features/safe_places/presentation/safe_places_screen.dart';
+import '../features/settings/settings_screen.dart';
+import '../features/supplies/presentation/supplies_screen.dart';
+import '../features/tol/presentation/tol_chat_screen.dart';
+import 'app_shell.dart';
+
+const _publicRoutes = {'/welcome', '/login', '/register', '/forgot-password'};
+
+/// Pure routing decision so it can be unit tested without widgets.
+@visibleForTesting
+String? redirectFor(SessionState s, String location) {
+  if (!s.ready) return location == '/splash' ? null : '/splash';
+  if (s.recoveringPassword) return location == '/reset-password' ? null : '/reset-password';
+  if (!s.signedIn && !s.guest) return _publicRoutes.contains(location) ? null : '/welcome';
+  if (s.signedIn && !s.onboardingComplete) return location == '/onboarding' ? null : '/onboarding';
+  if (_publicRoutes.contains(location) ||
+      location == '/splash' ||
+      location == '/onboarding' ||
+      location == '/reset-password') {
+    return '/home';
+  }
+  return null;
+}
+
+StatefulShellBranch _tab(String path, int index, Widget child) => StatefulShellBranch(
+      routes: [GoRoute(path: path, builder: (_, __) => TabPage(index: index, child: child))],
+    );
+
+final routerProvider = Provider<GoRouter>((ref) {
+  final refresh = ValueNotifier(0);
+  ref.listen(sessionProvider, (_, __) => refresh.value++);
+  ref.onDispose(refresh.dispose);
+
+  return GoRouter(
+    initialLocation: '/splash',
+    refreshListenable: refresh,
+    redirect: (context, state) => redirectFor(ref.read(sessionProvider), state.matchedLocation),
+    routes: [
+      GoRoute(path: '/splash', builder: (_, __) => const SplashScreen()),
+      GoRoute(path: '/welcome', builder: (_, __) => const WelcomeScreen()),
+      GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
+      GoRoute(path: '/register', builder: (_, __) => const RegisterScreen()),
+      GoRoute(path: '/forgot-password', builder: (_, __) => const ForgotPasswordScreen()),
+      GoRoute(path: '/reset-password', builder: (_, __) => const ResetPasswordScreen()),
+      GoRoute(path: '/onboarding', builder: (_, __) => const OnboardingScreen()),
+      GoRoute(path: '/profile', builder: (_, __) => const ProfileScreen()),
+      GoRoute(path: '/supplies', builder: (_, __) => const SuppliesScreen()),
+      GoRoute(path: '/readiness', builder: (_, __) => const ReadinessScreen()),
+      GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
+      GoRoute(path: '/offline-map', builder: (_, __) => const OfflineMapScreen()),
+      GoRoute(path: '/guidebook', builder: (_, __) => const GuidebookScreen()),
+      GoRoute(path: '/offline-readiness', builder: (_, __) => const OfflineReadinessScreen()),
+      GoRoute(path: '/tol', builder: (_, __) => const TolChatScreen()),
+      GoRoute(
+        path: '/guidebook/:id',
+        builder: (_, state) => GuideCategoryScreen(categoryId: state.pathParameters['id']!),
+      ),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, shell) => AppShell(shell: shell),
+        branches: [
+          _tab('/home', 0, const HomeScreen()),
+          _tab('/prepare', 1, const PrepareScreen()),
+          _tab('/safe-places', 2, const SafePlacesScreen()),
+          _tab('/more', 3, const MoreScreen()),
+        ],
+      ),
+    ],
+  );
+});

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- AppColors.canvas, so the launch screen matches the first Flutter screen instead of flashing white. -->
+    <color name="launch_canvas">#F8F6EF</color>
+</resources>
