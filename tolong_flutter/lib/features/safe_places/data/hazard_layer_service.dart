@@ -122,4 +122,21 @@ List<Object> hazardFilterExpression(HazardLayerSpec spec) =>
     <Object>['==', <Object>['get', spec.attribute], spec.band.code];
 
 /// Convenience for screens: the archive URL, so registration and map wiring cannot disagree.
-String get hazardArchiveUrl => noahHazardArchive;
+///
+/// Falls back to the web asset URL so callers that run before `main()` resolves the real one —
+/// including the widget tests, which never run `main()` — still see a well-formed URL. The
+/// overlay only draws when the recorded status says the archive was prepared, so the fallback
+/// never reaches a real map.
+String get hazardArchiveUrl => _hazardArchiveUrl ?? noahHazardArchive;
+
+/// The `pmtiles://` URL the map's hazard source reads from, resolved per platform by
+/// `prepareHazardArchive()` (in `hazard_archive.dart`) before `runApp`.
+///
+/// Web keeps the bundled-asset URL [noahHazardArchive]; Android and iOS point at the copy of
+/// the archive extracted into the app's support directory, because MapLibre Native needs a
+/// seekable file and cannot open a bundled asset through the `pmtiles://` scheme.
+String? _hazardArchiveUrl;
+
+/// Records the resolved archive URL. Called once from `main()`; `null` means the archive
+/// could not be prepared, which the overlay then reports as unavailable.
+void setHazardArchiveUrl(String? url) => _hazardArchiveUrl = url;

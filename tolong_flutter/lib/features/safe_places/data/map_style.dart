@@ -36,29 +36,39 @@ enum BasemapStyle {
 /// The scheme MapLibre uses for a PMTiles archive.
 const String pmtilesScheme = 'pmtiles://';
 
+/// The web path the flood archive is served from, after the `pmtiles://` prefix.
+///
+/// `pubspec.yaml` bundles the archive under the asset key `datasets/qc_flood.pmtiles`, and
+/// Flutter's web build serves every bundled asset under `/assets/`, so the archive sits at
+/// exactly this URL. The same string is the key the archive is registered under on web (the
+/// `FileSource`'s file name — see `hazard_archive.dart`).
+const String hazardArchiveKey = '/assets/datasets/qc_flood.pmtiles';
+
 /// How the pmtiles library matches a style source to a registered archive.
 ///
-/// This is why the URL below has **three** slashes. `Protocol.tile` strips a fixed ten
-/// characters — the length of `pmtiles://` — and looks the remainder up by the key used at
-/// registration. So:
+/// This is why the URL below has **three** slashes. The library strips a fixed ten characters
+/// — the length of `pmtiles://` — off the style's source URL and looks the remainder up by the
+/// key used at registration. So:
 ///
 /// ```text
 ///   style source        pmtiles:///assets/datasets/qc_flood.pmtiles
-///   after substr(10)  -> /assets/datasets/qc_flood.pmtiles
+///   after strip(10)   -> /assets/datasets/qc_flood.pmtiles
 ///   registered key    -> /assets/datasets/qc_flood.pmtiles   ✓ same
 /// ```
 ///
 /// Writing `pmtiles://assets/...` would leave the key as `assets/...` and miss, making the
-/// library quietly construct a *second* archive instance and re-fetch 51 MB. Keep the registered
-/// URL and this constant identical, including the leading slash.
+/// library quietly construct a *second* archive instance and re-fetch 51 MB. Keep
+/// [hazardArchiveKey] and this constant identical, including the leading slash.
 ///
-/// NoAH / Project NOAH hazard overlays, bundled so the map can show modelled hazard with no
+/// NOAH / Project NOAH hazard overlays, bundled so the map can show modelled hazard with no
 /// connection. The archive is the 5.17 GB national file reduced to Quezon City: 169 tiles, z0-14,
 /// bounds 120.9697,14.5691 -> 121.1538,14.7964.
 ///
-/// The same value is registered in `main()` via `registerPmTilesProtocol` and used by the map's
-/// `addSource`, so the two cannot drift apart.
+/// The web value is registered in `main()` via `prepareHazardArchive` and used by the map's
+/// `addSource` (through `hazardArchiveUrl`), so the two cannot drift apart. On Android and iOS
+/// the URL points at the archive extracted into the app's support directory instead — still
+/// `pmtiles://` plus an absolute path, still looked up the same way.
 ///
 /// **Modelled scenarios, not live conditions.** The UI must never call a route or an area "safe"
 /// because of this layer; it may only describe "lower known flood exposure".
-const String noahHazardArchive = '$pmtilesScheme/assets/datasets/qc_flood.pmtiles';
+const String noahHazardArchive = '$pmtilesScheme$hazardArchiveKey';

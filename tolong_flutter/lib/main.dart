@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -11,8 +10,8 @@ import 'app/router.dart';
 import 'core/config/env.dart';
 import 'core/storage/secure_vault.dart';
 import 'core/theme.dart';
+import 'features/safe_places/data/hazard_archive.dart';
 import 'features/safe_places/data/hazard_layer_service.dart';
-import 'features/safe_places/data/hazard_protocol.dart';
 import 'features/settings/settings.dart';
 import 'l10n/l10n.dart';
 
@@ -30,24 +29,23 @@ Future<void> main() async {
       authOptions: FlutterAuthClientOptions(localStorage: SecureSessionStorage()),
     );
   }
-  // Web only, and only once MapLibre GL JS is present: the map loads that library itself, so
-  // `maplibregl` does not exist while index.html is parsed. Android and iOS resolve `pmtiles://`
-  // inside MapLibre Native and need none of this.
+  // Preparing the hazard archive: on web it registers the `pmtiles://` protocol with MapLibre
+  // GL JS (which the map loads itself, so `maplibregl` does not exist while index.html is
+  // parsed); on Android and iOS it extracts the bundled archive to a seekable file. See
+  // `hazard_archive.dart`.
   //
-  // Neither step may stop the app from starting. `registerPmTilesProtocol` catches its own
-  // failures; `ensureWebLibraryLoaded` is wrapped because a map that will not load is still a map
-  // the rest of the app can run without. Either way the hazard overlay reports itself
-  // unavailable, which is a far better outcome than a blank screen.
-  if (kIsWeb) {
-    try {
-      await MapLibreMap.ensureWebLibraryLoaded();
-      setPmTilesRegistered(registerPmTilesProtocol(hazardArchiveUrl));
-    } catch (error) {
-      debugPrint('Web map library unavailable, continuing without it: $error');
-      setPmTilesRegistered(false);
-    }
-  } else {
-    setPmTilesRegistered(true);
+  // This must not stop the app from starting: `prepareHazardArchive` reports `null` on any
+  // failure instead of throwing, and the hazard overlay then reports itself unavailable —
+  // a far better outcome than a blank screen. A missing flood layer is an inconvenience; an
+  // app that will not launch is a disaster in itself.
+  try {
+    final archiveUrl = await prepareHazardArchive();
+    setHazardArchiveUrl(archiveUrl);
+    setPmTilesRegistered(archiveUrl != null);
+  } catch (error) {
+    debugPrint('Hazard archive unavailable, continuing without it: $error');
+    setHazardArchiveUrl(null);
+    setPmTilesRegistered(false);
   }
   runApp(ProviderScope(
     overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
