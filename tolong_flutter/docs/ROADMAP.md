@@ -54,7 +54,7 @@ Last updated: 2026-10-18 (end of Phase 2)
 | 3 | Real QC map, GPS, search, center markers, online routing, navigation screen | **Done in code.** Needs the route service deployed, official center data, and real-phone testing |
 | 4 | Offline readiness center, map downloads, sync queue, offline guidebook | **Done in code.** Sync needs the Supabase project; guidebook content needs sourced material |
 | 5 | Tol chat, Edge Function, offline fallback | **Done in code.** Needs an AI provider key in Supabase secrets |
-| 6 | Hazard layers, hazard-aware routing, shelter ranking | Blocked on datasets |
+| 6 | Hazard layers, hazard-aware routing, shelter ranking | **Partly in progress:** shelter ranking specified in [`SHELTER_RANKING_ML.md`](SHELTER_RANKING_ML.md) (hazard-band filter, trained ranking weights); hazard-aware A\* still blocked on the QC road graph |
 | 7 | Full testing, accessibility review, release build | Planned |
 
 ## 5. Phase 1 checklist
@@ -127,11 +127,14 @@ Phase 2 stores supplies and checklist progress as JSON documents in encrypted st
 - [x] **Offline Quezon City map**: MapLibre offline region for the QC boundary's bounding box, zoom 10–14 (vector tiles overzoom beyond). The estimate is checked in tests to stay below OpenFreeMap's 3,000-tile limit; 4 parallel requests max; distinct TolongApp User-Agent. Progress, done (date and size), retry and delete-with-confirmation. Reachable from Safe places and Settings → Offline maps. Web shows "Android only".
 - [x] 65 automated tests.
 
+- [x] **NOAH hazard overlay** (2026-10-20): four modelled-hazard groups (flood depth, landslide, storm surge, debris flow) from Project NOAH, clipped to Quezon City and bundled in `datasets/` (77 MB, committed on purpose). One fill layer per severity band, each with its own severity filter (`hazardFilterExpression()`), so bands shade distinctly instead of stacking; source registration is idempotent, because group switches never stack duplicate sources (web's `addSource` throws on a repeat — regression-tested). The legend frames colours as modelled exposure, not a safety guarantee, and names what NOAH does not model (earthquakes, fire); storm surge honestly reports no data for inland QC; a failed PMTiles registration disables all groups with an explanation (`hazard_protocol*.dart`). 28 tests in `hazard_layer_test.dart`. Verified in Chrome only — the Android/phone side is in the pending device checklist. Details and licence question: `MAP_OPTIONS.md` §4a.
+
+- [x] **PSGC cross-check** (2026-10-20): all 142 barangay names and codes now match the PSA Philippine Standard Geographic Code masterlist (Third Quarter 2026 release, 2026-10-12). Fixed 5 entries that still carried old 9-digit correspondence codes (`1374040xx` → `13813000xx`) and adopted PSA's official spellings for 9 names (e.g. "Aurora", "Teachers Village East", "E. Rodriguez"). psa.gov.ph refuses automated downloads, so the masterlist came from a mirror, validated against a second independent mirror and against psa.gov.ph's rendered tables; provenance is recorded in `test/fixtures/psgc_qc_official.json` and guarded by `tools/psgc_crosscheck/crosscheck.py --check` plus a test.
+
 ### Remaining in Phase 3
 - [ ] Deploy `tol-route` and set `ORS_API_KEY` (needs the Supabase project and a free openrouteservice.org key)
 - [ ] Replace demo centers with QC DRRMO data
-- [ ] Test on a real Android phone: GPS, map gestures inside the scrolling page, the offline download in airplane mode, performance
-- [ ] Cross-check barangay names against the PSA PSGC publication (the OSM PSGC codes make this a simple join)
+- [ ] Test on a real Android phone: GPS, map gestures inside the scrolling page, the offline download in airplane mode, performance; the SETUP Phase 3 rows (30–47) are being run manually by the team
 
 ## 6c. Phase 4 checklist
 
@@ -173,10 +176,16 @@ The queue stores only *which* record changed, never its contents, so no personal
 - [ ] Filipino answer quality of the chosen model should be checked by the team with real questions
 - [ ] Rate limiting is per Edge Function instance (best effort); add a table-based quota if the app goes public
 
-## 6e. Phase 6 — skipped for now
+## 6e. Phase 6 — A\* routing deferred; shelter ranking started
 Hazard-aware routing (A* over a QC road graph with flood/hazard layers) was deferred by the team
 on 2026-10-18, together with the Supabase setup. Walking routes still use OpenRouteService via
 `tol-route` once it is deployed, with the "not a safety guarantee" wording.
+
+The shelter-ranking part of Phase 6 resumed on 2026-10-19: the hazard-band filter fix is
+implemented in the map overlay (2026-10-20), while the hazard exposure query layer, the
+scoring engine and the trained ranking weights are specified in
+[`SHELTER_RANKING_ML.md`](SHELTER_RANKING_ML.md). The A\* plan itself is unchanged in
+`MAP_OPTIONS.md` §4b.
 
 ## 6f. Phase 7 checklist (testing and optimisation)
 Full results: `docs/TEST_REPORT.md`.
@@ -188,7 +197,7 @@ Full results: `docs/TEST_REPORT.md`.
 - [x] Error-state tests: unreadable bundled data, failed offline map download.
 - [x] Flood-alert audio player created lazily.
 - [x] Release APK build and size check.
-- [x] 145 automated tests, `flutter analyze` clean.
+- [x] 174 automated tests, `flutter analyze` clean (2026-10-20, after the hazard overlay and the PSGC cross-check).
 
 ### Not done
 - [ ] Real-device pass (GPS, offline map in airplane mode, TalkBack, performance on a low-end phone)

@@ -47,14 +47,97 @@ Use **MapLibre (`maplibre_gl`) with OpenFreeMap vector tiles** for the map, and 
 
 ## 4. Offline and hazard-aware routing (Stages B–C): our own A\*
 
+### 4a. Done: the NOAH hazard overlay (rendering, not routing)
+
+The map can now overlay **modelled** hazard from Project NOAH, bundled in `datasets/`:
+
+| Archive | Size | Zoom | Tiles | Bounds |
+|---|---|---|---|---|
+| `qc_flood.pmtiles` | 51.1 MB | 0–14 | 169 | 120.9697,14.5691 → 121.1538,14.7964 |
+| `qc_base.pmtiles` | 30.1 MB | 0–15 | 583 | same |
+
+Both are PMTiles v3, produced by `tippecanoe -z14` per layer then `tile-join -pk` across the nine
+NOAH layers, and then clipped from the 5.17 GB national archive (81,712 tiles) with
+`pmtiles extract --bbox`. **They are committed to git on purpose** so members get the data
+without re-downloading; the repo is ~78 MB.
+
+Nine source layers are exposed to users as four hazard groups, because that is how many choices a
+stressed person can act on, and it matches the guidebook's taxonomy:
+
+| Group | Source layers | Severity attribute | Quezon City |
+|---|---|---|---|
+| Flood depth | `flood_5yr`, `flood_25yr`, `flood_100yr` | `Var` 1–3 | present |
+| Landslide | `landslide` | `HAZ` 1–4 | present |
+| Storm surge | `storm_surge_ssa1`…`ssa4` | `HAZ` 1–3 | **absent — coastal only** |
+| Debris flow | `debris_flow` | `HAZ` 3–4 | sparse |
+
+**Honest limits, enforced by tests:**
+- This is *modelled scenario* data, not live conditions. The legend says so, and never says
+  "safe" — only "lower known flood exposure", per step 4 below.
+- NOAH models **no earthquake and no fire**. The legend states the gap rather than implying full
+  coverage.
+- The archive's own `tilestats` still report the *national* feature counts and its `name` /
+  `antimeridian_adjusted_bounds` fields are stale leftovers from the source. Never surface those;
+  read real bounds from the header (`pmtiles show`).
+
+Implementation notes:
+
+- `map_style.dart` exposes `BasemapStyle`, currently `openFreeMap` (hosted, unchanged). Flipping
+  `BasemapStyle.current` to `localPmtiles` switches the basemap to the bundled file — one value, no
+  widget changes. Offline region downloads read the same field. **That switch is not verified yet:**
+  the bundled-asset URL form is confirmed for the hazard overlay on web only, so re-check it before
+  relying on it.
+- **The archive URL needs three slashes: `pmtiles:///assets/…`.** The pmtiles library keys a
+  registered archive by the string handed to `FetchSource` (`getKey()`), and looks it up by
+  stripping exactly ten characters — the length of `pmtiles://` — off the style's source URL. Write
+  `pmtiles://assets/…` and the lookup misses, so the library silently builds a *second* archive and
+  re-fetches 51 MB. The registered URL and `noahHazardArchive` must match character for character.
+- MapLibre resolves `pmtiles://` natively on Android and iOS. On web the pmtiles library is
+  **vendored** at `web/vendor/pmtiles-4.3.0.js` (BSD-3-Clause, Protomaps), not loaded from a CDN:
+  `registerPmTilesProtocol()` runs inside `main()`, so a CDN on the boot path could stop the app
+  launching at all. See `hazard_protocol*.dart` — a conditional import, because `dart:js_interop`
+  cannot compile into a mobile build.
+- **Registration must never be able to crash start-up.** It is wrapped, and reports a bool.
+  `main()` records the outcome via `setPmTilesRegistered`, and `hazardLayerStatusProvider` turns
+  that into `HazardProtocolMissing` when it failed. The picker then disables the groups and says
+  so — it never removes the control, because a hidden button leaves the user with no idea why the
+  overlay is missing.
+- Sources and layers are added in `onStyleLoaded`, never `onMapCreated`: MapLibre discards
+  runtime-added layers when the style is replaced.
+- Added layer ids are tracked in the widget state, not read back from the style, which would mean
+  parsing the whole style JSON on every change.
+
+**To verify in a browser** (`flutter run -d chrome`, guest → Safe places → hazard button):
+
+| Symptom | Cause |
+|---|---|
+| Hazard colours appear | Working |
+| Button absent | Reverted the gate by hand |
+| 404 on `/assets/datasets/qc_flood.pmtiles` | Path wrong |
+| *"storage backend supports HTTP Byte Serving"* | Dev server rejected the HTTP `Range` request |
+| *"Invalid PMTiles protocol URL"* | `pmtiles.js` did not load, or registration failed |
+
+A `Range` failure is plausible on a plain static server; Flutter's dev server handles it, and a
+release build (`flutter build web --release`) is the fallback.
+
+**Outstanding:** the NOAH reuse licence is unconfirmed (see §5). Ask UP Resilience Institute
+before distributing. The data is usable for evaluation; it is not cleared for release.
+
+### 4b. Still to build: hazard-aware A\* routing
+
 Map tiles alone can't compute a route offline. The plan:
 
 1. Download the Philippines extract from Geofabrik (OSM, ODbL) and cut it to the QC boundary with `osmium`.
 2. Run a small Python script once (offline, in the repo's `tools/`) that keeps walkable ways and writes a compact graph asset: nodes with lat/lon, edges with length and flags (steps, bridge, unpaved).
 3. In the app, run **A\*** with straight-line (haversine) distance as the heuristic, with **Dijkstra** kept as a baseline for the report.
-4. Phase 6 adds hazard weights per edge, e.g. extra cost for edges inside NOAH 100-year flood polygons, and excludes verified closures. The UI would say "lower known flood exposure", never "safe".
+4. Add hazard weights per edge, e.g. extra cost for edges inside NOAH 100-year flood polygons, and excludes verified closures. The UI would say "lower known flood exposure", never "safe".
 
-This gives TolongApp a real, explainable routing agent that works in airplane mode. We will measure the graph size for QC before committing to shipping it in the APK versus downloading it.
+Steps 1–3 do not exist yet; step 4's hazard weights are now unblocked, because the flood polygons
+finally ship with the app. This gives TolongApp a real, explainable routing agent that works in airplane mode. We will measure the graph size for QC before committing to shipping it in the APK versus downloading it.
+
+**Shelter ranking (Phase 6), built on the same hazard data:** the trained ranking model — task,
+features, pairwise dataset, training, export and evaluation — is specified in
+[`SHELTER_RANKING_ML.md`](SHELTER_RANKING_ML.md).
 
 ## 5. Data sources and their status
 
@@ -63,7 +146,7 @@ This gives TolongApp a real, explainable routing agent that works in airplane mo
 | QC boundary | OSM relation for Quezon City (ODbL), or HDX "Philippines – Subnational Administrative Boundaries" (NAMRIA/PSA via OCHA, files dated Nov 2023, levels incl. barangay) | HDX licence **not confirmed**; HDX itself calls these indicative, not official. Use OSM for display, cross-check with HDX |
 | Barangay list (142) | PSA PSGC | To import; replaces the free-text field |
 | Evacuation centers | QC government evacuation center pages and QC DRRMO earthquake evacuation guide; a UP Diliman study found **no centralized, up-to-date database** for Metro Manila | **No machine-readable official list found.** Email **qcdrrmo@quezoncity.gov.ph** for a CSV. Until then: a small dataset labelled *development data, not verified* |
-| Flood hazard (Phase 6) | UP NOAH flood hazard maps (5–100-year rainfall scenarios, shapefiles; QC map validated in 2022) | Open to download; **reuse licence not stated**. Ask UP Resilience Institute before redistributing in the app |
+| Flood hazard, landslide, storm surge, debris flow | UP NOAH hazard maps (5-100-year rainfall scenarios, shapefiles; QC map validated in 2022) | **Downloaded, clipped to QC and bundled** as ``datasets/qc_flood.pmtiles`` (see 4a). **Reuse licence still not stated** - ask UP Resilience Institute before distributing |
 
 ## 6. Costs and risks
 

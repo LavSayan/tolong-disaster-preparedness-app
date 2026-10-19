@@ -77,7 +77,9 @@ same offline; the app no longer downloads fonts.
   `key.properties` (kept out of git) before distributing.
 - Evacuation centers are **demo data**, clearly labelled; hazard alerts have no data source;
   the guidebook has no content yet. All are shown honestly in the app.
-- Phase 6 (hazard-aware A* routing) not started.
+- Phase 6 hazard-aware A\* routing was deferred by the team; the shelter-ranking part has a spec
+  (`docs/SHELTER_RANKING_ML.md`) but is not implemented. The modelled-hazard **overlay** ships
+  (see §9).
 
 ## 7. Build notes
 
@@ -98,3 +100,37 @@ same offline; the app no longer downloads fonts.
   TolongApp icon is needed.
 - Debug builds (`flutter run`) still start slowly on a phone; that's normal for debug mode.
   Use the release APK to judge start-up time.
+
+## 9. Update 2026-10-20 — hazard overlay and PSGC cross-check
+
+### What changed in the suite
+
+| Check | Result |
+|---|---|
+| `flutter analyze` | No issues |
+| Automated tests (`flutter test --concurrency=1`) | **174 passed, 0 failed** (was 145) |
+
+New since the 2026-10-18 report:
+
+- `hazard_layer_test.dart` (28 tests): bundled PMTiles archives exist and are real, hazard
+  grouping and layer specs are unique per severity band, every band layer filters on its own
+  severity code (`Var` for flood, `HAZ` for the rest — regression tests for a bug where bands
+  rendered without filters), legend wording never claims safety, the picker degrades honestly
+  when the PMTiles protocol fails to register.
+- `qc_area_test.dart` gains a fixture test: barangay names and codes must match
+  `test/fixtures/psgc_qc_official.json` exactly — the PSA PSGC masterlist
+  (Third Quarter 2026 release, 2026-10-12) with provenance, since psa.gov.ph refuses automated
+  downloads and the datafile was taken from a validated mirror.
+- `tools/psgc_crosscheck/crosscheck.py`: same check outside Dart (`--check`), plus
+  `--extract` to rebuild the fixture from a fresh mirror datafile.
+
+Data corrections while cross-checking: 5 barangays carried old 9-digit correspondence codes
+(now `13813000xx`), and 9 names were aligned to PSA's official spellings.
+
+### What was **not** re-verified on hardware
+
+- The debug APK was rebuilt (`flutter build apk --debug`) but the emulator pass was abandoned —
+  the emulator would not reach a stable boot on the 8 GB laptop this session. The SETUP Phase 3
+  manual checklist (rows 30–47, plus the hazard overlay steps) was handed to the team to run on
+  a real phone; results should be appended here.
+- Everything needing a backend (routes, Tol online, sync) is still untested — no Supabase project yet.
