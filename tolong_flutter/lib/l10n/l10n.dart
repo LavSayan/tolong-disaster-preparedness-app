@@ -7,6 +7,7 @@ import '../features/readiness/domain/readiness.dart';
 import '../features/readiness/domain/recommendations.dart';
 import '../features/safe_places/data/route_service.dart';
 import '../features/safe_places/domain/evacuation_center.dart';
+import '../features/safe_places/domain/hazard.dart';
 import '../features/supplies/domain/supplies.dart';
 import 'generated/app_localizations.dart';
 
@@ -146,5 +147,21 @@ extension AppLocalizationsX on AppLocalizations {
         AuthErrorCode.rateLimited => errRateLimited,
         AuthErrorCode.weakPassword => errWeakPassword,
         AuthErrorCode.unknown => errUnknown,
+      };
+
+  String hazardGroupName(HazardGroup g) => switch (g) {
+        HazardGroup.flood => hazardGroupFlood,
+        HazardGroup.landslide => hazardGroupLandslide,
+        HazardGroup.stormSurge => hazardGroupStormSurge,
+        HazardGroup.debrisFlow => hazardGroupDebrisFlow,
+      };
+
+  /// Legend wording for a severity band. Bands are ordinal codes in the archive with no labels of
+  /// their own, so the meaning is spelled out here rather than shown as a bare number.
+  String hazardSeverity(int level) => switch (level) {
+        1 => hazardSeverity1,
+        2 => hazardSeverity2,
+        3 => hazardSeverity3,
+        _ => hazardSeverity4,
       };
 }

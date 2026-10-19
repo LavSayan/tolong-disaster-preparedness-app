@@ -848,6 +848,62 @@ class AppLocalizationsEn extends AppLocalizations {
   String get offDeleted => 'Offline map deleted.';
 
   @override
+  String get hazardTitle => 'Modelled hazard';
+
+  @override
+  String get hazardButton => 'Hazard map';
+
+  @override
+  String get hazardLegendTitle => 'What the colours mean';
+
+  @override
+  String get hazardLegendNote =>
+      'Modelled scenarios from Project NOAH, not live conditions. Nothing here shows whether a flood is happening now.';
+
+  @override
+  String get hazardLowerExposure =>
+      'Areas shaded more deeply are modelled to have higher exposure in the stated scenario. This is not a safety guarantee.';
+
+  @override
+  String get hazardGroupFlood => 'Flood depth';
+
+  @override
+  String get hazardGroupLandslide => 'Landslide';
+
+  @override
+  String get hazardGroupStormSurge => 'Storm surge';
+
+  @override
+  String get hazardGroupDebrisFlow => 'Debris flow';
+
+  @override
+  String get hazardSeverity1 => 'Low';
+
+  @override
+  String get hazardSeverity2 => 'Moderate';
+
+  @override
+  String get hazardSeverity3 => 'High';
+
+  @override
+  String get hazardSeverity4 => 'Very high';
+
+  @override
+  String get hazardNoData => 'No modelled data for this hazard in Quezon City.';
+
+  @override
+  String get hazardUnavailableGeneric =>
+      'The hazard map couldn\'t start on this device. The rest of the map still works.';
+
+  @override
+  String get hazardCoverageGap =>
+      'NOAH does not model earthquakes or fire, so those hazards are not shown here.';
+
+  @override
+  String get hazardSource =>
+      'Source: Project NOAH flood, landslide, storm surge and debris-flow maps, clipped to Quezon City.';
+
+  @override
   String get routeShow => 'Show route';
 
   @override

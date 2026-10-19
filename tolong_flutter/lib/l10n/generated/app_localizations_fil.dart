@@ -856,6 +856,64 @@ class AppLocalizationsFil extends AppLocalizations {
   String get offDeleted => 'Nabura ang offline na mapa.';
 
   @override
+  String get hazardTitle => 'Modelled na baha';
+
+  @override
+  String get hazardButton => 'Mapa ng panganib';
+
+  @override
+  String get hazardLegendTitle => 'Ano ang ibig sabihin ng mga kulay';
+
+  @override
+  String get hazardLegendNote =>
+      'Mga modelled na senaryo mula sa Project NOAH, hindi aktuwal na kalagayan. Wala rito sa nagsasaad kung may nagsisimulang baha ngayon.';
+
+  @override
+  String get hazardLowerExposure =>
+      'Mas malalim ang kulay, mas mataas ang modelled na pagkasamana sa senaryong ito. Hindi ito garantisya ng kaligtasan.';
+
+  @override
+  String get hazardGroupFlood => 'Lalim ng tubig';
+
+  @override
+  String get hazardGroupLandslide => 'Pagguho ng bundok';
+
+  @override
+  String get hazardGroupStormSurge =>
+      'Pagbugso ng tubig alang-alang sa baybayin';
+
+  @override
+  String get hazardGroupDebrisFlow => 'Pagbagsak ng lupa at baha';
+
+  @override
+  String get hazardSeverity1 => 'Mababa';
+
+  @override
+  String get hazardSeverity2 => 'Katamtaman';
+
+  @override
+  String get hazardSeverity3 => 'Mataas';
+
+  @override
+  String get hazardSeverity4 => 'Napakataas';
+
+  @override
+  String get hazardNoData =>
+      'Walang modelled na datos para sa hazards na ito sa Quezon City.';
+
+  @override
+  String get hazardUnavailableGeneric =>
+      'Hindi magsimula ang mapa ng panganib sa device na ito. gumana pa rin ang iba pang bahagi ng mapa.';
+
+  @override
+  String get hazardCoverageGap =>
+      'Hindi mo-model ng NOAH ang lindol at sunog, kaya hindi ipinapakita rito.';
+
+  @override
+  String get hazardSource =>
+      'Pinagmulan: Project NOAH na mapa ng baha, pagguho ng bundok, pagbugso ng tubig at pagbagsak ng lupa, pinaliit sa Quezon City.';
+
+  @override
   String get routeShow => 'Ipakita ang ruta';
 
   @override

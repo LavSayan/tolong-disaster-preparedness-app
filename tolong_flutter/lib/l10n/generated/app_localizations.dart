@@ -1412,6 +1412,108 @@ abstract class AppLocalizations {
   /// **'Offline map deleted.'**
   String get offDeleted;
 
+  /// No description provided for @hazardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Modelled hazard'**
+  String get hazardTitle;
+
+  /// No description provided for @hazardButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Hazard map'**
+  String get hazardButton;
+
+  /// No description provided for @hazardLegendTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What the colours mean'**
+  String get hazardLegendTitle;
+
+  /// No description provided for @hazardLegendNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Modelled scenarios from Project NOAH, not live conditions. Nothing here shows whether a flood is happening now.'**
+  String get hazardLegendNote;
+
+  /// No description provided for @hazardLowerExposure.
+  ///
+  /// In en, this message translates to:
+  /// **'Areas shaded more deeply are modelled to have higher exposure in the stated scenario. This is not a safety guarantee.'**
+  String get hazardLowerExposure;
+
+  /// No description provided for @hazardGroupFlood.
+  ///
+  /// In en, this message translates to:
+  /// **'Flood depth'**
+  String get hazardGroupFlood;
+
+  /// No description provided for @hazardGroupLandslide.
+  ///
+  /// In en, this message translates to:
+  /// **'Landslide'**
+  String get hazardGroupLandslide;
+
+  /// No description provided for @hazardGroupStormSurge.
+  ///
+  /// In en, this message translates to:
+  /// **'Storm surge'**
+  String get hazardGroupStormSurge;
+
+  /// No description provided for @hazardGroupDebrisFlow.
+  ///
+  /// In en, this message translates to:
+  /// **'Debris flow'**
+  String get hazardGroupDebrisFlow;
+
+  /// No description provided for @hazardSeverity1.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get hazardSeverity1;
+
+  /// No description provided for @hazardSeverity2.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate'**
+  String get hazardSeverity2;
+
+  /// No description provided for @hazardSeverity3.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get hazardSeverity3;
+
+  /// No description provided for @hazardSeverity4.
+  ///
+  /// In en, this message translates to:
+  /// **'Very high'**
+  String get hazardSeverity4;
+
+  /// No description provided for @hazardNoData.
+  ///
+  /// In en, this message translates to:
+  /// **'No modelled data for this hazard in Quezon City.'**
+  String get hazardNoData;
+
+  /// No description provided for @hazardUnavailableGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'The hazard map couldn\'t start on this device. The rest of the map still works.'**
+  String get hazardUnavailableGeneric;
+
+  /// No description provided for @hazardCoverageGap.
+  ///
+  /// In en, this message translates to:
+  /// **'NOAH does not model earthquakes or fire, so those hazards are not shown here.'**
+  String get hazardCoverageGap;
+
+  /// No description provided for @hazardSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Source: Project NOAH flood, landslide, storm surge and debris-flow maps, clipped to Quezon City.'**
+  String get hazardSource;
+
   /// No description provided for @routeShow.
   ///
   /// In en, this message translates to:

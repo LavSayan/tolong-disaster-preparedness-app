@@ -7,8 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
+import '../data/hazard_layer_service.dart';
 import '../data/map_style.dart';
 import '../domain/evacuation_center.dart';
+import '../domain/hazard.dart';
 
 /// Camera commands the screen can send to whichever map implementation is mounted.
 abstract interface class MapHandle {
@@ -26,6 +28,7 @@ typedef MapViewBuilder = Widget Function({
   required List<List<GeoPoint>>? outline,
   required ValueChanged<String> onCenterTap,
   required ValueChanged<MapHandle> onReady,
+  HazardGroup? hazardGroup,
 });
 
 /// Swappable so widget tests can use a fake (platform map views don't render in tests).
@@ -38,6 +41,7 @@ final mapViewBuilderProvider = Provider<MapViewBuilder>(
     required outline,
     required onCenterTap,
     required onReady,
+    hazardGroup,
   }) =>
       MapLibreView(
         centers: centers,
@@ -47,6 +51,7 @@ final mapViewBuilderProvider = Provider<MapViewBuilder>(
         outline: outline,
         onCenterTap: onCenterTap,
         onReady: onReady,
+        hazardGroup: hazardGroup,
       ),
 );
 
@@ -64,6 +69,7 @@ class MapLibreView extends StatefulWidget {
     required this.outline,
     required this.onCenterTap,
     required this.onReady,
+    this.hazardGroup,
   });
 
   final List<EvacuationCenter> centers;
@@ -76,6 +82,9 @@ class MapLibreView extends StatefulWidget {
   final ValueChanged<String> onCenterTap;
   final ValueChanged<MapHandle> onReady;
 
+  /// Modelled hazard to overlay, or `null` for none.
+  final HazardGroup? hazardGroup;
+
   @override
   State<MapLibreView> createState() => _MapLibreViewState();
 }
@@ -84,6 +93,17 @@ class _MapLibreViewState extends State<MapLibreView> implements MapHandle {
   MapLibreMapController? _controller;
   bool _styleLoaded = false;
   Future<void> _pending = Future.value();
+
+  /// Style layer ids this widget added for the hazard overlay, so they can be removed again.
+  final Set<String> _hazardLayerIds = {};
+
+  /// Whether the hazard source has been registered with the *current* style.
+  ///
+  /// Sources survive a group switch but not a style reload: re-adding one that exists is ignored
+  /// on Android but throws in MapLibre GL JS, which would abort the whole sync and leave the new
+  /// group undrawn. The flag is reset from [_onStyleLoaded], the one place a style replaces every
+  /// runtime source.
+  bool _hazardSourceAdded = false;
 
   @override
   void didUpdateWidget(MapLibreView old) {
@@ -96,6 +116,63 @@ class _MapLibreViewState extends State<MapLibreView> implements MapHandle {
       final r = widget.route;
       if (old.route != widget.route && r != null && r.length > 1) showBounds(boundsOf(r));
     }
+    if (old.hazardGroup != widget.hazardGroup) {
+      _syncHazard();
+    }
+  }
+
+  /// Adds the bundled NOAH hazard archive and one fill layer per severity band.
+  ///
+  /// Runs from `_onStyleLoaded`, never `_onMapCreated`: MapLibre discards every source and layer
+  /// added at runtime when the style is replaced, and that callback is already the place markers
+  /// and lines are (re)drawn.
+  ///
+  /// Added layer ids are tracked in [_hazardLayerIds] rather than read back from the style, which
+  /// would mean parsing the whole style JSON on every change.
+  ///
+  /// Any failure here is logged and swallowed. The overlay is supplementary — if the archive is
+  /// missing or the protocol unregistered the map must still work, because an evacuation centre
+  /// marker matters more than a flood band.
+  void _syncHazard() {
+    _pending = _pending.then((_) async {
+      final c = _controller;
+      if (c == null || !_styleLoaded || !mounted) return;
+      const sourceId = HazardLayerSpec.sourceId;
+      final group = widget.hazardGroup;
+      try {
+        // Clear previous bands first so switching groups never leaves stale fills behind.
+        for (final id in _hazardLayerIds) {
+          try {
+            await c.removeLayer(id);
+          } catch (_) {
+            // Already gone (e.g. the style reloaded under us); nothing to undo.
+          }
+        }
+        _hazardLayerIds.clear();
+        if (group == null) return;
+
+        if (!_hazardSourceAdded) {
+          await c.addSource(sourceId, VectorSourceProperties(url: hazardArchiveUrl));
+          _hazardSourceAdded = true;
+        }
+        for (final spec in hazardLayerSpecs(group)) {
+          await c.addFillLayer(
+            sourceId,
+            spec.id,
+            FillLayerProperties(
+              fillColor: spec.band.color,
+              fillOpacity: spec.opacity,
+            ),
+            sourceLayer: spec.sourceLayer,
+            filter: hazardFilterExpression(spec),
+          );
+          _hazardLayerIds.add(spec.id);
+        }
+      } catch (e) {
+        debugPrint('Hazard overlay unavailable: ${e.runtimeType}');
+        _hazardLayerIds.clear();
+      }
+    });
   }
 
   /// Draws the city outline (thin) and the route (thick) on the line layer.
@@ -138,8 +215,11 @@ class _MapLibreViewState extends State<MapLibreView> implements MapHandle {
 
   void _onStyleLoaded() {
     _styleLoaded = true;
+    _hazardSourceAdded = false;
+    _hazardLayerIds.clear();
     _syncMarkers();
     _syncLines();
+    _syncHazard();
     final r = widget.route;
     final o = widget.outline;
     showBounds(r != null && r.length > 1
@@ -225,7 +305,7 @@ class _MapLibreViewState extends State<MapLibreView> implements MapHandle {
   @override
   Widget build(BuildContext context) {
     return MapLibreMap(
-      styleString: openFreeMapStyle,
+      styleString: BasemapStyle.current.styleUrl,
       initialCameraPosition: CameraPosition(target: _ll(qcApproxBounds.center), zoom: 11.2),
       cameraTargetBounds: CameraTargetBounds(_bounds(metroPanBounds)),
       minMaxZoomPreference: const MinMaxZoomPreference(10, 18),

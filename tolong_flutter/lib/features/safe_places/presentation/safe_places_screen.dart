@@ -9,11 +9,13 @@ import '../../../shared/widgets/common.dart';
 import '../../../shared/widgets/form_widgets.dart';
 import '../application/safe_places_controller.dart';
 import '../data/evacuation_center_repository.dart';
+import '../data/hazard_layer_service.dart';
 import '../data/location_service.dart';
 import '../data/offline_map_service.dart';
 import '../data/qc_area_repository.dart';
 import '../data/route_service.dart';
 import '../domain/evacuation_center.dart';
+import '../domain/hazard.dart';
 import 'barangay_widgets.dart';
 import 'map_view.dart';
 import 'navigation_screen.dart';
@@ -51,6 +53,62 @@ class _SafePlacesScreenState extends ConsumerState<SafePlacesScreen> {
     await _map?.focus(b.center, zoom: 15);
   }
 
+  /// Picks which modelled hazard the map overlays. Chosen from a sheet rather than a row of map
+  /// buttons so four groups fit without crowding the map controls.
+Future<void> _pickHazard(HazardOverlayController controller, HazardGroup? current) async {
+    final l = context.l10n;
+    // Report rather than hide: if the archive cannot be read, say so plainly instead of showing a
+    // control that does nothing.
+    final available = ref.read(hazardLayerStatusProvider);
+    final unavailable = available is HazardProtocolMissing;
+    final picked = await showModalBottomSheet<HazardGroup?>(
+      context: context,
+      // Scrollable: four groups plus headings and the "off" row exceed a 360 dp sheet, and the
+      // accessibility checklist requires bottom sheets to scroll at large text sizes.
+      isScrollControlled: true,
+      builder: (sheetContext) => SafeArea(
+        child: SingleChildScrollView(
+          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(AppSpacing.xl, 0, AppSpacing.xl, AppSpacing.sm),
+              child: Text(l.hazardLegendTitle, style: serif(19)),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(AppSpacing.xl, 0, AppSpacing.xl, AppSpacing.md),
+              child: Text(unavailable ? l.hazardUnavailableGeneric : l.hazardLegendNote,
+                  style: sans(12, height: 1.45, color: unavailable ? AppColors.terracotta : AppColors.muted)),
+            ),
+          for (final g in HazardGroup.values)
+            ListTile(
+              // 48 dp so the tap target meets the accessibility test.
+              minTileHeight: 48,
+              // Disabled rather than removed: the user can see what the app supports and is told
+              // why it cannot show it right now.
+              enabled: !unavailable,
+              leading: Icon(Icons.layers_outlined,
+                  size: 20, color: unavailable ? AppColors.muted : AppColors.blue),
+              title: Text(l.hazardGroupName(g),
+                  style: sans(13,
+                      weight: FontWeight.w600, color: unavailable ? AppColors.muted : AppColors.ink)),
+              trailing: current == g
+                  ? const Icon(Icons.check_rounded, size: 18, color: AppColors.sage)
+                  : null,
+              onTap: () => Navigator.of(sheetContext).pop(g),
+            ),
+          ListTile(
+            minTileHeight: 48,
+            leading: const Icon(Icons.visibility_off_outlined, size: 20, color: AppColors.muted),
+            title: Text(l.hazardButton, style: sans(13, color: AppColors.muted)),
+            onTap: () => Navigator.of(sheetContext).pop(),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          ]),
+        ),
+      ),
+    );
+    controller.select(picked);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
@@ -61,6 +119,8 @@ class _SafePlacesScreenState extends ConsumerState<SafePlacesScreen> {
     final user = state.userPoint;
     final anyUnverified = centers.any((c) => !c.verified);
     final boundary = ref.watch(qcBoundaryProvider).value;
+    final hazardGroup = ref.watch(hazardOverlayProvider);
+    final hazardController = ref.read(hazardOverlayProvider.notifier);
 
     final selected = centers.where((c) => c.id == state.selectedId).firstOrNull;
     final nearestId =
@@ -87,6 +147,7 @@ class _SafePlacesScreenState extends ConsumerState<SafePlacesScreen> {
                     final c = centers.where((x) => x.id == id).firstOrNull;
                     if (c != null) _select(c);
                   },
+                  hazardGroup: hazardGroup,
                   onReady: (handle) => _map = handle,
                 ),
               ),
@@ -112,11 +173,23 @@ class _SafePlacesScreenState extends ConsumerState<SafePlacesScreen> {
                   tooltip: l.mapResetView,
                   onTap: () => _map?.showBounds(boundary?.bounds ?? qcApproxBounds),
                 ),
+                // Always shown. An earlier version hid this on web with `if (!kIsWeb)`, which meant the overlay
+                // was unreachable in exactly the platform it had been wired for. Availability is
+                // now reported by [hazardLayerStatusProvider] instead, so a build that cannot read
+                // the archive says so rather than silently losing the control.
+                const SizedBox(height: 6),
+                _MapButton(
+                  icon: Icons.water_damage_outlined,
+                  tooltip: l.hazardButton,
+                  active: hazardGroup != null,
+                  onTap: () => _pickHazard(hazardController, hazardGroup),
+                ),
               ]),
             ),
           ]),
         ),
       ),
+      if (hazardGroup != null) _HazardLegendCard(group: hazardGroup),
       _LocationMessage(state: state),
       if (centersAsync.isLoading)
         const Padding(padding: EdgeInsets.all(AppSpacing.xl), child: Center(child: CircularProgressIndicator()))
@@ -229,17 +302,26 @@ class _OfflineMapCard extends ConsumerWidget {
 }
 
 class _MapButton extends StatelessWidget {
-  const _MapButton({required this.icon, required this.tooltip, required this.onTap, this.busy = false});
+  const _MapButton({
+    required this.icon,
+    required this.tooltip,
+    required this.onTap,
+    this.busy = false,
+    this.active = false,
+  });
 
   final IconData icon;
   final String tooltip;
   final VoidCallback onTap;
   final bool busy;
 
+  /// Tints the button so an enabled map layer is obvious without reading the legend.
+  final bool active;
+
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.cream,
+      color: active ? AppColors.sageSoft : AppColors.cream,
       shape: const CircleBorder(side: BorderSide(color: AppColors.line)),
       elevation: 1,
       child: IconButton(
@@ -247,8 +329,63 @@ class _MapButton extends StatelessWidget {
         onPressed: busy ? null : onTap,
         icon: busy
             ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
-            : Icon(icon, size: 20, color: AppColors.ink),
+            : Icon(icon, size: 20, color: active ? AppColors.sage : AppColors.ink),
       ),
+    );
+  }
+}
+
+/// On-screen legend for the active hazard group.
+///
+/// Deliberately a legend rather than tap-a-polygon-to-inspect: every band has to be explainable
+/// without hunting on the map, and the wording has to be readable by someone who is stressed.
+class _HazardLegendCard extends StatelessWidget {
+  const _HazardLegendCard({required this.group});
+
+  final HazardGroup group;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final bands = group.severityBands;
+    return CardBox(
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          const Expanded(child: Eyebrow('MODELLED HAZARD')),
+          Text(l.hazardTitle, style: sans(10, weight: FontWeight.w700, color: AppColors.blue)),
+        ]),
+        const SizedBox(height: AppSpacing.sm),
+        Text(l.hazardLegendNote, style: sans(12, height: 1.45, color: AppColors.muted)),
+        const SizedBox(height: AppSpacing.md),
+        // Storm surge is a coastal hazard and Quezon City is inland, so the archive has no data
+        // for it here. Say so rather than showing an empty key.
+        if (group == HazardGroup.stormSurge)
+          Text(l.hazardNoData, style: sans(12, height: 1.45, color: AppColors.terracotta))
+        else
+          for (final band in bands)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Row(children: [
+                Container(
+                  width: 22,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    // `band.color` is '#RRGGBB'; Flutter wants AARRGGBB.
+                    color: Color(int.parse('FF${band.color.substring(1)}', radix: 16)),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                    child: Text(l.hazardSeverity(band.level), style: sans(12, weight: FontWeight.w600))),
+              ]),
+            ),
+        const SizedBox(height: AppSpacing.sm),
+        Text(l.hazardLowerExposure, style: sans(11, height: 1.45, color: AppColors.muted)),
+        Text(l.hazardCoverageGap, style: sans(11, height: 1.45, color: AppColors.muted)),
+        const SizedBox(height: AppSpacing.sm),
+        Text(l.hazardSource, style: sans(10, height: 1.4, color: AppColors.muted)),
+      ]),
     );
   }
 }

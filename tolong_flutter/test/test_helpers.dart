@@ -50,7 +50,8 @@ class FakeMap implements MapHandle {
           required route,
           required outline,
           required onCenterTap,
-          required onReady}) {
+          required onReady,
+          hazardGroup}) {
         WidgetsBinding.instance.addPostFrameCallback((_) => onReady(this));
         // Padded so the fake "pins" don't sit under the real map control buttons on the right.
         return Padding(

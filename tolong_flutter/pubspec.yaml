@@ -41,6 +41,11 @@ flutter:
     - assets/guidebook/
     - assets/fonts/DMSans-OFL.txt
     - assets/fonts/Fraunces-OFL.txt
+    # Quezon City basemap and NOAH modelled-hazard overlays, both clipped from national archives.
+    # Bundled rather than downloaded so the hazard map works with no connection, which is the
+    # point of the app. ~77 MB total; see docs/MAP_OPTIONS.md before swapping either out.
+    - datasets/qc_base.pmtiles
+    - datasets/qc_flood.pmtiles
   # Bundled (OFL) so text looks right on first launch without internet and no font requests leave the phone.
   fonts:
     - family: DMSans

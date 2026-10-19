@@ -31,6 +31,15 @@
 
   <title>tolong_flutter</title>
   <link rel="manifest" href="manifest.json">
+
+  <!--
+    pmtiles.js is vendored, not loaded from a CDN: MapLibre GL JS cannot read a PMTiles archive
+    without it, and registerPmTilesProtocol() runs in main(). A CDN here would put a network
+    dependency on the app's boot path, which an offline-first app must not have. BSD-3-Clause,
+    Protomaps — see vendor/pmtiles-4.3.0.LICENSE.txt. Android and iOS load nothing: MapLibre
+    Native resolves pmtiles:// internally.
+  -->
+  <script src="vendor/pmtiles-4.3.0.js"></script>
 </head>
 <body>
   <!--
