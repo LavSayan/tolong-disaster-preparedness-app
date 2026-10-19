@@ -22,7 +22,8 @@ l10n.yaml                     ARB → lib/l10n/generated/
 env.example.json              template for env.json (git-ignored)
 
 lib/
-├── main.dart                 67   entry: boots Supabase, ProviderScope, TolongApp
+├── main.dart                 87   entry: boots Supabase, prepares the hazard archive,
+│                                  ProviderScope, TolongApp
 ├── app/
 │   ├── router.dart           88   all routes + redirectFor() auth gate
 │   └── app_shell.dart       253   header, bottom nav, tab frame, TolFab
@@ -35,9 +36,9 @@ lib/
 │   └── storage/secure_vault.dart  70  encrypted vault port + Android Keystore
 ├── features/                       14 features, see §2
 ├── l10n/
-│   ├── app_en.arb            605 keys
-│   ├── app_fil.arb           605 keys
-│   └── l10n.dart            150   context.l10n + exhaustive enum→string switches
+│   ├── app_en.arb            622 keys
+│   ├── app_fil.arb           622 keys
+│   └── l10n.dart            167   context.l10n + exhaustive enum→string switches
 └── shared/widgets/
     ├── common.dart          167   ★ Logo, CardBox, PrimaryButton, Eyebrow, SampleTag, IconTile
     ├── character.dart       167   ★ the Tol mascot SVG and its 4 poses
@@ -70,7 +71,7 @@ docs/                       README, ARCHITECTURE, STRUCTURE, SETUP, ROADMAP, TES
 
 | Lines | File |
 |---|---|
-| 503 | `features/safe_places/presentation/safe_places_screen.dart` |
+| 663 | `features/safe_places/presentation/safe_places_screen.dart` |
 | 401 | `features/settings/settings_screen.dart` |
 | 337 | `features/household/presentation/household_forms.dart` |
 | 333 | `features/onboarding/onboarding_screen.dart` |
@@ -270,7 +271,7 @@ Generated or machine-owned files. Edits are lost on the next build.
 
 | Path | Regenerate with |
 |---|---|
-| `lib/l10n/generated/` (8,142 lines) | `flutter gen-l10n` — **do not edit** |
+| `lib/l10n/generated/` (8,372 lines) | `flutter gen-l10n` — **do not edit** |
 | `lib/core/database/app_database.g.dart` | `dart run build_runner build` |
 | `android/app/src/main/java/**/GeneratedPluginRegistrant.java` | automatic |
 | `build/`, `.dart_tool/`, `.flutter-plugins-dependencies` | automatic |

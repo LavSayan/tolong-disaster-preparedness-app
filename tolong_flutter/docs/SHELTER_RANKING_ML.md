@@ -237,7 +237,7 @@ python tools/ranking/train.py               # validates coverage, fits, prints C
 
 cd tolong_flutter
 flutter analyze                             # must be clean
-flutter test --concurrency=1                # 145 existing + ranking, parity, evaluation tests
+flutter test --concurrency=1                # 195 existing + ranking, parity, evaluation tests
 ```
 
 ## 10. Limitations and next steps

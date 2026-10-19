@@ -32,11 +32,12 @@ Every path below is relative to `tolong_flutter/` unless stated otherwise.
 | Local secrets | `flutter_secure_storage` ^11.2.0 | Android Keystore |
 | Non-sensitive prefs | `shared_preferences` ^2.5.6 | Settings flags only |
 | Sync bookkeeping | `drift` ^2.35.2, `drift_flutter` ^0.3.1 | SQLite, **metadata only** |
-| Maps | `maplibre_gl` ^0.27.1 | Vector map + offline region download |
+| Maps | `maplibre_gl` ^0.27.1 | Vector map + offline region download; web loads a **vendored** PMTiles loader from `web/vendor/` (no CDN on the boot path) |
 | Location | `geolocator` ^14.1.1 | |
+| Local file access | `path_provider` ^2.1.6 | Extracts the hazard archive into app storage (Android/iOS) |
 | Alerts | `audioplayers` ^6.1.0 | Flood warning tone |
-| i18n | `flutter_localizations` + ARB | English + Filipino, 605 keys each |
-| Tests | `flutter_test`, `flutter_lints` ^4.0.0 | 145 passing |
+| i18n | `flutter_localizations` + ARB | English + Filipino, 622 keys each |
+| Tests | `flutter_test`, `flutter_lints` ^4.0.0 | 195 passing |
 
 Gradle is deliberately throttled (`android/gradle.properties`: 1536 MB heap, 2 workers,
 parallel off) because the dev machines have 8 GB RAM.
@@ -80,7 +81,7 @@ an implementation by a Riverpod provider. There are eight ports:
 | `LocationService` | `GeolocatorLocationService` | — |
 | `SyncRemote` | `SupabaseSyncRemote` | `null` (sync disabled) |
 | `OnlineTolService` | Edge Function client | offline rule-based guide |
-| `MapHandle` / `MapViewBuilder` | `MapLibreMap` widget | `FakeMap` in tests |
+| `MapHandle` / `MapViewBuilder` | `MapLibreMap` widget (optional `onHazardDrawState` callback) | `FakeMap` in tests |
 
 Two of these bindings are the backbone of the whole test strategy:
 
@@ -301,7 +302,7 @@ Two details worth preserving if you touch it:
 | `supplies` | d/p | Inventory: 7 categories, 11 units, expiry, coverage maths |
 | `prepare` | d/p | Go-bag checklist: 26 stable-id templates + 7 household-specific suggestions |
 | `readiness` | a/p | Weighted score, per-area breakdown, rule-based recommendation agent |
-| `safe_places` | a/d/p | MapLibre map, GPS, evacuation centres, QC boundary, barangay search, routing, offline map, navigation |
+| `safe_places` | a/d/p | MapLibre map, GPS, evacuation centres, QC boundary, barangay search, routing, offline map, navigation, NOAH hazard overlay |
 | `sync` | a/d/p | Drift queue, engine, remote, store, conflict rules |
 | `tol` | a/d/p | AI assistant — Edge Function online, rule-based offline fallback, encrypted history |
 | `guidebook` | d/p | Bundled offline guide (structure only, see §11) |
@@ -311,6 +312,30 @@ Two details worth preserving if you touch it:
 | `onboarding` | — | 5-step wizard |
 | `alerts` | — | Flood alert card + warning sound |
 | `offline` | — | Offline Readiness Center |
+
+### The NOAH hazard overlay (`safe_places`)
+
+`datasets/qc_flood.pmtiles` holds nine modelled-hazard layers, shown to users as four
+groups: flood depth, landslide, storm surge, debris flow. The pieces, in dependency order:
+
+- **`domain/hazard.dart`** — groups and severity bands. Codes are **ints**: the archive stores
+  `Var`/`HAZ` as numbers, and MapLibre's `==`/`in` are type-strict, so a string code silently
+  matches nothing (a legend with no colours and no error).
+- **`data/hazard_layer_service.dart`** — pure layer specs (one fill layer per severity band),
+  `hazardFilterExpression()`, and `HazardDrawState` + `classifyDraw()`, the "did anything
+  actually draw?" classifier.
+- **`data/hazard_archive.dart`** — `prepareHazardArchive()`, awaited once from `main()`. Web
+  registers the archive with the vendored PMTiles loader (`web/vendor/hazard_archive.js`
+  fetches it as one whole file — the dev server cannot byte-serve); Android/iOS extract it
+  into the app-support directory. Returns `null` on any failure; start-up never blocks on it.
+- **`data/map_style.dart`** — `hazardArchiveKey`, the single constant behind both the
+  registered key and the map's `pmtiles:///…` source URL (three slashes — the library strips
+  exactly the scheme's length).
+- **`presentation/map_view.dart`** — `_syncHazard()` adds/rebinds the layers on style load;
+  `onMapIdle` runs the draw check so a filter that matches nothing surfaces as a legend note
+  (`hazardNothingDrawn`) instead of a silently colourless map.
+
+Data provenance, tile anatomy and the licence caveat: `MAP_OPTIONS.md` §4a.
 
 ---
 
@@ -423,7 +448,7 @@ text.
 
 ```bash
 cd tolong_flutter
-flutter test --concurrency=1     # 145 passing; --concurrency=1 is mandatory
+flutter test --concurrency=1     # 195 passing; --concurrency=1 is mandatory
 flutter analyze                   # clean
 ```
 
@@ -439,6 +464,8 @@ Parallel test engines exhaust memory on the target machines.
 | `sync_engine_test.dart` | Coalescing, tombstones, conflict rule, retry backoff |
 | `phase2_flows_test.dart` | Checklist, supplies, settings, account deletion |
 | `safe_places_test.dart` | Demo labels, markers, outside-QC, location denied/off/blocked |
+| `hazard_layer_test.dart` | Overlay specs, numeric severity filters, draw-state classification, legend wording |
+| `hazard_archive_fields_test.dart` | Severity codes pinned to values decoded from the bundled archive |
 | `phase4_test.dart` | Guidebook uncited-content guard, offline readiness, queued backup |
 | `responsive_test.dart` | Every route, two viewports, Filipino, large text |
 | `sync_store_test.dart` | Drift queue behaviour |

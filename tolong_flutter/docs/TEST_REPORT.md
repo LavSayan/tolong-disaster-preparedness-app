@@ -27,6 +27,8 @@ listed under "Not executed".
 | `onboarding_test.dart` | Onboarding to dashboard, Filipino chosen during onboarding
 | `phase2_flows_test.dart` | Checklist, custom items, supplies → Home coverage, settings and reduced motion, account deletion
 | `safe_places_test.dart` | Map with demo labels, marker taps, nearest center, outside-QC, location denied/blocked/off |
+| `hazard_layer_test.dart` | Hazard grouping, numeric per-band filters, draw-state classification, honest legend wording |
+| `hazard_archive_fields_test.dart` | Severity codes pinned to values decoded from the bundled PMTiles archive |
 | `qc_area_test.dart` | QC boundary, 142 barangays, barangay search, offline map download/delete |
 | `routing_test.dart` | Route drawing, wheelchair profile, route errors, navigation off-route/arrival |
 | `phase4_test.dart` | Guidebook (no uncited content), Offline Readiness Center, queued backup |
@@ -131,8 +133,8 @@ Data corrections while cross-checking: 5 barangays carried old 9-digit correspon
 
 - The debug APK was rebuilt (`flutter build apk --debug`) but the emulator pass was abandoned —
   the emulator would not reach a stable boot on the 8 GB laptop this session. The SETUP Phase 3
-  manual checklist (rows 30–47, plus the hazard overlay steps) was handed to the team to run on
-  a real phone; results should be appended here.
+  manual checklist (rows 30–47 and the hazard-overlay rows 69–71) was handed to the team to run
+  on a real phone; results should be appended here.
 - Everything needing a backend (routes, Tol online, sync) is still untested — no Supabase project yet.
 
 ## 10. Update 2026-10-20 — hazard overlay transport fix

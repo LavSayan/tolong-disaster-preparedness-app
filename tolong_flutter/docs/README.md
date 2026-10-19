@@ -30,7 +30,7 @@ including Supabase deployment and API keys.
 
 ```bash
 cd tolong_flutter
-flutter test --concurrency=1     # 174 passing; --concurrency=1 is mandatory
+flutter test --concurrency=1     # 195 passing; --concurrency=1 is mandatory
 flutter analyze                   # clean
 ```
 

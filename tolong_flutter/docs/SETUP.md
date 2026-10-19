@@ -76,6 +76,12 @@ flutter build web --release
 
 Then serve `build/web` with any static file server.
 
+Note: the map's hazard overlay works here too. On first use the page loads the 51 MB
+`datasets/qc_flood.pmtiles` as **one whole-file request** — by design, because plain static
+servers (the dev server included) do not honour HTTP byte ranges. Under `flutter run -d chrome`,
+hot reload does not re-load the vendored archive loader; do a full restart. Details:
+`docs/MAP_OPTIONS.md` §4a.
+
 Note: Supabase's built-in email sender is rate limited on the free tier. For heavier testing, configure your own SMTP under Authentication → Emails.
 
 ## Manual test checklist
@@ -175,6 +181,19 @@ Note: Supabase's built-in email sender is rate limited on the free tier. For hea
 | 66 | Android Settings → Font size largest + Display size largest | No text is cut off; bottom sheets scroll |
 | 67 | Airplane mode from a fresh start | App opens with correct fonts; Offline readiness shows what is available |
 | 68 | Home → flood alert sound → tap twice | Plays on the first tap, stops on the second |
+
+### Hazard overlay (Safe places screen; the web side is Chrome-verified 2026-10-20)
+
+Rows 69–71 cover the NOAH hazard button. Data details and the licence caveat:
+`docs/MAP_OPTIONS.md` §4a. After pulling new code, run a **full app restart** — under
+`flutter run -d chrome`, hot-reloading an already-open page does not re-load the vendored
+archive loader script.
+
+| # | Steps | Expected |
+|---|---|---|
+| 69 | Safe places → hazard button → "Flood depth" | Legend of modelled-exposure bands (never "safe"); hazard colours shade Quezon City; no "data could not be drawn" note |
+| 70 | Switch to Landslide, then Debris flow, then Storm surge | Colours change per group; debris flow may draw little or nothing (spare in QC is honest); storm surge says it has no data for inland QC and shows no empty key |
+| 71 | (Web) full `flutter run -d chrome` restart, then pick a hazard | One ~51 MB archive fetch on first use per page load, then colours with no error; "colourless legend with no error" on an old tab means the restart step was skipped |
 
 ### Regenerating the database code
 After changing `lib/core/database/app_database.dart`:
