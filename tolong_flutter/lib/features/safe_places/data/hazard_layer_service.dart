@@ -115,11 +115,52 @@ class HazardLayerSpec {
 /// the severity colours would collapse into whichever fill was added last and the legend would
 /// lie about what is drawn.
 ///
+/// The comparison must be **numeric**: the archive stores `Var`/`HAZ` as numbers (verified in
+/// `test/fixtures/hazard_archive_fields.json`), and MapLibre's `==` compares types strictly, so a
+/// string code would match nothing — a silent failure where the legend rendered and the map drew
+/// no colours at all.
+///
 /// Returned as a plain MapLibre expression list (`jsonEncode`d for Android, passed straight to
 /// MapLibre GL JS on web, both inside maplibre_gl). It is a pure value on purpose: the grouping
 /// and filtering logic stays testable without a platform map view.
 List<Object> hazardFilterExpression(HazardLayerSpec spec) =>
     <Object>['==', <Object>['get', spec.attribute], spec.band.code];
+
+/// A filter matching every severity band of [group], for the "did anything actually match?"
+/// check in `map_view.dart`: querying the source with this must find the features the band
+/// filters collectively select, so a zero count there alongside a non-empty source proves the
+/// severity filter itself never matches.
+List<Object> hazardGroupFilterExpression(HazardGroup group) => <Object>[
+      'in',
+      <Object>['get', group.severityAttribute],
+      [for (final b in group.severityBands) b.code],
+    ];
+
+/// A group with data loaded but no filter match is silent failure: everything else
+/// either drew colours or legitimately has nothing loaded for the view.
+enum HazardDrawState {
+  /// The severity filter matched at least one loaded feature — colours are on the map.
+  drawn,
+
+  /// No features of this group's source layers are loaded for the current view. That is not
+  /// always a bug (an empty stretch of QC legitimately carries no flood polygon) so the UI
+  /// stays quiet instead of nagging about absence.
+  viewHasNoData,
+
+  /// Features are loaded but the severity filter matched none of them. On a working setup this
+  /// cannot happen — the filter only selects the codes those layers carry — so it is the exact
+  /// signature of the silent type-mismatch bug that once drew a legend over a colourless map.
+  filterMatchedNothing,
+}
+
+/// Classifies the two counts the map view gathers on `onMapIdle` (see `map_view.dart`):
+/// [sourceCount] = the group's features loaded in the current tiles, no filter;
+/// [matchedCount] = the same query under [hazardGroupFilterExpression].
+HazardDrawState classifyDraw({required int sourceCount, required int matchedCount}) {
+  if (matchedCount > 0) return HazardDrawState.drawn;
+  if (sourceCount > 0) return HazardDrawState.filterMatchedNothing;
+  return HazardDrawState.viewHasNoData;
+}
 
 /// Convenience for screens: the archive URL, so registration and map wiring cannot disagree.
 ///

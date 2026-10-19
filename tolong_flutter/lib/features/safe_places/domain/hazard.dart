@@ -49,8 +49,13 @@ enum HazardGroup {
 class HazardSeverityBand {
   const HazardSeverityBand(this.code, this.level);
 
-  /// The value in the archive's severity attribute, as a string for the style expression.
-  final String code;
+  /// The value in the archive's severity attribute.
+  ///
+  /// The archive stores `Var`/`HAZ` as **numbers** (verified by decoding the bundled tiles — see
+  /// `test/fixtures/hazard_archive_fields.json`), so the code has to be an `int`: MapLibre's `==`
+  /// compares types strictly, and `1 == '1'` is false. A string code silently matched no features
+  /// — the legend drew while the map stayed blank with no error anywhere.
+  final int code;
 
   /// How many bands the scale has, so the UI can render a legend without hard-coding counts.
   final int level;
@@ -71,16 +76,17 @@ extension HazardGroupSeverity on HazardGroup {
         // Var: 1..3 — 5-year, 25-year and 100-year bands share one attribute, so the same three
         // severity steps are used for all three return periods.
         HazardGroup.flood => const [
-            HazardSeverityBand('1', 1),
-            HazardSeverityBand('2', 2),
-            HazardSeverityBand('3', 3),
+            HazardSeverityBand(1, 1),
+            HazardSeverityBand(2, 2),
+            HazardSeverityBand(3, 3),
           ],
-        // HAZ: 1..4
+        // HAZ: flood-adjacent layers observe 1..3 (surge) or 3..4 (sparse debris flow); the full
+        // 1..4 scale is declared so every class that ever reaches QC has a legend entry.
         _ => const [
-            HazardSeverityBand('1', 1),
-            HazardSeverityBand('2', 2),
-            HazardSeverityBand('3', 3),
-            HazardSeverityBand('4', 4),
+            HazardSeverityBand(1, 1),
+            HazardSeverityBand(2, 2),
+            HazardSeverityBand(3, 3),
+            HazardSeverityBand(4, 4),
           ],
       };
 }

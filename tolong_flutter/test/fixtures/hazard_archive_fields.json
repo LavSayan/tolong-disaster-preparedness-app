@@ -1,0 +1,98 @@
+{
+  "archive": "tolong_flutter/datasets/qc_flood.pmtiles",
+  "source_ref": "Project NOAH flood, landslide, storm-surge and debris-flow shapefiles, clipped to Quezon City and committed in datasets/.",
+  "extracted_by": "tools/hazard_archive_check/hazard_fields.py --extract",
+  "note": "Values are decoded from every tile; metadata tilestats in the archive is stale.",
+  "sha256": "f38f3ec96a98dc2e151c04ca8359b8001f628d0dbfea44bcc0a0a221c02a2c21",
+  "size_bytes": 51054047,
+  "spec_version": 3,
+  "tiles": 169,
+  "zoom_range": [
+    0,
+    14
+  ],
+  "compression": "gzip",
+  "fields": {
+    "flood_100yr": {
+      "attribute": "Var",
+      "type": "number",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    "flood_5yr": {
+      "attribute": "Var",
+      "type": "number",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    "flood_25yr": {
+      "attribute": "Var",
+      "type": "number",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    "landslide": {
+      "attribute": "HAZ",
+      "type": "number",
+      "values": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "storm_surge_ssa2": {
+      "attribute": "HAZ",
+      "type": "number",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    "storm_surge_ssa1": {
+      "attribute": "HAZ",
+      "type": "number",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    "storm_surge_ssa3": {
+      "attribute": "HAZ",
+      "type": "number",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    "debris_flow": {
+      "attribute": "HAZ",
+      "type": "number",
+      "values": [
+        3,
+        4
+      ]
+    },
+    "storm_surge_ssa4": {
+      "attribute": "HAZ",
+      "type": "number",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    }
+  }
+}

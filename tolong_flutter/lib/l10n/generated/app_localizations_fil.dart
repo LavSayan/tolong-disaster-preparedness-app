@@ -902,6 +902,10 @@ class AppLocalizationsFil extends AppLocalizations {
       'Walang modelled na datos para sa hazards na ito sa Quezon City.';
 
   @override
+  String get hazardNothingDrawn =>
+      'May datos ang mapa para sa panganib na ito ngunit hindi maiguhit. Mukhang problema ito ng app, hindi patunay na wala ang panganib.';
+
+  @override
   String get hazardUnavailableGeneric =>
       'Hindi magsimula ang mapa ng panganib sa device na ito. gumana pa rin ang iba pang bahagi ng mapa.';
 

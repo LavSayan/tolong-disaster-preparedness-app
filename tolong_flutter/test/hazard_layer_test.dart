@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tolong_flutter/features/safe_places/data/hazard_archive.dart';
 import 'package:tolong_flutter/features/safe_places/data/hazard_layer_service.dart';
 import 'package:tolong_flutter/features/safe_places/data/map_style.dart';
 import 'package:tolong_flutter/features/safe_places/domain/evacuation_center.dart';
@@ -60,22 +61,38 @@ void main() {
       expect(hazardArchiveUrl, contains('qc_flood.pmtiles'));
     });
 
-    test('the archive URL has three slashes so it matches the registered key', () {
-      // The pmtiles library keys registered archives by getKey() and looks them up by stripping
-      // exactly ten characters — the length of "pmtiles://" — off the style's source URL. If the
-      // two disagree it silently builds a *second* archive and re-fetches 51 MB, so the leading
-      // slash is load-bearing, not cosmetic.
-      expect(hazardArchiveUrl.substring(0, pmtilesScheme.length + 1), 'pmtiles:///');
-      expect(hazardArchiveUrl.substring(pmtilesScheme.length), '/assets/datasets/qc_flood.pmtiles');
+    test('the registered key is the source URL after the scheme, character for character', () {
+      // The pmtiles library looks a style source up by stripping exactly ten characters — the
+      // length of "pmtiles://" — off its URL and matching the remainder against the key the
+      // archive was registered under (on web, the FileSource's file name). If the two disagree
+      // it silently builds a *second* archive and re-fetches 51 MB, so this equality is
+      // load-bearing, not cosmetic: main() registers [hazardArchiveKey], the map source uses
+      // [hazardArchiveUrl].
+      expect(hazardArchiveUrl, pmtilesScheme + hazardArchiveKey);
+      expect(hazardArchiveKey, startsWith('/'),
+          reason: 'three slashes: pmtiles:// plus a leading slash on the key');
     });
 
-    test('the bundled archive is served from the path the URL asks for', () {
-      // Guards the web path: MapLibre fetches `assetUrl` relative to the page, and the Flutter
-      // build serves the archive under /assets/.
-      const assetUrl = '/assets/datasets/qc_flood.pmtiles';
-      expect(hazardArchiveUrl.substring(pmtilesScheme.length), assetUrl);
-      expect(File('build/web$assetUrl').existsSync() || _dataset('qc_flood.pmtiles').existsSync(), isTrue,
-          reason: 'the archive must exist at $assetUrl in a web build');
+    test('the web path serves the bundled asset', () {
+      // pubspec bundles the archive as `datasets/qc_flood.pmtiles`, and Flutter's web build
+      // serves every bundled asset under /assets/. Deliberately no `build/web` lookup here:
+      // a build may not have run, and the file the build copies is this one.
+      expect(hazardArchiveKey, '/assets/datasets/qc_flood.pmtiles');
+      expect(_dataset('qc_flood.pmtiles').existsSync(), isTrue);
+    });
+
+    test('a failed preparation reports null instead of throwing', () async {
+      // The VM test environment has no path_provider implementation, so the native branch
+      // fails — which is exactly the contract: report, never throw, never take the app down.
+      expect(await prepareHazardArchive(), isNull);
+    });
+
+    test('the resolved URL replaces the web fallback once recorded', () {
+      // On Android and iOS main() records the extracted copy's path; the map source must read
+      // that, not the web asset URL the getter falls back to before resolution.
+      setHazardArchiveUrl('$pmtilesScheme/data/user/0/app/files/qc_flood.pmtiles');
+      addTearDown(() => setHazardArchiveUrl(null));
+      expect(hazardArchiveUrl, '$pmtilesScheme/data/user/0/app/files/qc_flood.pmtiles');
     });
 
     test('the overlay reports itself available when the protocol is registered', () {
@@ -117,10 +134,12 @@ void main() {
     });
 
     test('severity codes match the ranges the archive actually carries', () {
-      // flood_* use Var 1..3; landslide and surge use HAZ 1..3/1..4.
-      expect(HazardGroup.flood.severityBands.map((b) => b.code), ['1', '2', '3']);
-      expect(HazardGroup.landslide.severityBands.map((b) => b.code), ['1', '2', '3', '4']);
-      expect(HazardGroup.debrisFlow.severityBands.map((b) => b.code).last, '4');
+      // flood_* use Var 1..3; landslide and surge use HAZ 1..3/1..4. The codes are ints because
+      // the archive stores them as numbers — asserted against the decoded data in
+      // hazard_archive_fields_test.dart.
+      expect(HazardGroup.flood.severityBands.map((b) => b.code), [1, 2, 3]);
+      expect(HazardGroup.landslide.severityBands.map((b) => b.code), [1, 2, 3, 4]);
+      expect(HazardGroup.debrisFlow.severityBands.map((b) => b.code).last, 4);
     });
 
     test('storm surge is a coastal hazard with no Quezon City data', () {
@@ -176,11 +195,59 @@ void main() {
     test('flood bands filter on Var, every other group on HAZ', () {
       expect(
         hazardFilterExpression(hazardLayerSpecs(HazardGroup.flood)[3]),
-        ['==', ['get', 'Var'], '1'],
+        ['==', ['get', 'Var'], 1],
       );
       expect(
         hazardFilterExpression(hazardLayerSpecs(HazardGroup.landslide).first),
-        ['==', ['get', 'HAZ'], '1'],
+        ['==', ['get', 'HAZ'], 1],
+      );
+    });
+
+    test('the filter compares numbers, because the archive stores numbers', () {
+      // Regression guard for the silent failure class: the archive carries `Var`/`HAZ` as
+      // numbers (decoded from the tiles in hazard_archive_fields_test.dart), and MapLibre's ==
+      // compares types strictly. A string code matched no feature — the legend rendered, the
+      // map stayed blank, and nothing threw. This test keeps the filter numeric.
+      for (final g in HazardGroup.values) {
+        for (final spec in hazardLayerSpecs(g)) {
+          expect(hazardFilterExpression(spec).last, isA<int>(), reason: spec.id);
+        }
+        expect(hazardGroupFilterExpression(g).last, isA<List<int>>(), reason: '$g codes');
+      }
+    });
+
+    test('the group filter selects every declared band of the group', () {
+      for (final g in HazardGroup.values) {
+        final filter = hazardGroupFilterExpression(g);
+        expect(filter.first, 'in', reason: '$g');
+        expect(filter[1], ['get', g.severityAttribute], reason: '$g');
+        expect(filter.last, [for (final b in g.severityBands) b.code], reason: '$g');
+      }
+    });
+  });
+
+  group('draw-state classification', () {
+    test('a match means the overlay is drawing', () {
+      expect(
+        classifyDraw(sourceCount: 12, matchedCount: 5),
+        HazardDrawState.drawn,
+      );
+    });
+
+    test('loaded features with no filter match is the silent failure', () {
+      // Exact signature of the type bug: data present, filter matched nothing, no error thrown.
+      expect(
+        classifyDraw(sourceCount: 12, matchedCount: 0),
+        HazardDrawState.filterMatchedNothing,
+      );
+    });
+
+    test('nothing loaded is not a failure and stays quiet', () {
+      // An empty stretch of tiles legitimately carries no hazard polygons; a warning here would
+      // cry wolf about normal map use.
+      expect(
+        classifyDraw(sourceCount: 0, matchedCount: 0),
+        HazardDrawState.viewHasNoData,
       );
     });
   });
@@ -223,6 +290,20 @@ void main() {
       expect(en.hazardCoverageGap, contains('fire'));
       expect(fil.hazardCoverageGap, isNotEmpty);
       expect(en.hazardCoverageGap.toLowerCase(), isNot(contains('every hazard')));
+    });
+
+    test('the nothing-drawn note reports an app problem, not an absence', () async {
+      // Shown when the map loaded hazard features but the severity filter matched none — the
+      // silent failure. The wording must never let a missing colour read as "no hazard here".
+      final en = await l10n('en');
+      for (final forbidden in ['is safe', 'safe route', 'guaranteed safe', 'will not flood']) {
+        expect(en.hazardNothingDrawn.toLowerCase(), isNot(contains(forbidden)));
+      }
+      expect(en.hazardNothingDrawn, contains('could not draw'));
+      expect(en.hazardNothingDrawn, contains('not evidence'));
+      for (final language in ['en', 'fil']) {
+        expect((await l10n(language)).hazardNothingDrawn, isNotEmpty, reason: language);
+      }
     });
   });
 

@@ -29,6 +29,7 @@ typedef MapViewBuilder = Widget Function({
   required ValueChanged<String> onCenterTap,
   required ValueChanged<MapHandle> onReady,
   HazardGroup? hazardGroup,
+  ValueChanged<HazardDrawState>? onHazardDrawState,
 });
 
 /// Swappable so widget tests can use a fake (platform map views don't render in tests).
@@ -42,6 +43,7 @@ final mapViewBuilderProvider = Provider<MapViewBuilder>(
     required onCenterTap,
     required onReady,
     hazardGroup,
+    onHazardDrawState,
   }) =>
       MapLibreView(
         centers: centers,
@@ -52,6 +54,7 @@ final mapViewBuilderProvider = Provider<MapViewBuilder>(
         onCenterTap: onCenterTap,
         onReady: onReady,
         hazardGroup: hazardGroup,
+        onHazardDrawState: onHazardDrawState,
       ),
 );
 
@@ -70,6 +73,7 @@ class MapLibreView extends StatefulWidget {
     required this.onCenterTap,
     required this.onReady,
     this.hazardGroup,
+    this.onHazardDrawState,
   });
 
   final List<EvacuationCenter> centers;
@@ -84,6 +88,12 @@ class MapLibreView extends StatefulWidget {
 
   /// Modelled hazard to overlay, or `null` for none.
   final HazardGroup? hazardGroup;
+
+  /// Reports whether the active hazard overlay is actually drawing, [HazardDrawState] first
+  /// resolving on the first `onMapIdle` after the layers are added. The screen surfaces
+  /// [HazardDrawState.filterMatchedNothing] in the legend, because that state is the silent
+  /// failure the overlay once had: data loaded, filter matched nothing, no error anywhere.
+  final ValueChanged<HazardDrawState>? onHazardDrawState;
 
   @override
   State<MapLibreView> createState() => _MapLibreViewState();
@@ -105,6 +115,11 @@ class _MapLibreViewState extends State<MapLibreView> implements MapHandle {
   /// runtime source.
   bool _hazardSourceAdded = false;
 
+  /// The last [HazardDrawState] reported to `widget.onHazardDrawState`, so the callback fires on
+  /// change rather than every idle frame. Reset when the group changes or the style reloads,
+  /// because either event redraws the layers the counts are read from.
+  HazardDrawState? _lastReported;
+
   @override
   void didUpdateWidget(MapLibreView old) {
     super.didUpdateWidget(old);
@@ -117,6 +132,7 @@ class _MapLibreViewState extends State<MapLibreView> implements MapHandle {
       if (old.route != widget.route && r != null && r.length > 1) showBounds(boundsOf(r));
     }
     if (old.hazardGroup != widget.hazardGroup) {
+      _lastReported = null;
       _syncHazard();
     }
   }
@@ -175,6 +191,47 @@ class _MapLibreViewState extends State<MapLibreView> implements MapHandle {
     });
   }
 
+  /// Counts what the hazard overlay actually drew once the map settles.
+  ///
+  /// The overlay can fail **silently**: a severity filter that matches nothing paints no fills
+  /// and throws no error, which once showed a legend over a colourless map for days. So after
+  /// each idle frame with an active group, the source is queried unfiltered (features loaded for
+  /// this view) and again under `hazardGroupFilterExpression` (what the filters select).
+  /// `classifyDraw` turns the two counts into the state the screen reports — a non-empty source
+  /// with zero matches is [HazardDrawState.filterMatchedNothing], the only state the legend
+  /// warns about, because an empty view and a drawn view are both normal.
+  Future<void> _onMapIdle() async {
+    final group = widget.hazardGroup;
+    if (group == null || _hazardLayerIds.isEmpty) return;
+    _pending = _pending.then((_) async {
+      final c = _controller;
+      if (c == null || !_styleLoaded || !mounted) return;
+      try {
+        var sourceCount = 0;
+        var matchedCount = 0;
+        const sourceId = HazardLayerSpec.sourceId;
+        for (final layer in group.sourceLayers) {
+          final unfiltered = c.querySourceFeatures(sourceId, layer, null);
+          final filtered =
+              c.querySourceFeatures(sourceId, layer, hazardGroupFilterExpression(group));
+          sourceCount += (await unfiltered).length;
+          matchedCount += (await filtered).length;
+        }
+        final state = classifyDraw(sourceCount: sourceCount, matchedCount: matchedCount);
+        if (kDebugMode) {
+          debugPrint('Hazard overlay draws $matchedCount of $sourceCount loaded ($state)');
+        }
+        if (state != _lastReported) {
+          _lastReported = state;
+          widget.onHazardDrawState?.call(state);
+        }
+      } catch (e) {
+        // A style reload can beat the layers; the next idle pin re-checks.
+        debugPrint('Hazard draw check skipped: ${e.runtimeType}');
+      }
+    });
+  }
+
   /// Draws the city outline (thin) and the route (thick) on the line layer.
   void _syncLines() {
     _pending = _pending.then((_) async {
@@ -217,6 +274,7 @@ class _MapLibreViewState extends State<MapLibreView> implements MapHandle {
     _styleLoaded = true;
     _hazardSourceAdded = false;
     _hazardLayerIds.clear();
+    _lastReported = null;
     _syncMarkers();
     _syncLines();
     _syncHazard();
@@ -312,6 +370,7 @@ class _MapLibreViewState extends State<MapLibreView> implements MapHandle {
       onMapCreated: _onMapCreated,
       onStyleLoadedCallback: _onStyleLoaded,
       onMapClick: _onMapClick,
+      onMapIdle: _onMapIdle,
       trackCameraPosition: true,
       compassEnabled: false,
       rotateGesturesEnabled: false,

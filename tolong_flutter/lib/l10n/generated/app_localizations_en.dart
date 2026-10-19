@@ -892,6 +892,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hazardNoData => 'No modelled data for this hazard in Quezon City.';
 
   @override
+  String get hazardNothingDrawn =>
+      'The map has the data for this hazard but could not draw any of it. This looks like an app problem, not evidence that the hazard is absent.';
+
+  @override
   String get hazardUnavailableGeneric =>
       'The hazard map couldn\'t start on this device. The rest of the map still works.';
 

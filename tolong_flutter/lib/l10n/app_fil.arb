@@ -243,6 +243,7 @@
   "hazardSeverity3": "Mataas",
   "hazardSeverity4": "Napakataas",
   "hazardNoData": "Walang modelled na datos para sa hazards na ito sa Quezon City.",
+  "hazardNothingDrawn": "May datos ang mapa para sa panganib na ito ngunit hindi maiguhit. Mukhang problema ito ng app, hindi patunay na wala ang panganib.",
   "hazardUnavailableGeneric": "Hindi magsimula ang mapa ng panganib sa device na ito. gumana pa rin ang iba pang bahagi ng mapa.",
   "hazardCoverageGap": "Hindi mo-model ng NOAH ang lindol at sunog, kaya hindi ipinapakita rito.",
   "hazardSource": "Pinagmulan: Project NOAH na mapa ng baha, pagguho ng bundok, pagbugso ng tubig at pagbagsak ng lupa, pinaliit sa Quezon City.",

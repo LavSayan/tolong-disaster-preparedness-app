@@ -1496,6 +1496,12 @@ abstract class AppLocalizations {
   /// **'No modelled data for this hazard in Quezon City.'**
   String get hazardNoData;
 
+  /// No description provided for @hazardNothingDrawn.
+  ///
+  /// In en, this message translates to:
+  /// **'The map has the data for this hazard but could not draw any of it. This looks like an app problem, not evidence that the hazard is absent.'**
+  String get hazardNothingDrawn;
+
   /// No description provided for @hazardUnavailableGeneric.
   ///
   /// In en, this message translates to:

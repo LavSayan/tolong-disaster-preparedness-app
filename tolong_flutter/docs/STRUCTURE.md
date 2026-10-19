@@ -45,7 +45,8 @@ lib/
     ├── animations.dart       87   FadeSlideIn, Pressable
     └── scenes.dart           22   Scene enum: home / alert / guide / map
 
-test/                       16 files, 174 tests — see §5; fixtures/ holds the PSGC provenance fixture
+test/                       17 files, 195 tests — see §5; fixtures/ holds the PSGC provenance fixture
+                            and the hazard archive field fixture
 android/                    app manifest, Gradle, launcher icon, splash
 assets/
 ├── data/                   qc_boundary.json (306 pts), qc_barangays.json (142, PSGC
@@ -57,6 +58,8 @@ supabase/
 ├── migrations/             3 SQL files — profiles, delete account, sync records
 └── functions/              tol-route/index.ts, tol-chat/index.ts
 tools/psgc_crosscheck/      crosscheck.py — checks qc_barangays against the official PSGC fixture
+tools/hazard_archive_check/ hazard_fields.py — pins the archive's attribute fields (Var/HAZ as
+                            numbers, observed values) to test/fixtures/hazard_archive_fields.json
 docs/                       README, ARCHITECTURE, STRUCTURE, SETUP, ROADMAP, TEST_REPORT,
                             TOL_AI_OPTIONS, MAP_OPTIONS, SHELTER_RANKING_ML
 ```
@@ -141,7 +144,10 @@ docs/                       README, ARCHITECTURE, STRUCTURE, SETUP, ROADMAP, TES
 | Which hazard is overlaid (app state) | `lib/features/safe_places/data/hazard_layer_service.dart` | `hazardOverlayProvider` |
 | Adding the overlay to the map | `lib/features/safe_places/presentation/map_view.dart` | `_syncHazard()` |
 | Hazard band colour + severity filter | `lib/features/safe_places/data/hazard_layer_service.dart` | `hazardFilterExpression()` |
+| Numeric codes the filter compares against | `tools/hazard_archive_check/hazard_fields.py` + `test/fixtures/hazard_archive_fields.json` | run `--check` after any dataset change |
+| Did the overlay actually draw? (silent-failure pin) | `lib/features/safe_places/data/hazard_layer_service.dart` | `HazardDrawState` + `classifyDraw()` |
 | PMTiles protocol registration (web only) | `lib/features/safe_places/data/hazard_protocol*.dart` | conditional import; never throws |
+| Archive preparation per platform (web register, native extract) | `lib/features/safe_places/data/hazard_archive.dart` | `prepareHazardArchive()` — reports `null`, never throws |
 | Is the hazard overlay usable at all? | `lib/features/safe_places/data/hazard_layer_service.dart` | `hazardLayerStatusProvider` |
 | Hazard picker sheet + legend card | `lib/features/safe_places/presentation/safe_places_screen.dart` | `_pickHazard()`, `_HazardLegendCard` |
 | The bundled hazard and basemap data itself | `datasets/qc_flood.pmtiles`, `qc_base.pmtiles` | 77 MB, committed on purpose |
@@ -222,7 +228,7 @@ Changing `AppColors.muted` will leave those untouched. Grep before assuming a co
 ## 5. Verifying a change
 
 ```bash
-flutter test --concurrency=1     # 174 tests; --concurrency=1 is mandatory
+flutter test --concurrency=1     # 195 tests; --concurrency=1 is mandatory
 flutter analyze                  # must be clean
 ```
 
@@ -231,7 +237,7 @@ Two tests specifically guard UI work:
 - **`test/responsive_test.dart`** — every route at 320×568 and 320×2400, in Filipino, at large text. Run this after any layout change.
 - **`test/accessibility_test.dart`** — 48 dp tap targets, semantic labels, WCAG AA contrast. Run this after any colour or sizing change.
 
-Others worth knowing: `unit_test.dart` (readiness weights, coverage maths, redirects), `error_states_test.dart`, `phase4_test.dart` (guidebook content guard), `hazard_layer_test.dart` (overlay specs, filters, legend wording), `qc_area_test.dart` (PSGC fixture match).
+Others worth knowing: `unit_test.dart` (readiness weights, coverage maths, redirects), `error_states_test.dart`, `phase4_test.dart` (guidebook content guard), `hazard_layer_test.dart` (overlay specs, filters, legend wording, draw-state classification), `hazard_archive_fields_test.dart` (severity codes pinned to decoded archive data), `qc_area_test.dart` (PSGC fixture match).
 
 **Global UI chokepoints** — set these once, not per screen:
 
@@ -270,6 +276,7 @@ Generated or machine-owned files. Edits are lost on the next build.
 | `build/`, `.dart_tool/`, `.flutter-plugins-dependencies` | automatic |
 | `android/local.properties` | machine-local SDK paths, git-ignored |
 | `web/vendor/pmtiles-4.3.0.js` | third-party, BSD-3-Clause — re-download to update, don't hand-edit |
+| `web/vendor/hazard_archive.js` | our glue over the vendored pmtiles: fetches the archive into a `File`, registers the protocol |
 | `env.json` | git-ignored; copy from `env.example.json` |
 
 The generated localizations are **committed** on purpose — the app builds without a codegen

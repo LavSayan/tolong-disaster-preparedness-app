@@ -31,6 +31,13 @@ class SafePlacesScreen extends ConsumerStatefulWidget {
 class _SafePlacesScreenState extends ConsumerState<SafePlacesScreen> {
   MapHandle? _map;
 
+  /// What the map last reported about the hazard overlay drawing, from the idle pin in
+  /// `map_view.dart`. Only [HazardDrawState.filterMatchedNothing] is shown: the legend would
+  /// otherwise lie about colours the map never painted. Paired with the group it was measured
+  /// for, because picking a different group makes the report stale until the next idle frame.
+  HazardGroup? _hazardDrawnGroup;
+  HazardDrawState? _hazardDraw;
+
   void _select(EvacuationCenter c) {
     ref.read(safePlacesProvider.notifier).select(c.id);
     _map?.focus(c.location, zoom: 15);
@@ -121,6 +128,7 @@ Future<void> _pickHazard(HazardOverlayController controller, HazardGroup? curren
     final boundary = ref.watch(qcBoundaryProvider).value;
     final hazardGroup = ref.watch(hazardOverlayProvider);
     final hazardController = ref.read(hazardOverlayProvider.notifier);
+    final hazardDraw = _hazardDrawnGroup == hazardGroup ? _hazardDraw : null;
 
     final selected = centers.where((c) => c.id == state.selectedId).firstOrNull;
     final nearestId =
@@ -148,6 +156,8 @@ Future<void> _pickHazard(HazardOverlayController controller, HazardGroup? curren
                     if (c != null) _select(c);
                   },
                   hazardGroup: hazardGroup,
+                  onHazardDrawState: (s) =>
+                      setState(() { _hazardDrawnGroup = hazardGroup; _hazardDraw = s; }),
                   onReady: (handle) => _map = handle,
                 ),
               ),
@@ -189,7 +199,8 @@ Future<void> _pickHazard(HazardOverlayController controller, HazardGroup? curren
           ]),
         ),
       ),
-      if (hazardGroup != null) _HazardLegendCard(group: hazardGroup),
+      if (hazardGroup != null)
+        _HazardLegendCard(group: hazardGroup, drawn: hazardDraw),
       _LocationMessage(state: state),
       if (centersAsync.isLoading)
         const Padding(padding: EdgeInsets.all(AppSpacing.xl), child: Center(child: CircularProgressIndicator()))
@@ -339,10 +350,16 @@ class _MapButton extends StatelessWidget {
 ///
 /// Deliberately a legend rather than tap-a-polygon-to-inspect: every band has to be explainable
 /// without hunting on the map, and the wording has to be readable by someone who is stressed.
+///
+/// [drawn] is what the map reported about actually painting the group. Only
+/// `filterMatchedNothing` is rendered, as a data note: the legend sitting there while the map
+/// draws nothing is exactly the silent failure this once shipped as, and the honest UI says so
+/// instead of leaving a colourless map to be read as "no hazard here".
 class _HazardLegendCard extends StatelessWidget {
-  const _HazardLegendCard({required this.group});
+  const _HazardLegendCard({required this.group, this.drawn});
 
   final HazardGroup group;
+  final HazardDrawState? drawn;
 
   @override
   Widget build(BuildContext context) {
@@ -357,6 +374,12 @@ class _HazardLegendCard extends StatelessWidget {
         const SizedBox(height: AppSpacing.sm),
         Text(l.hazardLegendNote, style: sans(12, height: 1.45, color: AppColors.muted)),
         const SizedBox(height: AppSpacing.md),
+        if (drawn == HazardDrawState.filterMatchedNothing)
+          Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.md),
+            child: Text(l.hazardNothingDrawn,
+                style: sans(12, height: 1.45, color: AppColors.terracotta)),
+          ),
         // Storm surge is a coastal hazard and Quezon City is inland, so the archive has no data
         // for it here. Say so rather than showing an empty key.
         if (group == HazardGroup.stormSurge)

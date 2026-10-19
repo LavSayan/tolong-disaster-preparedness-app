@@ -243,6 +243,7 @@
   "hazardSeverity3": "High",
   "hazardSeverity4": "Very high",
   "hazardNoData": "No modelled data for this hazard in Quezon City.",
+  "hazardNothingDrawn": "The map has the data for this hazard but could not draw any of it. This looks like an app problem, not evidence that the hazard is absent.",
   "hazardUnavailableGeneric": "The hazard map couldn't start on this device. The rest of the map still works.",
   "hazardCoverageGap": "NOAH does not model earthquakes or fire, so those hazards are not shown here.",
   "hazardSource": "Source: Project NOAH flood, landslide, storm surge and debris-flow maps, clipped to Quezon City.",

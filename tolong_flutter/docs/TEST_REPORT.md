@@ -134,3 +134,93 @@ Data corrections while cross-checking: 5 barangays carried old 9-digit correspon
   manual checklist (rows 30–47, plus the hazard overlay steps) was handed to the team to run on
   a real phone; results should be appended here.
 - Everything needing a backend (routes, Tol online, sync) is still untested — no Supabase project yet.
+
+## 10. Update 2026-10-20 — hazard overlay transport fix
+
+A manual Chrome check (`flutter run -d chrome`) found the hazard picker and legend working but no
+colours on the map, with no 404. Diagnosis: protocol registration, the map source and the band
+layers were all fine — pmtiles' HTTP `FetchSource` requires the server to honour **byte ranges**,
+and Flutter's dev server (like any plain static server) answers a `Range` request with a 200 and
+the whole 51 MB, which the library rejects. A documented claim that "Flutter's dev server handles
+it" was wrong.
+
+| Check | Result |
+|---|---|
+| `flutter analyze` | No issues |
+| Automated tests (`flutter test --concurrency=1`) | **176 passed, 0 failed** (was 174) |
+
+Changes:
+
+- Web loads the archive as a **whole file** into a `File`-backed pmtiles `FileSource`
+  (`web/vendor/hazard_archive.js` glue + a rewritten `hazard_protocol_web.dart`) — no byte-serving
+  dependency, so the overlay works in `flutter run -d chrome` and on any static host. Cost: one
+  51 MB fetch per page load, on first overlay use.
+- Android/iOS extract the bundled archive once into the app-support directory (atomic `.part` +
+  rename, `hazard_archive.dart`); the map reads `pmtiles://<extracted path>`, because MapLibre
+  Native cannot open a bundled asset through `pmtiles://` at all (deflated APK entry, no
+  filesystem path).
+- The registered key is now derived from one constant (`hazardArchiveKey` in `map_style.dart`),
+  fixing a latent mismatch where `main()` registered the *prefixed* URL; `hazard_layer_test.dart`
+  asserts the key equals the source URL minus the scheme and dropped a `build/web` check that
+  passed vacuously.
+
+### What is **not** verified yet (manual checks pending)
+
+- ~~Chrome colours after the fix~~ **Verified later the same day (§11)**: colours render once
+  the numeric filter is in; see §11.
+- Android extraction on a real phone — including whether MapLibre Native accepts the
+  `pmtiles:///data/…` path form.
+- 51 MB cost acceptance: web fetch-per-page-load, Android first-run copy.
+
+## 11. Update 2026-10-20 — the real cause: filter compared a string to a number
+
+A second Chrome check still showed legend with no colours and — crucially — **no error**. That
+ruled the transport out and pointed at a silent filter problem. Decoding the bundled archive
+directly (tile z14/13697/7520, then every tile) settled it: `Var`/`HAZ` are stored as **numbers**
+(`INT 1..3/1..4`), while the style filter compared them against the **string** codes `'1'…'4'`.
+MapLibre's `==` compares types strictly, so `1 == '1'` is false for every feature: zero matches,
+no fills, no exception. The legend rendered as before, because it is driven by `band.level`, not
+by what the map drew. The earlier "transport fix" was still a real defect (the dev server
+legitimately cannot byte-serve) but was not what the user saw.
+
+| Check | Result |
+|---|---|
+| `flutter analyze` | No issues |
+| Automated tests (`flutter test --concurrency=1`) | **195 passed, 0 failed** (was 176) |
+| `python tools/hazard_archive_check/hazard_fields.py --check` | OK: 9 layers match the committed fixture |
+
+Changes:
+
+- `HazardSeverityBand.code` is now an `int`, and the filter emits
+  `['==', ['get','Var'], 1]` — numeric, matching the archive. Layer ids are unchanged.
+- **The data backs the ranges.** `tools/hazard_archive_check/hazard_fields.py` decodes **all 169
+  tiles** (stdlib-only, reuses the proven PMTiles directory/MVT decoding) and writes
+  `test/fixtures/hazard_archive_fields.json` — per layer: attribute, storage type, observed
+  values (`flood*` Var {1,2,3}; `landslide` HAZ {1,2,3,4}; surge {1,2,3}; `debris_flow` {3,4};
+  archive sha256/size/tiles as provenance). `--check` re-decodes and diffs. New
+  `hazard_archive_fields_test.dart` (13 tests) asserts every group's attribute is present and
+  numeric in all of its source layers and that **every observed value has a declared band**.
+  The reverse (a declared band with no data) is allowed on purpose: the legend shows the full
+  scale for groups whose QC extract uses only part of it.
+- **Silent failures are visible now.** `hazard_layer_service.dart` gained a pure
+  `classifyDraw` + `HazardDrawState`; `map_view.dart` hooks `onMapIdle`: with an active group it
+  queries the source unfiltered and again under a new whole-group filter
+  (`hazardGroupFilterExpression`; `['in', ['get', attr], [codes]]`), classifying `drawn`,
+  `viewHasNoData` (stays quiet: normal for empty tiles) or `filterMatchedNothing`. That last
+  state — data loaded, filter matched none — reaches the legend as a short note
+  (`hazardNothingDrawn`, both languages, generated); it is worded as an app-problem report,
+  never as evidence the hazard is absent. The comparison cannot happen on a colourless run
+  again without the legend saying so.
+- `HazardLayerSpec` group-filter and draw-state helpers are unit-tested in
+  `hazard_layer_test.dart` (+6 tests, now 36), including a regression test asserting the filter
+  code is an `int`.
+
+### What is **not** verified yet (manual checks pending)
+
+- ~~Chrome colours after both fixes~~ **Verified 2026-10-20**: a full `flutter run -d chrome`
+  restart loaded the new `web/vendor/hazard_archive.js` script tag (it does not load on a
+  hot-reload of an already-open page) and the hazard colours now render, with the
+  `hazardNothingDrawn` note correctly staying hidden.
+- Android extraction on a real phone — including whether MapLibre Native accepts the
+  `pmtiles:///data/…` path form.
+- 51 MB cost acceptance: web fetch-per-page-load, Android first-run copy.
