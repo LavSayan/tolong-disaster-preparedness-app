@@ -1,11 +1,13 @@
-# TolongApp — Architecture
+# TolongApp — Code Guide
 
 Calm, offline-first disaster preparedness for every household.
 
-This document explains **how the code is organised and why**. It is the map a new
+This document explains **how the code is organised and why**, and doubles as the
+lookup: **"I want to change X → open these files."** It is the map a new
 contributor reads before their first change. For setup steps see
 [`tolong_flutter/docs/SETUP.md`](SETUP.md); for status and gaps see
-[`tolong_flutter/docs/ROADMAP.md`](ROADMAP.md).
+[`tolong_flutter/docs/STATUS.md`](STATUS.md); the design options behind the map
+and the AI assistant live in [`design/`](design/).
 
 ---
 
@@ -15,7 +17,7 @@ contributor reads before their first change. For setup steps see
 |---|---|
 | `tolong_flutter/` | **The TolongApp product** — Flutter, Android-first. All feature work happens here. |
 | `tolong_flutter/supabase/` | Postgres migrations + 2 Deno Edge Functions (Deno/TypeScript, client-agnostic). |
-| `tolong_flutter/docs/` | Setup, roadmap, test report, and design/option notes. |
+| `tolong_flutter/docs/` | Setup, code guide, status, change history, and design-option notes. |
 
 Every path below is relative to `tolong_flutter/` unless stated otherwise.
 
@@ -335,7 +337,8 @@ groups: flood depth, landslide, storm surge, debris flow. The pieces, in depende
   `onMapIdle` runs the draw check so a filter that matches nothing surfaces as a legend note
   (`hazardNothingDrawn`) instead of a silently colourless map.
 
-Data provenance, tile anatomy and the licence caveat: `MAP_OPTIONS.md` §4a.
+Data provenance, tile anatomy and the licence caveat:
+[`design/MAP_OPTIONS.md`](design/MAP_OPTIONS.md) §4a.
 
 ---
 
@@ -418,8 +421,8 @@ A recurring, deliberate theme — an app about emergencies must not fake capabil
   The parser refuses to render uncited advice.
 - **`evacuation_centers_dev.json`** carries 6 centres all flagged `verified: false`.
 
-`docs/ROADMAP.md` §72 lists this as an explicit Phase 1 deliverable, and
-`accessibility_test.dart` + `phase4_test.dart` guard it with tests.
+The Phase 1 checklist in [`CHANGELOG.md`](CHANGELOG.md) lists this as an explicit
+deliverable, and `accessibility_test.dart` + `phase4_test.dart` guard it with tests.
 
 ---
 
@@ -444,46 +447,253 @@ text.
 
 ---
 
-## 13. Testing
+## 13. File map
 
-```bash
-cd tolong_flutter
-flutter test --concurrency=1     # 195 passing; --concurrency=1 is mandatory
-flutter analyze                   # clean
+The Flutter app is `tolong_flutter/`. The Supabase backend is `tolong_flutter/supabase/`.
+Both `flutter` and `flutter test` must be run from inside `tolong_flutter/` — the repo
+root holds only `tools/`. Every `lib/…` path below is relative to `tolong_flutter/`.
+
+At the repo root:
+
+```
+tools/psgc_crosscheck/      crosscheck.py — checks qc_barangays against the official PSGC fixture
+tools/hazard_archive_check/ hazard_fields.py — pins the archive's attribute fields (Var/HAZ as
+                            numbers, observed values) to test/fixtures/hazard_archive_fields.json
 ```
 
-Parallel test engines exhaust memory on the target machines.
+Inside `tolong_flutter/`:
 
-| File | Focus |
+```
+pubspec.yaml                  dependencies + assets + fonts
+analysis_options.yaml         lint rules (flutter_lints)
+build.yaml                    drift codegen config
+l10n.yaml                     ARB → lib/l10n/generated/
+env.example.json              template for env.json (git-ignored)
+
+lib/
+├── main.dart                 87   entry: boots Supabase, prepares the hazard archive,
+│                                  ProviderScope, TolongApp
+├── app/
+│   ├── router.dart           88   all routes + redirectFor() auth gate
+│   └── app_shell.dart       253   header, bottom nav, tab frame, TolFab
+├── core/
+│   ├── theme.dart           193   ★ design tokens — start here for any visual change
+│   ├── validation.dart       70   email / PH phone / landline / password rules
+│   ├── clock.dart             4   injectable DateTime for deterministic tests
+│   ├── config/env.dart       14   the two build-time config values
+│   ├── database/            62   Drift tables (sync bookkeeping only)
+│   └── storage/secure_vault.dart  70  encrypted vault port + Android Keystore
+├── features/                       14 features — see the feature map (§8)
+├── l10n/
+│   ├── app_en.arb            622 keys
+│   ├── app_fil.arb           622 keys
+│   └── l10n.dart            167   context.l10n + exhaustive enum→string switches
+└── shared/widgets/
+    ├── common.dart          167   ★ Logo, CardBox, PrimaryButton, Eyebrow, SampleTag, IconTile
+    ├── character.dart       167   ★ the Tol mascot SVG and its 4 poses
+    ├── form_widgets.dart    178   FormPage, PasswordField, LoadingButton, InlineMessage
+    ├── animations.dart       87   FadeSlideIn, Pressable
+    └── scenes.dart           22   Scene enum: home / alert / guide / map
+
+test/                       17 files, 195 tests — inventory in STATUS.md;
+                            fixtures/ holds the PSGC provenance fixture and the
+                            hazard archive field fixture
+android/                    app manifest, Gradle, launcher icon, splash
+assets/
+├── data/                   qc_boundary.json (306 pts), qc_barangays.json (142, PSGC
+│                           cross-checked), evacuation_centers_dev.json (6, unverified)
+├── fonts/                  DM Sans + Fraunces variable fonts (OFL)
+└── guidebook/guidebook.json    5 categories, currently 0 sections
+datasets/                   bundled PMTiles, 77 MB (qc_base + qc_flood) — design/MAP_OPTIONS.md §4a
+supabase/
+├── migrations/             3 SQL files — profiles, delete account, sync records
+└── functions/              tol-route/index.ts, tol-chat/index.ts
+web/                        index.html + vendored PMTiles loader and archive glue (vendor/)
+docs/                       SETUP, CODE_GUIDE, STATUS, CHANGELOG; design/ = MAP_OPTIONS,
+                            TOL_AI_OPTIONS, SHELTER_RANKING_ML
+```
+
+★ = the two highest-leverage UI files.
+
+**Largest files** — worth knowing before you open them:
+
+| Lines | File |
 |---|---|
-| `test_helpers.dart` | `pumpApp()` boots the real `TolongApp` at 360×780; seven fakes |
-| `unit_test.dart` | Redirects, validation, coverage maths, readiness weights, checklist merge |
-| `tol_test.dart` | Offline intents EN/FIL, **no personal data in AI context**, consent, fallback |
-| `qc_area_test.dart` | Boundary, 142 barangays, search, offline tile estimate |
-| `routing_test.dart` | Route drawing, wheelchair profile, error codes, off-route/arrival |
-| `sync_engine_test.dart` | Coalescing, tombstones, conflict rule, retry backoff |
-| `phase2_flows_test.dart` | Checklist, supplies, settings, account deletion |
-| `safe_places_test.dart` | Demo labels, markers, outside-QC, location denied/off/blocked |
-| `hazard_layer_test.dart` | Overlay specs, numeric severity filters, draw-state classification, legend wording |
-| `hazard_archive_fields_test.dart` | Severity codes pinned to values decoded from the bundled archive |
-| `phase4_test.dart` | Guidebook uncited-content guard, offline readiness, queued backup |
-| `responsive_test.dart` | Every route, two viewports, Filipino, large text |
-| `sync_store_test.dart` | Drift queue behaviour |
-| `widget_test.dart` | Welcome without a backend, honest errors, guest mode, tabs |
-| `onboarding_test.dart` | Onboarding flow |
-| `error_states_test.dart` | Unreadable assets, failed download |
-| `accessibility_test.dart` | 48 dp tap targets, labels, WCAG AA contrast |
-
-The port indirection pays off here: `test_helpers.dart` overrides `mapViewBuilderProvider`
-with `FakeMap`, uses `MemoryVault` instead of the Keystore, an in-memory
-`NativeDatabase.memory()`, and a fixed `clockProvider` (`fixedNow = DateTime(2026,10,18,9,30)`).
-
-**Not tested** (per `docs/TEST_REPORT.md`): real Android devices, and everything requiring a
-live Supabase project — auth, backup sync, Edge Functions.
+| 663 | `features/safe_places/presentation/safe_places_screen.dart` |
+| 401 | `features/settings/settings_screen.dart` |
+| 337 | `features/household/presentation/household_forms.dart` |
+| 333 | `features/onboarding/onboarding_screen.dart` |
+| 326 | `features/tol/presentation/tol_chat_screen.dart` |
+| 326 | `features/prepare/presentation/prepare_screen.dart` |
 
 ---
 
-## 14. Adding a feature — the shape of the change
+## 14. "I want to change…"
+
+### Visual design
+
+| Change | File | Anchor |
+|---|---|---|
+| Brand colors | `lib/core/theme.dart` | `AppColors` :6 |
+| Spacing scale | `lib/core/theme.dart` | `AppSpacing` :37 |
+| Corner radii | `lib/core/theme.dart` | `AppRadii` :47 |
+| Icon sizes | `lib/core/theme.dart` | `AppIconSizes` :56 |
+| Animation speed | `lib/core/theme.dart` | `AppDurations` :63 |
+| Body type style | `lib/core/theme.dart` | `sans()` :73 |
+| Heading type style | `lib/core/theme.dart` | `serif()` :91 |
+| Buttons, inputs, dialogs, snackbars, checkboxes, page transitions | `lib/core/theme.dart` | `buildAppTheme()` :107 |
+| Logo / wordmark | `lib/shared/widgets/common.dart` | `Logo` :7 |
+| Card, button, pill, icon tile | `lib/shared/widgets/common.dart` | `CardBox` :69, `PrimaryButton` :93 |
+| The Tol mascot, its poses, **its colors** | `lib/shared/widgets/character.dart` | `_characterSvg()` :11 |
+| Mascot poses available | `lib/shared/widgets/scenes.dart` | `Scene` enum |
+| Text inputs, bottom sheets | `lib/shared/widgets/form_widgets.dart` | |
+| Entrance animation, press feedback | `lib/shared/widgets/animations.dart` | `FadeSlideIn` :7, `Pressable` :58 |
+
+### Layout / navigation
+
+| Change | File |
+|---|---|
+| Tab bar icons or order | `lib/app/app_shell.dart` :187 |
+| Header (logo, offline icon, bell, avatar) | `lib/app/app_shell.dart` :112 |
+| Tab content frame, page padding | `lib/app/app_shell.dart` :57 |
+| Floating Tol button | `lib/app/app_shell.dart` :41 |
+| Any screen | `lib/features/*/presentation/` |
+| Add a route | `lib/app/router.dart` |
+| Auth gating rules | `lib/app/router.dart` :29 `redirectFor()` |
+
+### Readiness and scoring
+
+| Change | File | Anchor |
+|---|---|---|
+| **Readiness weights** (currently 40/30/15/15) | `lib/features/readiness/domain/readiness.dart` | `ReadinessReport.weights` :33 |
+| Contacts needed for full marks | same | `targetContacts` :40 |
+| Water/food coverage maths | `lib/features/supplies/domain/supplies.dart` | `computeSupplyReport()` :195 |
+| Litres & meals per person per day (3.8 L / 3) | same | `PreparednessTargets` :32 |
+| Score component weights | same | `SupplyReport` :172 |
+| "Expiring soon" window (30 days) | same | `expiringSoonDays` :193 |
+| Suggestion rules | `lib/features/readiness/domain/recommendations.dart` | |
+
+### Checklist, supplies, household
+
+| Change | File | Anchor |
+|---|---|---|
+| Go-bag template items (26) | `lib/features/prepare/domain/checklist.dart` | `goBagTemplates` :17 |
+| Which items appear per household need | same | `buildChecklist()` :139 |
+| Supply categories (7) and units (11) | `lib/features/supplies/domain/supplies.dart` | `SupplyCategory`, `SupplyUnit` |
+| Household / contact fields | `lib/features/household/domain/models.dart` | |
+
+### Maps and location
+
+| Change | File | Anchor |
+|---|---|---|
+| Basemap choice (hosted vs bundled offline) | `lib/features/safe_places/data/map_style.dart` | `BasemapStyle.current` |
+| Hazard archive URL + `pmtiles://` scheme | `lib/features/safe_places/data/map_style.dart` | `noahHazardArchive` |
+| **Hazard groups and severity scales** | `lib/features/safe_places/domain/hazard.dart` | `HazardGroup`, `severityBands` |
+| Hazard layer specs, opacity ramp, layer ids | `lib/features/safe_places/data/hazard_layer_service.dart` | `hazardLayerSpecs()` |
+| Which hazard is overlaid (app state) | `lib/features/safe_places/data/hazard_layer_service.dart` | `hazardOverlayProvider` |
+| Adding the overlay to the map | `lib/features/safe_places/presentation/map_view.dart` | `_syncHazard()` |
+| Hazard band colour + severity filter | `lib/features/safe_places/data/hazard_layer_service.dart` | `hazardFilterExpression()` |
+| Numeric codes the filter compares against | `tools/hazard_archive_check/hazard_fields.py` + `test/fixtures/hazard_archive_fields.json` | run `--check` after any dataset change |
+| Did the overlay actually draw? (silent-failure pin) | `lib/features/safe_places/data/hazard_layer_service.dart` | `HazardDrawState` + `classifyDraw()` |
+| PMTiles protocol registration (web only) | `lib/features/safe_places/data/hazard_protocol*.dart` | conditional import; never throws |
+| Archive preparation per platform (web register, native extract) | `lib/features/safe_places/data/hazard_archive.dart` | `prepareHazardArchive()` — reports `null`, never throws |
+| Is the hazard overlay usable at all? | `lib/features/safe_places/data/hazard_layer_service.dart` | `hazardLayerStatusProvider` |
+| Hazard picker sheet + legend card | `lib/features/safe_places/presentation/safe_places_screen.dart` | `_pickHazard()`, `_HazardLegendCard` |
+| The bundled hazard and basemap data itself | `datasets/qc_flood.pmtiles`, `qc_base.pmtiles` | 77 MB, committed on purpose |
+| Map tile style | `lib/features/safe_places/data/map_style.dart` | `BasemapStyle` |
+| Evacuation centres | `assets/data/evacuation_centers_dev.json` | all 6 are `verified: false` |
+| QC boundary / barangay list | `assets/data/qc_boundary.json`, `qc_barangays.json` | |
+| Barangay names/codes vs the PSA list | `tools/psgc_crosscheck/crosscheck.py` + `test/fixtures/psgc_qc_official.json` | run `--check` after any data edit |
+| Point-in-polygon test | `lib/features/safe_places/domain/qc_area.dart` :15 `contains()` |
+| Offline map download size & status | `lib/features/safe_places/data/offline_map_service.dart` | |
+| Route service, wheelchair profile | `lib/features/safe_places/data/route_service.dart` | |
+| Location permission handling | `lib/features/safe_places/data/location_service.dart` | |
+| Map widget / camera control | `lib/features/safe_places/presentation/map_view.dart` | `mapViewBuilderProvider` :32 |
+
+### Text and validation
+
+| Change | File |
+|---|---|
+| **Any user-facing string** | `lib/l10n/app_en.arb` **and** `lib/l10n/app_fil.arb` — both |
+| Show a stored error to the user | `lib/l10n/l10n.dart` (exhaustive switch, no default) |
+| Email / phone / password rules | `lib/core/validation.dart` |
+
+### Platform config
+
+| Change | File |
+|---|---|
+| App name, permissions, deep links | `android/app/src/main/AndroidManifest.xml` |
+| Application ID, Java version, signing | `android/app/build.gradle.kts` |
+| Gradle memory / workers | `android/gradle.properties` |
+| Splash screen background | `android/app/src/main/res/values/colors.xml` + `drawable/launch_background.xml` |
+| Launcher icon | `android/app/src/main/res/mipmap-*/` |
+| Web page title, meta | `web/index.html`, `web/manifest.json` |
+| Supabase URL + key | `env.json` (copy from `env.example.json`) |
+| Font families | `assets/fonts/` and `pubspec.yaml` :44 |
+
+---
+
+## 15. Four traps
+
+**1. The token system is not total.** Hardcoded hex values exist outside `theme.dart`:
+
+- `app_shell.dart` — muted grey `#5C6B63` at lines 81, 176, 229, 240; guest-amber `#7A521A` at 101, 105; avatar colours at 148, 150, 152
+- `common.dart` :59 (`Eyebrow`), :135 (`SampleTag`)
+- `alerts/presentation/alert_card.dart` — 15 hardcoded hex values
+
+Changing `AppColors.muted` will leave those untouched. Grep before assuming a colour change went everywhere.
+
+**2. The mascot has its own palette.** `character.dart` :17-43 hardcodes `#3f5d51`, `#a3c4a5`, `#f7e9cf`, `#719b7b` etc. inside the SVG `StringBuffer`. Recolouring `AppColors` does nothing to Tol — you must edit that buffer.
+
+**3. `PrimaryButton` bypasses the theme.** `common.dart` :93 sets `color: AppColors.sage` directly instead of reading `Theme.of(context)`, so changes to `filledButtonTheme` in `theme.dart` will not reach it.
+
+**4. Text must go in both ARB files.** `lib/l10n/l10n.dart` uses exhaustive `switch` expressions with no `default`, so a missing key is a **compile error**, not a runtime `undefined`. Both `app_en.arb` and `app_fil.arb` must be updated.
+
+---
+
+## 16. Do not edit
+
+Generated or machine-owned files. Edits are lost on the next build.
+
+| Path | Regenerate with |
+|---|---|
+| `lib/l10n/generated/` (8,372 lines) | `flutter gen-l10n` — **do not edit** |
+| `lib/core/database/app_database.g.dart` | `dart run build_runner build` |
+| `android/app/src/main/java/**/GeneratedPluginRegistrant.java` | automatic |
+| `build/`, `.dart_tool/`, `.flutter-plugins-dependencies` | automatic |
+| `android/local.properties` | machine-local SDK paths, git-ignored |
+| `web/vendor/pmtiles-4.3.0.js` | third-party, BSD-3-Clause — re-download to update, don't hand-edit |
+| `env.json` | git-ignored; copy from `env.example.json` |
+
+The generated localizations are **committed** on purpose — the app builds without a codegen
+step, which matters on an 8 GB machine.
+
+---
+
+## 17. Verifying a change
+
+```bash
+cd tolong_flutter
+flutter test --concurrency=1     # 195 tests; --concurrency=1 is mandatory
+flutter analyze                  # must be clean
+```
+
+Full suite inventory and what is not covered: [`docs/STATUS.md`](STATUS.md).
+
+Two tests specifically guard UI work:
+
+- **`test/responsive_test.dart`** — every route at 320×568 and 320×2400, in Filipino, at large text. Run this after any layout change.
+- **`test/accessibility_test.dart`** — 48 dp tap targets, semantic labels, WCAG AA contrast. Run this after any colour or sizing change.
+
+**Global UI chokepoints** — set these once, not per screen:
+
+- Motion: `lib/core/theme.dart` :70 `motion(context, duration)` → returns `Duration.zero` under reduced motion
+- Text size and reduced motion are applied in `lib/main.dart` `builder:` for the whole app
+- All new animations must go through `motion()`, or reduced-motion users lose them
+
+---
+
+## 18. Adding a feature — the shape of the change
 
 1. **`domain/`** — models and pure functions. No imports. Test first.
 2. **`data/`** — repository reading/writing through `SecureVault`. Enqueue via
@@ -495,19 +705,10 @@ live Supabase project — auth, backup sync, Edge Functions.
 7. Register the route in `lib/app/router.dart`.
 8. Run `flutter analyze` and `flutter test --concurrency=1`.
 
+When the shape differs from the standard four layers:
+
+- **New provider** — Riverpod, no codegen. Put `Notifier`/`AsyncNotifier` providers in the feature's `application/` layer, derived `Provider`s alongside. See `lib/features/readiness/application/readiness_providers.dart` :13-47 for the pattern — derived providers return `null` while any source is loading (see the comment at :32).
+- **New port** (a swappable external dependency) — declare `abstract interface class` in the feature's `data/`, bind an implementation in a `Provider`, and add an `Unconfigured*` fallback that fails with a real error code rather than silently doing nothing. See `lib/features/safe_places/data/route_service.dart` :101.
+- **New database table** — edit `lib/core/database/app_database.dart`, then `dart run build_runner build`.
+
 ---
-
-## 15. Known gaps
-
-Verify against `docs/ROADMAP.md` before assuming any of these are current.
-
-- **No Supabase project provisioned.** Migrations and functions are written and
-  deployable but have never run against a live project.
-- **`applicationId` is still `com.example.tolong_flutter`** — must change before release.
-- **Release builds are signed with the debug key** (`android/app/build.gradle.kts:36`,
-  with a TODO).
-- **Guidebook has zero sections** pending cited sources.
-- **Evacuation centres are unverified demo data** (6 records, `verified: false`).
-- **Phase 6 hazard-aware routing was skipped.**
-- **iOS is unconfigured.** Android is the only shipped target; maplibre and geolocator
-  permissions are declared for Android only.

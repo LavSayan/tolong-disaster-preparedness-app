@@ -49,7 +49,7 @@ The key lives only in Supabase secrets. Never put it in `env.json` or the app.
 
 ### Tol online (Edge Function)
 
-Pick a provider (see `docs/TOL_AI_OPTIONS.md`), then from `tolong_flutter/`:
+Pick a provider (see [`design/TOL_AI_OPTIONS.md`](design/TOL_AI_OPTIONS.md)), then from `tolong_flutter/`:
 
 ```bash
 supabase secrets set TOL_PROVIDER=anthropic TOL_MODEL=claude-haiku-5-5 ANTHROPIC_API_KEY=YOUR_KEY
@@ -80,7 +80,7 @@ Note: the map's hazard overlay works here too. On first use the page loads the 5
 `datasets/qc_flood.pmtiles` as **one whole-file request** — by design, because plain static
 servers (the dev server included) do not honour HTTP byte ranges. Under `flutter run -d chrome`,
 hot reload does not re-load the vendored archive loader; do a full restart. Details:
-`docs/MAP_OPTIONS.md` §4a.
+`design/MAP_OPTIONS.md` §4a.
 
 Note: Supabase's built-in email sender is rate limited on the free tier. For heavier testing, configure your own SMTP under Authentication → Emails.
 
@@ -185,7 +185,7 @@ Note: Supabase's built-in email sender is rate limited on the free tier. For hea
 ### Hazard overlay (Safe places screen; the web side is Chrome-verified 2026-10-20)
 
 Rows 69–71 cover the NOAH hazard button. Data details and the licence caveat:
-`docs/MAP_OPTIONS.md` §4a. After pulling new code, run a **full app restart** — under
+`design/MAP_OPTIONS.md` §4a. After pulling new code, run a **full app restart** — under
 `flutter run -d chrome`, hot-reloading an already-open page does not re-load the vendored
 archive loader script.
 

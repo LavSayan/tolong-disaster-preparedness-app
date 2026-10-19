@@ -29,7 +29,7 @@ enum BasemapStyle {
   final String styleUrl;
 
   /// The basemap the app uses today. Switching to [BasemapStyle.localPmtiles] needs the bundled
-  /// asset URL verified on each platform first; see `docs/MAP_OPTIONS.md`.
+  /// asset URL verified on each platform first; see `docs/design/MAP_OPTIONS.md`.
   static const current = BasemapStyle.openFreeMap;
 }
 

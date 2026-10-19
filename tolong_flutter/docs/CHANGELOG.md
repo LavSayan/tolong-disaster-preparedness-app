@@ -1,8 +1,13 @@
-# TolongApp — Audit, Plan and Status
+# TolongApp — Change history
 
-Last updated: 2026-10-18 (end of Phase 2)
+What was done and in which order: phase checklists as recorded when each phase ended, plus the
+dated test-report updates. Only the hazard-overlay and PSGC work carries explicit dates in the
+record; the other phases are ordered but not individually dated.
 
-## 1. Audit of the starting point (Phase 0)
+Currently-open work: [`STATUS.md`](STATUS.md) · How the code is shaped: [`CODE_GUIDE.md`](CODE_GUIDE.md) ·
+Setup and the manual QA checklist: [`SETUP.md`](SETUP.md) · Design options: [`design/`](design/).
+
+## 1. Phase 0 — Audit of the starting point
 
 | Area | What was there | Notes |
 |---|---|---|
@@ -14,7 +19,9 @@ Last updated: 2026-10-18 (end of Phase 2)
 | Tests | Flutter's counter template (failed to compile) | |
 | Reusable pieces | Theme colours/typography, Logo, Character (SVG mascot with poses), CardBox, IconTile, warning-sound generator | Kept and reused. |
 
-## 2. Recommended architecture
+### The plan as written at the start
+
+Recommended architecture:
 
 - **State:** Riverpod 3 (`Notifier` / `AsyncNotifier`, no code generation, which keeps builds light on 8 GB machines).
 - **Navigation:** go_router 18 with a `StatefulShellRoute` for the four tabs and a pure `redirectFor()` function for auth/onboarding/guest rules (unit-tested).
@@ -24,42 +31,33 @@ Last updated: 2026-10-18 (end of Phase 2)
   - Phase 2+: Drift (SQLite) for inventory, checklists, alerts, evacuation centers and the sync queue. Encrypt sensitive tables or keep them in secure storage.
 - **Backend:** Supabase Auth + Postgres with RLS. Secrets that must not ship in the APK (AI provider keys, any service-role key) live only in Supabase Edge Functions.
 
-## 3. Integration strategies
+Integration strategies:
 
-### Maps (Phase 3)
+**Maps (Phase 3)**
+
 - **Renderer:** compare `maplibre_gl` (native MapLibre, built-in offline region downloads) and `flutter_map` (pure Dart, simpler, offline through tile caching). Pick after a one-day spike on the target phone.
 - **Tiles:** do **not** bulk-download from public openstreetmap.org tile servers. Options to evaluate: a Quezon City **Protomaps PMTiles** extract (single file, can be self-hosted on Supabase Storage and downloaded once for offline use), or a commercial free tier (MapTiler, Stadia). Show OSM attribution on the map.
 - **Boundary:** the official QC administrative boundary from a published source (PSA PSGC codes; HDX/OCHA Philippines admin boundaries). Verify licence and accuracy before relying on it; a bounding box is not the boundary.
 - **Routing:** the public OSRM demo server is not for production use. Evaluate OpenRouteService or GraphHopper free tiers (walking profile), or self-host OSRM with a QC-only extract. Hazard-aware A* (Phase 6) needs a local road graph plus validated hazard layers.
 - **Evacuation centers:** request structured data from QC DRRMO / QC Government. Until then, use a small dataset clearly labelled *development data, not verified*.
 
-### Tol AI assistant (Phase 5)
+**Tol AI assistant (Phase 5)**
+
 - Provider-agnostic interface in the app; one Supabase Edge Function (`tol-chat`) holds the API key and calls the chosen provider.
 - Compare Gemini, OpenAI and Claude on current pricing, free tier, Filipino quality, latency and data-use terms. **Check the live terms when deciding; they change often.**
 - System prompt and server-side checks forbid inventing hazards, shelters, hotlines or weather; Tol cites data source and freshness for anything dynamic.
 - Offline: rule-based FAQ and checklist helper, visibly labelled "Offline guidance".
 
-### Offline (Phase 4)
+**Offline (Phase 4)**
+
 - Sync queue table (operation, entity, local id, payload, attempts, last error). Retry on connectivity *hint*, then confirm with a real request.
 - Conflict rule: last-writer-wins per record using server `updated_at`, with deleted records tombstoned so they can't reappear.
 - Bundle the DM Sans and Fraunces fonts as assets (they currently download on first launch through google_fonts).
 
-## 4. Phase plan
+## 2. Phase 1 — Theme, auth, onboarding, navigation
 
-| Phase | Scope | Status |
-|---|---|---|
-| 0 | Audit | Done |
-| 1 | Theme tokens, splash, welcome, Supabase auth, onboarding, navigation, profile, logout, emergency (guest) access, animations | **Done in code. Supabase sign-up/login still untested end to end; needs a Supabase project.** |
-| 2 | Real readiness score, Supply Coverage, interactive checklist, household editing polish, Settings, English/Filipino | **Done in code. Not yet run on a phone.** |
-| 3 | Real QC map, GPS, search, center markers, online routing, navigation screen | **Done in code.** Needs the route service deployed, official center data, and real-phone testing |
-| 4 | Offline readiness center, map downloads, sync queue, offline guidebook | **Done in code.** Sync needs the Supabase project; guidebook content needs sourced material |
-| 5 | Tol chat, Edge Function, offline fallback | **Done in code.** Needs an AI provider key in Supabase secrets |
-| 6 | Hazard layers, hazard-aware routing, shelter ranking | **Partly in progress:** shelter ranking specified in [`SHELTER_RANKING_ML.md`](SHELTER_RANKING_ML.md) (hazard-band filter, trained ranking weights); hazard-aware A\* still blocked on the QC road graph |
-| 7 | Full testing, accessibility review, release build | Planned |
+Completed:
 
-## 5. Phase 1 checklist
-
-### Completed
 - [x] Central theme tokens: colours (primary, secondary, background, surface, success, warning, error), spacing, radii, icon sizes, durations, button/input/dialog/sheet themes (`lib/theme.dart`)
 - [x] Reduced motion: honours the Android setting and an in-app switch (More → Reduce motion); all custom animations collapse to zero duration
 - [x] Animated splash, welcome screen with mascot, card entrance animations, button press feedback, animated progress bars, bottom-nav transition
@@ -74,9 +72,10 @@ Last updated: 2026-10-18 (end of Phase 2)
 - [x] Android: INTERNET permission, deep link for auth emails, app label "TolongApp"
 - [x] Automated tests (unit + widget), run at a 360 dp phone width
 
-## 6. Phase 2 checklist
+## 3. Phase 2 — Real data: readiness, supplies, checklist, settings
 
-### Completed
+Completed:
+
 - [x] Feature-folder structure: `lib/core`, `lib/shared/widgets`, `lib/l10n`, `lib/features/<feature>/{domain,data,application,presentation}`
 - [x] **English / Filipino** with `flutter_localizations` + ARB files (`lib/l10n/app_en.arb`, `app_fil.arb`, ~370 strings). No hardcoded UI strings remain. Language follows the device on first launch, can be switched on Welcome, in onboarding, in Profile and in Settings, and is saved and synced to the profile.
 - [x] **Supply Coverage** (`features/supplies`): add/edit/delete items, 7 categories, 11 units, expiry dates, optional daily use, per-unit amounts. Water coverage in liters (L, mL, US gallon, or liters per bottle) and food in meals are calculated separately and never added together. Expired items are excluded and flagged; items expiring within 30 days are warned about. Items with unknown per-unit amounts are left out and counted, never guessed. Shortfalls are shown against a configurable target.
@@ -89,28 +88,32 @@ Last updated: 2026-10-18 (end of Phase 2)
 - [x] 35 automated tests: formulas (including the 4 people / 24 L / 8 L per day = 3 days example), unit conversions, expiry, checklist merging, readiness weights, recommendation order, both languages, and end-to-end flows (onboarding, checking items, adding supplies, settings, Filipino switch, account deletion).
 
 ### Formulas (for the defense)
+
 - **Water days** = usable liters ÷ (household size × liters per person per day). Default 3.8 L (≈1 US gallon, the widely used guideline).
 - **Food days** = usable meals ÷ (household size × meals per person per day). Default 3.
 - **Supply score** = 0.30 × min(1, water days ÷ target) + 0.30 × min(1, food days ÷ target) + 0.10 for each of medicines, first aid, hygiene and lighting with at least one unexpired item. Default target is 3 days.
 - **Readiness** = 40 × checklist completion + 30 × supply score + 15 × min(1, contacts ÷ 2) + 15 × (0.5 if household saved + 0.5 if barangay set).
 
 ### Design decision: local storage
+
 Phase 2 stores supplies and checklist progress as JSON documents in encrypted storage (Android Keystore), behind repository classes, the same way as the household data. SQLite (Drift) moves to Phase 4, together with the sync queue, where relational queries and migrations are actually needed. Swapping the storage only touches the `data/` folders.
 
-### Not done / limitations
+### Not done / limitations (as recorded at phase end)
+
 - [ ] Sign-up, login, email verification, password reset and account deletion not yet run against a real Supabase project
 - [ ] Household, contacts, supplies and checklist are local-only (encrypted on device); cloud sync comes with the sync queue (Phase 4)
 - [ ] Onboarding completion is stored on the device, so logging in on a second phone repeats onboarding (prefilled)
-- [ ] Barangay is free text; replace with the official list of 142 QC barangays from PSA PSGC
+- [ ] Barangay is free text; replace with the official list of 142 QC barangays from PSA PSGC *(closed by the Phase 3 PSGC cross-check)*
 - [ ] Notification switches store preferences only; reminders need `flutter_local_notifications` (planned with alerts)
 - [ ] Filipino translations were written for natural everyday Filipino, but should be reviewed by the team before the defense
 - [ ] Disaster Guidebook and Offline Readiness still show "Coming soon" (Phase 4)
-- [ ] Fonts download at first launch (bundle them in Phase 4)
+- [ ] Fonts download at first launch (bundle them in Phase 4) *(closed in Phase 7)*
 - [ ] App ID is still `com.example.tolong_flutter`; choose the final ID before any release build
 
-## 6b. Phase 3 checklist
+## 4. Phase 3 — The real map: QC, barangays, routing, the hazard overlay
 
-### Completed
+Completed:
+
 - [x] Live map: MapLibre (`maplibre_gl` 0.27.1) with OpenFreeMap Positron tiles, framed on Quezon City, pan limited to Metro Manila, zoom 10–18, attribution shown. Verified rendering in Chrome (release web build).
 - [x] Controls: zoom in, zoom out, show my location, show all of QC. Camera moves are animated, or instant under reduced motion.
 - [x] Location (`geolocator` 14): asked only when the user taps "Show my location" or asks for a route; handles denied, permanently denied (opens app settings), location off (opens location settings), failure, and users outside the approximate QC area.
@@ -127,18 +130,20 @@ Phase 2 stores supplies and checklist progress as JSON documents in encrypted st
 - [x] **Offline Quezon City map**: MapLibre offline region for the QC boundary's bounding box, zoom 10–14 (vector tiles overzoom beyond). The estimate is checked in tests to stay below OpenFreeMap's 3,000-tile limit; 4 parallel requests max; distinct TolongApp User-Agent. Progress, done (date and size), retry and delete-with-confirmation. Reachable from Safe places and Settings → Offline maps. Web shows "Android only".
 - [x] 65 automated tests.
 
-- [x] **NOAH hazard overlay** (2026-10-20): four modelled-hazard groups (flood depth, landslide, storm surge, debris flow) from Project NOAH, clipped to Quezon City and bundled in `datasets/` (77 MB, committed on purpose). One fill layer per severity band, each with its own severity filter (`hazardFilterExpression()`), so bands shade distinctly instead of stacking; source registration is idempotent, because group switches never stack duplicate sources (web's `addSource` throws on a repeat — regression-tested). The legend frames colours as modelled exposure, not a safety guarantee, and names what NOAH does not model (earthquakes, fire); storm surge honestly reports no data for inland QC; a failed PMTiles registration disables all groups with an explanation (`hazard_protocol*.dart`). Same day, after a Chrome check showed legend but no colours: the dev server does not honour HTTP byte ranges, so pmtiles' `FetchSource` was replaced by a whole-file source on web (`web/vendor/hazard_archive.js`), and Android/iOS now extract the archive to a seekable file in the app-support directory on first run (`hazard_archive.dart`) — MapLibre Native cannot open a bundled asset through `pmtiles://` at all. A second Chrome check then showed the *same* symptom with **no error at all**, and decoding the archive settled the real cause: `Var`/`HAZ` are stored as **numbers** while the filter compared them as strings, and in MapLibre `1 == '1'` matches nothing — the legend rendered, the map stayed blank, nothing threw. The filter is numeric now; the observed value set per layer is pinned to decoded-tile data (`tools/hazard_archive_check/hazard_fields.py --check` + `test/fixtures/hazard_archive_fields.json`); and the map reports "features loaded but no filter match" as a legend note instead of failing silently (`classifyDraw` → `hazardNothingDrawn`). 36 tests in `hazard_layer_test.dart`, 13 more in `hazard_archive_fields_test.dart`. Confirmed drawing in Chrome on 2026-10-20 from a full restart (colours render; the no-match note stays hidden); the Android/phone side is in the pending device checklist. Details and licence question: `MAP_OPTIONS.md` §4a.
+- [x] **NOAH hazard overlay** (2026-10-20): four modelled-hazard groups (flood depth, landslide, storm surge, debris flow) from Project NOAH, clipped to Quezon City and bundled in `datasets/` (77 MB, committed on purpose). One fill layer per severity band, each with its own severity filter (`hazardFilterExpression()`), so bands shade distinctly instead of stacking; source registration is idempotent, because group switches never stack duplicate sources (web's `addSource` throws on a repeat — regression-tested). The legend frames colours as modelled exposure, not a safety guarantee, and names what NOAH does not model (earthquakes, fire); storm surge honestly reports no data for inland QC; a failed PMTiles registration disables all groups with an explanation (`hazard_protocol*.dart`). Same day, after a Chrome check showed legend but no colours: the dev server does not honour HTTP byte ranges, so pmtiles' `FetchSource` was replaced by a whole-file source on web (`web/vendor/hazard_archive.js`), and Android/iOS now extract the archive to a seekable file in the app-support directory on first run (`hazard_archive.dart`) — MapLibre Native cannot open a bundled asset through `pmtiles://` at all. A second Chrome check then showed the *same* symptom with **no error at all**, and decoding the archive settled the real cause: `Var`/`HAZ` are stored as **numbers** while the filter compared them as strings, and in MapLibre `1 == '1'` matches nothing — the legend rendered, the map stayed blank, nothing threw. The filter is numeric now; the observed value set per layer is pinned to decoded-tile data (`tools/hazard_archive_check/hazard_fields.py --check` + `test/fixtures/hazard_archive_fields.json`); and the map reports "features loaded but no filter match" as a legend note instead of failing silently (`classifyDraw` → `hazardNothingDrawn`). 36 tests in `hazard_layer_test.dart`, 13 more in `hazard_archive_fields_test.dart`. Confirmed drawing in Chrome on 2026-10-20 from a full restart (colours render; the no-match note stays hidden); the Android/phone side is in the pending device checklist. Details and licence question: [`design/MAP_OPTIONS.md`](design/MAP_OPTIONS.md) §4a.
 
 - [x] **PSGC cross-check** (2026-10-20): all 142 barangay names and codes now match the PSA Philippine Standard Geographic Code masterlist (Third Quarter 2026 release, 2026-10-12). Fixed 5 entries that still carried old 9-digit correspondence codes (`1374040xx` → `13813000xx`) and adopted PSA's official spellings for 9 names (e.g. "Aurora", "Teachers Village East", "E. Rodriguez"). psa.gov.ph refuses automated downloads, so the masterlist came from a mirror, validated against a second independent mirror and against psa.gov.ph's rendered tables; provenance is recorded in `test/fixtures/psgc_qc_official.json` and guarded by `tools/psgc_crosscheck/crosscheck.py --check` plus a test.
 
 ### Remaining in Phase 3
+
 - [ ] Deploy `tol-route` and set `ORS_API_KEY` (needs the Supabase project and a free openrouteservice.org key)
 - [ ] Replace demo centers with QC DRRMO data
-- [ ] Test on a real Android phone: GPS, map gestures inside the scrolling page, the offline download in airplane mode, performance; the SETUP Phase 3 rows (30–47) are being run manually by the team
+- [ ] Test on a real Android phone: GPS, map gestures inside the scrolling page, the offline download in airplane mode, performance; the SETUP manual checklist rows (30–47) are being run manually by the team
 
-## 6c. Phase 4 checklist
+## 5. Phase 4 — Offline-first readiness, sync, guidebook
 
-### Completed
+Completed:
+
 - [x] **Disaster guidebook structure**: Flood, Earthquake, Fire, Typhoon, First aid. Content lives in `assets/guidebook/guidebook.json` (bundled, so offline) with English/Filipino text, phases (before/during/after), steps with optional bundled images, links to go-bag items, and a required `source` per section. **Sections without a source are dropped by the parser.** No guide content was invented; every category shows a "coming soon" state. Opens from Prepare, More and the Readiness Center.
 - [x] **Offline Readiness Center** (header signal icon, More → Offline readiness): one honest list of street map, QC boundary/barangays, evacuation centers (flagged as unverified sample), hazard alerts (none connected), guidebook (0 of 5 with content), household data (encrypted on device), Tol offline (not yet), and account backup status, plus offline map storage and "Back up now".
 - [x] **Drift database** (`lib/core/database/app_database.dart`): `sync_queue`, `record_versions`, `sync_states`. Dates stored as ISO-8601 text to keep milliseconds and UTC (see `build.yaml`). Regenerate with `dart run build_runner build`.
@@ -149,19 +154,22 @@ Phase 2 stores supplies and checklist progress as JSON documents in encrypted st
 - [x] 83 automated tests, including an in-memory Drift store, a fake server applying the same SQL rule, and an end-to-end widget test (check an item → queued → uploaded → "Everything is backed up").
 
 ### Design decision: what Drift holds
+
 The queue stores only *which* record changed, never its contents, so no personal data sits in the unencrypted SQLite file. The encrypted vault (Android Keystore) stays the source of truth. Moving the records themselves into SQLite would need SQLCipher; that isn't needed for the current data volume and can be added later behind the same repositories.
 
-### Not done / limitations
+### Not done / limitations (as recorded at phase end)
+
 - [ ] Not run against a real Supabase project yet (migration 3 must be applied)
 - [ ] On a new phone, onboarding still runs once before the first pull restores household data
 - [ ] Sync is disabled on web (the web preview has no on-device database)
 - [ ] Guidebook content must be written from cited official sources (NDRRMC, QC DRRMO, PAGASA, PHIVOLCS, Red Cross) and reviewed
 - [ ] Hazard alerts have no data source yet, so nothing is cached for offline use
 
-## 6d. Phase 5 checklist
+## 6. Phase 5 — Tol, the preparedness agent
 
-### Completed
-- [x] Provider comparison with sources and a recommendation (`docs/TOL_AI_OPTIONS.md`): Claude Haiku 5.5 for production (≈$0.0003 per reply, API data not trained on by default), Gemini Flash-Lite free tier for zero-cost development with household context off.
+Completed:
+
+- [x] Provider comparison with sources and a recommendation ([`design/TOL_AI_OPTIONS.md`](design/TOL_AI_OPTIONS.md)): Claude Haiku 5.5 for production (≈$0.0003 per reply, API data not trained on by default), Gemini Flash-Lite free tier for zero-cost development with household context off.
 - [x] **`tol-chat` Edge Function** (`supabase/functions/tol-chat`): provider adapters for Anthropic, Gemini and OpenAI chosen by `TOL_PROVIDER`/`TOL_MODEL` secrets; API key never in the app; JWT required (signed-in users only); per-user burst limit; input limits (12 messages, 1,000 chars each, 6,000 total); 25 s timeout; clear error codes.
 - [x] **Safety**: system prompt forbids inventing hazards, rescues, shelter availability, weather, routes-as-safe and phone numbers; tells the model what the app really has (no live alerts, unverified centers, no guidebook content yet); emergencies → 911 and officials first. **Output guard** removes any 7+ digit number from replies (911 survives). Every online reply is labelled "AI-generated · may be wrong · not an official advisory".
 - [x] **Consent**: household summary (size, children/seniors/pets yes/no, whether there are assistance needs, barangay, readiness, missing supply categories) is sent only when the user turns it on (chat menu or Settings → Privacy). Names, ages, phone numbers, contacts and medicine names are never sent (tested). `TOL_SHARE_CONTEXT=false` can force it off server-side.
@@ -171,12 +179,14 @@ The queue stores only *which* record changed, never its contents, so no personal
 - [x] Fixed a reduced-motion bug found while testing: onboarding "Next" now jumps instead of animating with a zero duration.
 - [x] 93 automated tests.
 
-### Not done / limitations
+### Not done / limitations (as recorded at phase end)
+
 - [ ] Needs `supabase functions deploy tol-chat` plus a provider key
 - [ ] Filipino answer quality of the chosen model should be checked by the team with real questions
 - [ ] Rate limiting is per Edge Function instance (best effort); add a table-based quota if the app goes public
 
-## 6e. Phase 6 — A\* routing deferred; shelter ranking started
+## 7. Phase 6 — Hazard-aware routing deferred; shelter ranking specified
+
 Hazard-aware routing (A* over a QC road graph with flood/hazard layers) was deferred by the team
 on 2026-10-18, together with the Supabase setup. Walking routes still use OpenRouteService via
 `tol-route` once it is deployed, with the "not a safety guarantee" wording.
@@ -184,35 +194,115 @@ on 2026-10-18, together with the Supabase setup. Walking routes still use OpenRo
 The shelter-ranking part of Phase 6 resumed on 2026-10-19: the hazard-band filter fix is
 implemented in the map overlay (2026-10-20), while the hazard exposure query layer, the
 scoring engine and the trained ranking weights are specified in
-[`SHELTER_RANKING_ML.md`](SHELTER_RANKING_ML.md). The A\* plan itself is unchanged in
-`MAP_OPTIONS.md` §4b.
+[`design/SHELTER_RANKING_ML.md`](design/SHELTER_RANKING_ML.md). The A\* plan itself is unchanged in
+[`design/MAP_OPTIONS.md`](design/MAP_OPTIONS.md) §4b.
 
-## 6f. Phase 7 checklist (testing and optimisation)
-Full results: `docs/TEST_REPORT.md`.
+## 8. Phase 7 — Testing, accessibility, release build
 
-### Completed
-- [x] Fonts bundled (DM Sans, Fraunces variable, OFL licences shown in Settings → Open-source licenses); `google_fonts` removed, so text renders offline and nothing is fetched at start-up.
-- [x] Responsive tests for every route at 320 dp, in Filipino with larger text; overflows fixed.
-- [x] Accessibility tests (48 dp tap targets, labelled controls, WCAG AA contrast) on 12 screens; all fixes made.
-- [x] Error-state tests: unreadable bundled data, failed offline map download.
-- [x] Flood-alert audio player created lazily.
-- [x] Release APK build and size check.
-- [x] 195 automated tests, `flutter analyze` clean (2026-10-20, after the hazard overlay's numeric-filter fix, its field fixture and the PSGC cross-check).
+### Test report — 2026-10-18 baseline
 
-### Not done
-- [ ] Real-device pass (GPS, offline map in airplane mode, TalkBack, performance on a low-end phone)
-- [ ] Everything that needs Supabase (auth, sync, routes, Tol online)
-- [ ] Set the real `applicationId` and a release signing key before distribution
+Date: 2026-10-18 · App version 0.5.0+5 · Flutter 3.47.7 / Dart 3.13.5 · Windows 10, 8 GB RAM
 
-## 7. Risks and realistic limits
-- **8 GB laptop:** Android builds are slow and can run out of memory. Close other apps; keep the Gradle heap at 1.5 GB. Run tests with `flutter test --concurrency=1`; parallel test engines exhaust memory.
-- **Data availability:** hazard-aware routing and shelter evaluation depend on datasets the team does not have yet.
-- **Free tiers:** map tiles, routing APIs, Supabase and AI providers all have limits; a demo is fine, a public launch is not.
-- **Safety wording:** no "safe route" or live-flood claims without validated, current data.
+Supabase setup and Phase 6 (hazard-aware routing) were skipped at the team's request, so anything
+that needs a backend is listed as "Not executed".
 
-## 8. Decisions for the team
-1. Create the Supabase project (free tier), run both migrations, and share the URL and publishable key via `env.json`, never via git.
+| Check | Result |
+|---|---|
+| `flutter analyze` | No issues |
+| Automated tests (`flutter test --concurrency=1`) | **145 passed, 0 failed** |
+| Accessibility guidelines (12 screens) | Pass after fixes (below) |
+| Small screens and large text (37 route checks) | Pass after fixes (below) |
+| Release APK (`flutter build apk --release`) | Built, **96.9 MB** universal APK (all CPU types). With `--split-per-abi`: **34.6 MB** (arm64, most phones), 29.7 MB (older 32-bit) |
+| Real Android device | **Not tested** |
+| Supabase auth, backup sync, Edge Functions (routes, Tol online) | **Not tested**: no project yet |
+
+Accessibility fixes made in Phase 7:
+
+- **Tap targets** raised to 48 dp: header icons, profile avatar (visible circle unchanged), Tol button, welcome EN/FIL switch, barangay search bar, flood-alert sound toggle.
+- **Text contrast** raised to at least 4.5:1: muted text, eyebrow labels, dates, footers, nav labels, warning/success/error text, info and success messages, guest banner. The primary sage was deepened slightly (#63896D → #52775D) so white text on buttons passes. Decorative tints and chevrons are unchanged.
+- The flood-alert `AudioPlayer` is now created on first tap instead of on screen load.
+
+Responsiveness fixes (earlier in Phase 7):
+
+Fixed overflows found at 320 dp width and large text: profile section headers, supplies essentials grid (now wraps and grows), readiness area points, Tol mode chip, supply expiry field, and all bottom sheets (now scroll). Fonts are bundled (DM Sans, Fraunces, OFL) so text renders the same offline; the app no longer downloads fonts.
+
+Build notes:
+
+- The first release build failed: Android lint ran out of Metaspace on the `audioplayers` plugin. Fixed by raising `-XX:MaxMetaspaceSize` from 512m to 1024m in `android/gradle.properties` (heap stays at 1.5 GB for the 8 GB laptop). Second build: 5.5 minutes.
+- The APK is large because MapLibre ships native libraries for each CPU type. For sharing a test build, use `flutter build apk --release --split-per-abi` and install `app-arm64-v8a-release.apk`; for Play, upload `flutter build appbundle`.
+- Material icons are tree-shaken (1.6 MB → 15 KB).
+
+Start-up fix (after the report):
+
+- Removed a fixed 1.4 s wait on the splash screen; the session is ready as soon as saved settings are read.
+- The Android launch screen (shown until Flutter draws its first frame) is now the app's cream background instead of white, including the Android 12+ system splash.
+- The app icon is still Flutter's default logo, so it isn't shown on the launch screen. A real TolongApp icon is needed.
+- Debug builds (`flutter run`) still start slowly on a phone; that's normal for debug mode. Use the release APK to judge start-up time.
+
+Also completed in Phase 7: error-state tests for unreadable bundled data; the flood-alert audio player made lazy; fonts bundled as assets with `google_fonts` removed.
+
+### Update 2026-10-20 — hazard tests and the PSGC cross-check
+
+What changed in the suite:
+
+| Check | Result |
+|---|---|
+| `flutter analyze` | No issues |
+| Automated tests (`flutter test --concurrency=1`) | **174 passed, 0 failed** (was 145) |
+
+New since the 2026-10-18 report:
+
+- `hazard_layer_test.dart` (28 tests): bundled PMTiles archives exist and are real, hazard grouping and layer specs are unique per severity band, every band layer filters on its own severity code (`Var` for flood, `HAZ` for the rest — regression tests for a bug where bands rendered without filters), legend wording never claims safety, the picker degrades honestly when the PMTiles protocol fails to register.
+- `qc_area_test.dart` gains a fixture test: barangay names and codes must match `test/fixtures/psgc_qc_official.json` exactly — the PSA PSGC masterlist (Third Quarter 2026 release, 2026-10-12) with provenance, since psa.gov.ph refuses automated downloads and the datafile was taken from a validated mirror.
+- `tools/psgc_crosscheck/crosscheck.py`: same check outside Dart (`--check`), plus `--extract` to rebuild the fixture from a fresh mirror datafile.
+
+Data corrections while cross-checking: 5 barangays carried old 9-digit correspondence codes (now `13813000xx`), and 9 names were aligned to PSA's official spellings.
+
+What was **not** re-verified on hardware:
+
+- The debug APK was rebuilt (`flutter build apk --debug`) but the emulator pass was abandoned — the emulator would not reach a stable boot on the 8 GB laptop this session. The SETUP manual checklist (rows 30–47 and the hazard-overlay rows 69–71) was handed to the team to run on a real phone; results are appended to [`STATUS.md`](STATUS.md).
+- Everything needing a backend (routes, Tol online, sync) is still untested — no Supabase project yet.
+
+### Update 2026-10-20 — hazard overlay transport fix
+
+A manual Chrome check (`flutter run -d chrome`) found the hazard picker and legend working but no colours on the map, with no 404. Diagnosis: protocol registration, the map source and the band layers were all fine — pmtiles' HTTP `FetchSource` requires the server to honour **byte ranges**, and Flutter's dev server (like any plain static server) answers a `Range` request with a 200 and the whole 51 MB, which the library rejects. A documented claim that "Flutter's dev server handles it" was wrong.
+
+| Check | Result |
+|---|---|
+| `flutter analyze` | No issues |
+| Automated tests (`flutter test --concurrency=1`) | **176 passed, 0 failed** (was 174) |
+
+Changes:
+
+- Web loads the archive as a **whole file** into a `File`-backed pmtiles `FileSource` (`web/vendor/hazard_archive.js` glue + a rewritten `hazard_protocol_web.dart`) — no byte-serving dependency, so the overlay works in `flutter run -d chrome` and on any static host. Cost: one 51 MB fetch per page load, on first overlay use.
+- Android/iOS extract the bundled archive once into the app-support directory (atomic `.part` + rename, `hazard_archive.dart`); the map reads `pmtiles://<extracted path>`, because MapLibre Native cannot open a bundled asset through `pmtiles://` at all (deflated APK entry, no filesystem path).
+- The registered key is now derived from one constant (`hazardArchiveKey` in `map_style.dart`), fixing a latent mismatch where `main()` registered the *prefixed* URL; `hazard_layer_test.dart` asserts the key equals the source URL minus the scheme and dropped a `build/web` check that passed vacuously.
+
+What is **not** verified yet (manual checks pending): the Android extraction on a real phone (including whether MapLibre Native accepts the `pmtiles:///data/…` path form) and the 51 MB cost acceptance (web fetch-per-page-load, Android first-run copy). The Chrome colours from this fix verified the same day with the next update.
+
+### Update 2026-10-20 — the real cause: filter compared a string to a number
+
+A second Chrome check still showed legend with no colours and — crucially — **no error**. That ruled the transport out and pointed at a silent filter problem. Decoding the bundled archive directly (tile z14/13697/7520, then every tile) settled it: `Var`/`HAZ` are stored as **numbers** (`INT 1..3/1..4`), while the style filter compared them against the **string** codes `'1'…'4'`. MapLibre's `==` compares types strictly, so `1 == '1'` is false for every feature: zero matches, no fills, no exception. The legend rendered as before, because it is driven by `band.level`, not by what the map drew. The earlier "transport fix" was still a real defect (the dev server legitimately cannot byte-serve) but was not what the user saw.
+
+| Check | Result |
+|---|---|
+| `flutter analyze` | No issues |
+| Automated tests (`flutter test --concurrency=1`) | **195 passed, 0 failed** (was 176) |
+| `python tools/hazard_archive_check/hazard_fields.py --check` | OK: 9 layers match the committed fixture |
+
+Changes:
+
+- `HazardSeverityBand.code` is now an `int`, and the filter emits `['==', ['get','Var'], 1]` — numeric, matching the archive. Layer ids are unchanged.
+- **The data backs the ranges.** `tools/hazard_archive_check/hazard_fields.py` decodes **all 169 tiles** (stdlib-only, reuses the proven PMTiles directory/MVT decoding) and writes `test/fixtures/hazard_archive_fields.json` — per layer: attribute, storage type, observed values (`flood*` Var {1,2,3}; `landslide` HAZ {1,2,3,4}; surge {1,2,3}; `debris_flow` {3,4}; archive sha256/size/tiles as provenance). `--check` re-decodes and diffs. New `hazard_archive_fields_test.dart` (13 tests) asserts every group's attribute is present and numeric in all of its source layers and that **every observed value has a declared band**. The reverse (a declared band with no data) is allowed on purpose: the legend shows the full scale for groups whose QC extract uses only part of it.
+- **Silent failures are visible now.** `hazard_layer_service.dart` gained a pure `classifyDraw` + `HazardDrawState`; `map_view.dart` hooks `onMapIdle`: with an active group it queries the source unfiltered and again under a new whole-group filter (`hazardGroupFilterExpression`; `['in', ['get', attr], [codes]]`), classifying `drawn`, `viewHasNoData` (stays quiet: normal for empty tiles) or `filterMatchedNothing`. That last state — data loaded, filter matched none — reaches the legend as a short note (`hazardNothingDrawn`, both languages, generated); it is worded as an app-problem report, never as evidence the hazard is absent. The comparison cannot happen on a colourless run again without the legend saying so.
+- `HazardLayerSpec` group-filter and draw-state helpers are unit-tested in `hazard_layer_test.dart` (+6 tests, now 36), including a regression test asserting the filter code is an `int`.
+
+What is **not** verified yet (manual checks pending): Android extraction on a real phone (including whether MapLibre Native accepts the `pmtiles:///data/…` path form) and 51 MB cost acceptance. Chrome colours **verified 2026-10-20**: a full `flutter run -d chrome` restart loaded the new `web/vendor/hazard_archive.js` script tag (it does not load on a hot-reload of an already-open page) and the hazard colours now render, with the `hazardNothingDrawn` note correctly staying hidden.
+
+## 9. Decision log (as recorded 2026-10-18)
+
+1. Create the Supabase project (free tier), run the migrations, and share the URL and publishable key via `env.json`, never via git. *(Still open — now counts three migrations.)*
 2. ~~Help vs More tab~~: confirmed **More** (2026-10-18).
 3. ~~Feature-folder move~~: confirmed and done in Phase 2.
-4. Initialise git (`git init`) so every change can be reviewed and reverted. Still recommended.
-5. Phase 3 needs a decision on the map tile source and routing service (see section 3).
+4. Initialise git (`git init`) so every change can be reviewed and reverted. Done — the repo is now git-managed.
+5. Phase 3 needs a decision on the map tile source and routing service *(superseded: PMTiles chosen for the hazard overlay — see §4 — and `tol-route` deployment deferred by the team)*.
