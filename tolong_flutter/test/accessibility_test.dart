@@ -9,7 +9,7 @@ import 'test_helpers.dart';
 /// - tap targets at least 48x48 dp (Android guideline)
 /// - every tappable element has a label for screen readers
 /// - text contrast meets WCAG AA (4.5:1, or 3:1 for large text)
-const screens = ['/home', '/prepare', '/safe-places', '/more', '/supplies', '/readiness', '/settings', '/tol', '/guidebook'];
+const screens = ['/home', '/prepare', '/safe-places', '/more', '/supplies', '/readiness', '/settings', '/tol'];
 
 Future<void> visit(WidgetTester tester, String route) async {
   final container = ProviderScope.containerOf(tester.element(find.byType(MaterialApp)));

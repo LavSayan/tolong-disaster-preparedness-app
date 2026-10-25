@@ -1,9 +1,8 @@
 /// Modelled hazard types carried by the bundled NOAH archive.
 ///
 /// The archive holds nine source layers; they are grouped here by the hazard a person actually
-/// has to prepare for, so the map offers four choices rather than nine cryptic ones. Grouping
-/// also keeps the wording aligned with `assets/guidebook/guidebook.json`, which is organised
-/// around the same hazard taxonomy (storm surge folds into the typhoon category).
+/// has to prepare for, so the map offers four choices rather than nine cryptic ones, and one
+/// naming taxonomy carries across every screen that names a hazard.
 ///
 /// **NOAH does not cover every hazard.** There is no earthquake layer and no fire layer. Those
 /// gaps are stated in the UI rather than left as a silent absence, and the earthquake gap is why

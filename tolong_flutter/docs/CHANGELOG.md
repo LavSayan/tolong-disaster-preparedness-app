@@ -299,6 +299,112 @@ Changes:
 
 What is **not** verified yet (manual checks pending): Android extraction on a real phone (including whether MapLibre Native accepts the `pmtiles:///data/…` path form) and 51 MB cost acceptance. Chrome colours **verified 2026-10-20**: a full `flutter run -d chrome` restart loaded the new `web/vendor/hazard_archive.js` script tag (it does not load on a hot-reload of an already-open page) and the hazard colours now render, with the `hazardNothingDrawn` note correctly staying hidden.
 
+### Update 2026-10-25 — shelter ranking v1: pair data, trained weights, evaluation
+
+Phase 6's shelter-ranking track was implemented end to end per
+[`design/SHELTER_RANKING_ML.md`](design/SHELTER_RANKING_ML.md) (three factors: modelled exposure
+at the candidate's own point, straight-line travel estimate, wheelchair accessibility, all
+capped/neutralized exactly as specified; the PHIVOLCS catalogue stays context only — every site
+has nearby events in 2016-2022, which says more about recording networks than about hazard, so it
+never became a weight).
+
+Changes:
+
+- **Dart engine + asset loading.** `features/safe_places/domain/ranking.dart` holds the formulas
+  (score, pairwise probability, contributions, constraint check, walking-mode renormalization,
+  and the exposure formula home `exposureFromBands`); `data/hazard_bands_repository.dart` loads
+  the 82 KB `hazard_bands.json` (148 sites, flood/landslide/debris bands + exposure sampled from
+  `qc_flood.pmtiles`) inside a compute isolate with graceful null fallback;
+  `data/ranking_weights_repository.dart` loads `ranking_weights.json` and falls
+  back to the hand-set 45/35/20 on any problem — never a crash, never a partial model.
+- **Safe Places integration.** With a location or barangay set on file, the centres list orders
+  by modelled score (distance tiebreak), each card discloses weights provenance (default vs
+  trained v1), modelled exposure, travel (estimated vs route) and the accessibility reading;
+  without hazard data the list honestly falls back to distance. All new strings exist in both
+  languages.
+- **Utility pipeline (tools/ranking, all stdlib or the three listed deps).** `extract_bands.py`
+  rebuilds the hazard asset from the NOAH archive (`--extract`/`--check`); `seismic_context.py`
+  joins the PHIVOLCS catalogue 2016-2022 (context only, drift-guarded); `make_pairs.py` authors
+  the dataset as 119 explicit `decidingFactor`-tagged preference rules with per-pair rationales
+  (coverage gates: >= 25 pairs per factor, every flood band, every travel bucket); `check_parity.py`
+  writes the Dart<->Python feature parity fixture (`exposure_parity.json`, 1e-9 tolerance,
+  synthetic absence rows included); `train.py` fits Bradley-Terry logistic weights with SLSQP
+  (sums to exactly 100, exposure floored at 30, 4-decimal rounding with exact-sum repair,
+  lambda by 5-fold out-of-fold log loss, byte-deterministic re-runs) and ships
+  `assets/data/ranking_weights.json` (30.0 / 58.1894 / 11.8106 with the training metrics in the
+  file). The trained fit **ties** the hand-set baseline's CV accuracy (0.9250), so the shipped
+  file keeps full provenance about the tie — documented rather than hidden.
+- **Evaluation (test/evaluation/ranking_evaluation_test.dart + test/fixtures/ranking_golden.json).**
+  12 golden candidate sets pin orderings under both weight sets; ablation tables (Kendall's τ)
+  over the 148-site universe; monotonicity violations 0/200 per ablation for any non-negative
+  weights; explanation audit (zero-weight factors never appear as reasons; contributions sum to
+  score); forbidden-claims scan over 36 ranking strings in EN/FIL (0 hits); benchmarks
+  (cold parse in an isolate: ~14 ms; `exposureAt` x 10 000: ~93 ms; full ranking N=6: ~175 µs,
+  N=1000: ~1.4 ms; asset 82 KB vs the 5 MB gate; ORS budget: the engine re-rank uses straight-line
+  estimates, 0 calls — a real route request happens only for the selected centre, <= the spec's 3).
+- Parity: `test/ranking_parity_test.dart` recomputes every fixture row with the Dart formula and
+  pins the fixture's sha to the shipped asset.
+
+| Check | Result |
+|---|---|
+| `flutter analyze` | No issues |
+| Automated tests (`flutter test --concurrency=1`) | **243 passed, 0 failed** (ranking phases 0–2 had brought the suite to 228 before this update) |
+| `python tools/ranking/check_parity.py` | OK (22 asset rows + 3 synthetic edge rows) |
+| `python tools/ranking/train.py` | Deterministic re-run reproduces the shipped file byte-for-byte |
+
+Known limits (already in spec §10): single-author expert labels over synthetic candidates; the
+1.2 m/s travel estimate underestimates crowded or wheelchair-slow walks; no outcome data exists
+anywhere to validate against.
+
+### Update 2026-10-25 — demo/admin tools + placeholder cleanup
+
+Two related changes: an isolated demo mode for presentations, and the removal of every
+placeholder surface now that simulation has a proper home.
+
+**Demo tools** ([`design/DEMO_TOOLS.md`](design/DEMO_TOOLS.md)): a compile-time
+`--dart-define=DEMO_TOOLS=true` build gets a hidden `/demo` panel (Settings version-row
+long-press, or a More tile in that build only) that can simulate the app's inputs:
+
+- **Location** — QC presets, one outside-QC preset, any barangay centre, manual coordinates;
+  applying re-locates immediately, so the ranked list and distances react.
+- **Simulated disaster advisory** — flood/earthquake/fire with severity, area and message,
+  shown on Home with a `SIMULATED · NOT LIVE` tag; the header bell opens it (and exists only
+  while an advisory is live).
+- **Fake routes** — straight-line plans with the app's own walking-estimate duration and a
+  simulated attribution, so `By route` travel and the wheelchair-verified state demo without
+  an ORS key (zero network calls).
+- **Ranking weights** — trained v1 vs hand-set baseline, plus a per-centre diagnostics table
+  (xE/xT/xA, contributions, score).
+- **Map + utilities** — hazard overlay selection, reset overrides, clear local data, sign out.
+
+Isolation: the flag defaults off, the route/entries/overrides don't exist in normal builds,
+the demo session is in-memory only, and a thin "Demo overrides active" banner shows while any
+override is live. Normal builds keep the plain providers; tests install the same wrappers over
+fakes via `pumpApp(..., demoTools: true)`.
+
+**Placeholder cleanup** — removed rather than hidden:
+
+- The hardcoded sample flood card on Home and the dead alerts bell (alerts are demo-only now).
+- The **disaster guidebook feature entirely** — it shipped zero cited sections, so every
+  "coming soon" surface (routes, More/Prepare entries, offline-readiness row, Tol's guide
+  branch, the asset, its tests and l10n) is gone; Tol answers guide questions with an
+  official-source pointer. Pre-cleanup code is in git history for when reviewed content exists.
+- The **notification preference switches** (Settings + onboarding) that no feature ever read,
+  and the offline-readiness placeholder rows; that screen now lists only shipped capabilities
+  (map, area data, centres, household, backup).
+- Copy that promised the future: "will replace them", "once connected", "isn't set up yet",
+  "won't work yet" — reworded as present-tense facts; dead l10n keys deleted; `showSoon`
+  renamed to `showMessage` (every call site is a confirmation, not a promise).
+
+Kept on purpose: the sample-centre honesty labels (`DEMO DATA`, `NOT REAL DATA`, sample notes,
+attribution) — the six centres are genuinely unverified, and the app says so everywhere.
+
+| Check | Result |
+|---|---|
+| `flutter analyze` | No issues |
+| Automated tests (`flutter test --concurrency=1`) | **245 passed, 0 failed** (was 243) |
+| Demo isolation | Without the flag: no `/demo` route, no tile, no panel (tested) |
+
 ## 9. Decision log (as recorded 2026-10-18)
 
 1. Create the Supabase project (free tier), run the migrations, and share the URL and publishable key via `env.json`, never via git. *(Still open — now counts three migrations.)*

@@ -10,6 +10,9 @@ import '../../../shared/widgets/character.dart';
 import '../../../shared/widgets/common.dart';
 import '../../../shared/widgets/form_widgets.dart';
 import '../../alerts/presentation/alert_card.dart';
+import '../../demo/application/demo_session.dart';
+import '../../demo/domain/demo_models.dart';
+import '../../demo/presentation/advisory_texts.dart';
 import '../../household/data/household_repository.dart';
 import '../../readiness/application/readiness_providers.dart';
 import '../../readiness/domain/readiness.dart';
@@ -20,15 +23,6 @@ String greetingFor(AppLocalizations l, DateTime now) => switch (now.hour) {
       < 18 => l.greetingAfternoon,
       _ => l.greetingEvening,
     };
-
-final _alertDismissedProvider = NotifierProvider<_AlertDismissed, bool>(_AlertDismissed.new);
-
-class _AlertDismissed extends Notifier<bool> {
-  @override
-  bool build() => false;
-
-  void dismiss() => state = true;
-}
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -46,6 +40,13 @@ class HomeScreen extends ConsumerWidget {
 
     final toPack = checklist?.where((i) => !i.done).length;
     final water = report?.supplies.water;
+
+    // The advisory card is demo-only: normal builds render nothing here until a real alert
+    // source exists, because a hardcoded example card was a placeholder.
+    final advisory = ref.watch(demoAdvisoryProvider);
+    final advisoryRevision = ref.watch(demoSessionProvider.select((s) => s.advisoryRevision));
+    final showAdvisory =
+        advisory != null && ref.watch(advisoryDismissedRevisionProvider) != advisoryRevision;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -86,11 +87,8 @@ class HomeScreen extends ConsumerWidget {
             ),
           ]),
         ),
-        if (!ref.watch(_alertDismissedProvider))
-          AlertCard(
-            onDismiss: () => ref.read(_alertDismissedProvider.notifier).dismiss(),
-            onMap: () => context.go('/safe-places'),
-          ),
+        // showAdvisory already implies advisory != null (flow analysis promotes it).
+        if (showAdvisory) _AdvisoryCard(advisory: advisory),
         if (report != null) FadeSlideIn(child: _StatusCard(report: report)),
         Padding(
           padding: const EdgeInsets.fromLTRB(2, 7, 2, 12),
@@ -105,7 +103,7 @@ class HomeScreen extends ConsumerWidget {
             IconButton(
               tooltip: l.nextStepsHelp,
               style: IconButton.styleFrom(backgroundColor: AppColors.cream, side: const BorderSide(color: AppColors.line)),
-              onPressed: () => showSoon(context, l.nextStepsHelpText),
+              onPressed: () => showMessage(context, l.nextStepsHelpText),
               icon: const Icon(Icons.help_outline_rounded, size: 19, color: Color(0xFF5C6B63)),
             ),
           ]),
@@ -290,12 +288,33 @@ class _QuickAction extends StatelessWidget {
               const Positioned(
                 right: 8,
                 bottom: 11,
-                child: Icon(Icons.chevron_right_rounded, size: 18, color: Color(0xFFAAB4AD)),
-              ),
-            ]),
-          ),
-        ),
-      ),
+                 child: Icon(Icons.chevron_right_rounded, size: 18, color: Color(0xFFAAB4AD)),
+               ),
+             ]),
+           ),
+         ),
+       ),
+     );
+   }
+ }
+
+/// The advisory card on Home, fed by the demo session (demo builds only). Shares the
+/// [advisoryTexts] derivation with the header bell so the two surfaces cannot drift.
+class _AdvisoryCard extends ConsumerWidget {
+  const _AdvisoryCard({required this.advisory});
+
+  final DemoAdvisory advisory;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = advisoryTexts(context.l10n, advisory);
+    return AlertCard(
+      category: t.category,
+      title: t.title,
+      body: t.body,
+      tag: t.tag,
+      onDismiss: () => ref.read(advisoryDismissedRevisionProvider.notifier).dismiss(),
+      onMap: () => context.go('/safe-places'),
     );
   }
 }

@@ -127,4 +127,37 @@ void main() {
     await tester.tap(find.text('Turn on'));
     expect(location.settingsOpened, 2);
   });
+
+  testWidgets('with a location the list is ranked and discloses provenance and gaps', (tester) async {
+    await openSafePlaces(tester, location: FakeLocationService(const Located(GeoPoint(14.7270, 121.0425))));
+    await tester.tap(find.byTooltip('Show my location'));
+    await tester.pumpAndSettle();
+
+    await scrollTo(tester, find.text('RANKED CENTERS'));
+    // Provenance is visible, not assumed: defaults ship because no trained weights exist yet.
+    expect(find.textContaining('Default weights'), findsWidgets);
+    expect(find.textContaining('Ranked for your situation'), findsOneWidget);
+    // Every row shows its score and the honest travel label (no route fetched yet).
+    expect(find.textContaining('Score'), findsWidgets);
+    expect(find.textContaining('estimated'), findsWidgets);
+    // Nothing here may read as a safety claim.
+    expect(find.textContaining('is safe'), findsNothing);
+    expect(find.textContaining('guaranteed safe'), findsNothing);
+    expect(find.textContaining('will not flood'), findsNothing);
+  });
+
+  testWidgets('selecting a ranked center shows the model facts on its card', (tester) async {
+    await openSafePlaces(tester, location: FakeLocationService(const Located(GeoPoint(14.7270, 121.0425))));
+    await tester.tap(find.byTooltip('Show my location'));
+    await tester.pumpAndSettle();
+    // Locating inside QC auto-selects the nearest center, whose card is headed NEAREST CENTER.
+    await scrollTo(tester, find.text('NEAREST CENTER'));
+    await scrollTo(tester, find.text('Weights'));
+    expect(find.text('Default weights'), findsOneWidget);
+    expect(find.text('Modelled exposure'), findsOneWidget);
+    expect(find.text('Travel time'), findsOneWidget);
+    expect(find.text('Not part of the score in walking mode'), findsOneWidget);
+    expect(find.text('No hazard reading at this point — treated as neutral'), findsNothing,
+        reason: 'the selected demo center sits exactly on an asset site');
+  });
 }

@@ -39,9 +39,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ok => 'OK';
 
   @override
-  String get comingSoon => 'Coming soon';
-
-  @override
   String get notSet => 'Not set';
 
   @override
@@ -58,11 +55,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get couldNotLoad => 'Couldn\'t read saved data.';
-
-  @override
-  String soonFeature(Object feature) {
-    return '$feature isn\'t available yet. It\'s planned for a later update.';
-  }
 
   @override
   String get tabHome => 'Home';
@@ -84,14 +76,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openProfile => 'Open profile';
-
-  @override
-  String get soonOfflineCenter =>
-      'The offline readiness center isn\'t available yet.';
-
-  @override
-  String get soonAlerts =>
-      'Hazard alerts aren\'t connected yet. Follow QC DRRMO for official advisories.';
 
   @override
   String get guestBanner =>
@@ -282,23 +266,42 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeFooter => 'Your data is saved on this phone';
 
   @override
-  String get alertFloodAdvisory => 'FLOOD ADVISORY';
+  String get alertTypeFlood => 'FLOOD ADVISORY';
 
   @override
-  String get alertDemoTag => 'DEMO · NOT LIVE';
+  String get alertTypeEarthquake => 'EARTHQUAKE ADVISORY';
 
   @override
-  String get alertDemoTitle => 'Example: rising water near Marikina River.';
+  String get alertTypeFire => 'FIRE ADVISORY';
 
   @override
-  String get alertDemoBody =>
-      'This sample shows how advisories will look. Live alerts aren\'t connected yet.';
+  String get alertSeverityAdvisory => 'Advisory';
+
+  @override
+  String get alertSeverityWarning => 'Warning';
+
+  @override
+  String get alertSeveritySevere => 'Severe';
+
+  @override
+  String get alertSimulatedTag => 'SIMULATED · NOT LIVE';
+
+  @override
+  String get alertSimulatedNote =>
+      'A simulated scenario from the demo tools, not a real emergency message. Follow QC DRRMO and PAGASA for official advisories.';
 
   @override
   String get alertOpenSafePlaces => 'Open safe places';
 
   @override
   String get alertDismiss => 'Dismiss alert';
+
+  @override
+  String get demoBannerActive =>
+      'Demo overrides active — the location, advisory, route or weights on this screen are simulated.';
+
+  @override
+  String get demoOpenTools => 'Open demo tools';
 
   @override
   String get soundPlay => 'Play warning sound';
@@ -373,7 +376,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get centersDemoNote =>
-      'These are sample points for building the app, not real evacuation centers. Official QC DRRMO data will replace them.';
+      'These are sample points for building the app, not real evacuation centers. Follow QC DRRMO and your barangay for official evacuation center locations.';
 
   @override
   String get centerNearest => 'NEAREST CENTER';
@@ -419,6 +422,73 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notVerified => 'Not verified';
+
+  @override
+  String get rankNote =>
+      'Ranked for your situation by a modelled score: exposure, travel time and accessibility. This is not a safety verdict and it does not know live conditions.';
+
+  @override
+  String get rankWeightsTitle => 'RANKED CENTERS';
+
+  @override
+  String get rankWeightsLabel => 'Weights';
+
+  @override
+  String get rankWeightsTrained => 'Trained weights v1';
+
+  @override
+  String get rankWeightsDefault => 'Default weights';
+
+  @override
+  String get rankExposureLabel => 'Modelled exposure';
+
+  @override
+  String rankExposureValue(Object value) {
+    return '$value of 1.00';
+  }
+
+  @override
+  String get rankExposureUnknown =>
+      'No hazard reading at this point — treated as neutral';
+
+  @override
+  String get rankTravelLabel => 'Travel time';
+
+  @override
+  String rankTravelEstimated(Object minutes) {
+    return '≈ $minutes min · estimated';
+  }
+
+  @override
+  String rankTravelByRoute(Object minutes) {
+    return '$minutes min · route';
+  }
+
+  @override
+  String rankScore(Object score) {
+    return 'Score $score / 100';
+  }
+
+  @override
+  String get rankAccessibilityLabel => 'Wheelchair data';
+
+  @override
+  String get rankAccessibilityNeutral => 'Not checked yet — treated as neutral';
+
+  @override
+  String get rankAccessibilityVerified => 'Checked with a wheelchair route';
+
+  @override
+  String get rankAccessibilityFailed =>
+      'The wheelchair route could not be planned — counted as unavailable';
+
+  @override
+  String get rankAccessibilityWalking =>
+      'Not part of the score in walking mode';
+
+  @override
+  String get rankDistanceFallback =>
+      'Hazard data is unavailable, so centers are listed by distance.';
 
   @override
   String get tolTitle => 'Tol';
@@ -580,22 +650,32 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String tolOffGuideReady(Object category) {
-    return 'Open the $category guide in the Disaster guidebook. It\'s saved for offline reading.';
+  String tolOffGuideSoon(Object category) {
+    return 'I don\'t have a written $category guide yet. For now, follow official advice from QC DRRMO, PAGASA and PHIVOLCS.';
   }
 
   @override
-  String tolOffGuideSoon(Object category) {
-    return 'The $category guide isn\'t written yet. For now, follow official advice from QC DRRMO, PAGASA and PHIVOLCS.';
-  }
+  String get tolGuideNameFlood => 'flood';
+
+  @override
+  String get tolGuideNameEarthquake => 'earthquake';
+
+  @override
+  String get tolGuideNameFire => 'fire';
+
+  @override
+  String get tolGuideNameTyphoon => 'typhoon';
+
+  @override
+  String get tolGuideNameFirstAid => 'first aid';
 
   @override
   String get tolOffGreeting =>
-      'Hi! I\'m in offline mode, so I can only use what\'s saved on this phone. Ask me about your go-bag, water and food supplies, expiring items, readiness score, emergency contacts, safe places or the guidebook.';
+      'Hi! I\'m in offline mode, so I can only use what\'s saved on this phone. Ask me about your go-bag, water and food supplies, expiring items, readiness score, emergency contacts or safe places.';
 
   @override
   String get tolOffFallback =>
-      'I couldn\'t match that offline. I can help with your go-bag, water and food supplies, expiring items, readiness score, emergency contacts, safe places and the guidebook.';
+      'I couldn\'t match that offline. I can help with your go-bag, water and food supplies, expiring items, readiness score, emergency contacts and safe places.';
 
   @override
   String get orcTitle => 'Offline readiness';
@@ -628,33 +708,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get orcAlerts => 'Hazard alerts';
-
-  @override
-  String get orcAlertsBody =>
-      'No alert source is connected yet, so there are no saved alerts. Follow QC DRRMO and PAGASA for official advisories.';
-
-  @override
-  String get orcGuidebook => 'Disaster guidebook';
-
-  @override
-  String orcGuidebookBody(Object ready, Object total) {
-    return '$ready of $total guides have content. Guides are built into the app and work offline.';
-  }
-
-  @override
   String get orcHousehold => 'Your household data';
 
   @override
   String get orcHouseholdBody =>
       'Profile, contacts, supplies and checklist are saved encrypted on this phone.';
-
-  @override
-  String get orcTol => 'Tol offline help';
-
-  @override
-  String get orcTolBody =>
-      'Not available yet. Offline guidance arrives with the Tol assistant.';
 
   @override
   String get orcSync => 'Account backup';
@@ -702,60 +760,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get guidebookEyebrow => 'LEARN WHAT TO DO';
-
-  @override
-  String get guidebookTitle => 'Disaster guidebook';
-
-  @override
-  String get guidebookSeeAll => 'See all';
-
-  @override
-  String get guidebookIntro =>
-      'Step-by-step guidance for common hazards in Quezon City. Every guide will cite its official source and is saved in the app for offline reading.';
-
-  @override
-  String guideSectionCount(num count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count sections',
-      one: '1 section',
-      zero: 'Coming soon',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String guideComingSoon(Object category) {
-    return '$category preparedness guide coming soon.';
-  }
-
-  @override
-  String get guideVisualSoon =>
-      'Visual, step-by-step instructions from official sources will be added here.';
-
-  @override
-  String get guideOffline => 'Saved in the app · works offline';
-
-  @override
-  String guideSource(Object source) {
-    return 'Source: $source';
-  }
-
-  @override
-  String get guideBefore => 'Before';
-
-  @override
-  String get guideDuring => 'During';
-
-  @override
-  String get guideAfter => 'After';
-
-  @override
-  String get guideGeneral => 'General';
-
-  @override
   String get brgySearch => 'Search barangay';
 
   @override
@@ -794,10 +798,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get offIncludes =>
       'Includes streets and places across Quezon City. Evacuation centers, barangays and the city boundary are already built into the app.';
-
-  @override
-  String get offNotIncluded =>
-      'Not included yet: planning new routes offline and live alerts.';
 
   @override
   String offEstimate(Object tiles) {
@@ -934,7 +934,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get routeErrNotConfigured =>
-      'Route planning isn\'t set up in this build yet. It needs the Supabase route service.';
+      'Route planning is not configured in this build. It needs the Supabase route service.';
 
   @override
   String get routeErrNetwork =>
@@ -1575,9 +1575,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get moreSupplies => 'Supply coverage';
 
   @override
-  String get moreGuidebook => 'Disaster guidebook';
-
-  @override
   String get moreOffline => 'Offline readiness';
 
   @override
@@ -1622,7 +1619,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get welcomeNotConfigured =>
-      'Online accounts aren\'t configured in this build, so sign-up and login won\'t work yet. Emergency access works on this device.';
+      'Online accounts are not configured in this build, so sign-up and login are unavailable. Emergency access works on this device.';
 
   @override
   String get createAccount => 'Create account';
@@ -1744,7 +1741,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errNotConfigured =>
-      'Online accounts aren\'t set up in this build yet. You can still use emergency access.';
+      'Online accounts are not configured in this build. You can still use emergency access.';
 
   @override
   String get errNetwork =>
@@ -1897,12 +1894,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get onbPrefsSub =>
       'Android will ask for permission the first time a feature needs it. You can change these later in Settings.';
-
-  @override
-  String get prefReminders => 'Preparedness reminders';
-
-  @override
-  String get prefRemindersSub => 'Reminders to check supplies and your go-bag';
 
   @override
   String get prefLocation => 'Use my location';
@@ -2147,22 +2138,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get setDaysTargetSub => 'Default 3 days (a 72-hour kit)';
 
   @override
-  String get setNotifications => 'Notifications';
-
-  @override
-  String get setNotificationsNote =>
-      'Your choices are saved. Reminders start once notifications are added in a later update.';
-
-  @override
-  String get setReminders => 'Preparedness reminders';
-
-  @override
-  String get setExpiry => 'Expiration reminders';
-
-  @override
-  String get setHazard => 'Hazard alert notifications';
-
-  @override
   String get setLocation => 'Location and maps';
 
   @override
@@ -2229,7 +2204,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get setDataSourcesBody =>
-      'Supply targets follow widely published preparedness guidelines and can be changed above. Hazard alerts, maps and evacuation centers will list their sources once connected.';
+      'Supply targets follow widely published preparedness guidelines and can be changed above. Evacuation centers currently shown are development samples, not official data.';
 
   @override
   String get setMapAttribution => 'Map attribution';

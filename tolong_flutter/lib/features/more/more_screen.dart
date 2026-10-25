@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/config/demo.dart';
 import '../../core/theme.dart';
 import '../../l10n/l10n.dart';
 import '../../shared/widgets/common.dart';
@@ -55,13 +56,8 @@ class MoreScreen extends ConsumerWidget {
             foreground: AppColors.primary,
             onTap: () => context.push('/settings'),
           ),
-          _MoreTile(
-            icon: Icons.menu_book_outlined,
-            title: l.moreGuidebook,
-            background: AppColors.sageSoft,
-            foreground: AppColors.primary,
-            onTap: () => context.push('/guidebook'),
-          ),
+          // The disaster guidebook has no cited content yet, so the whole feature is absent
+          // (no tile, no route): an empty "coming soon" surface would be a placeholder.
           _MoreTile(
             icon: Icons.download_for_offline_outlined,
             title: l.moreOffline,
@@ -69,6 +65,16 @@ class MoreScreen extends ConsumerWidget {
             foreground: AppColors.blue,
             onTap: () => context.push('/offline-readiness'),
           ),
+          // Visible only in demo builds (compile-time DEMO_TOOLS define); English on purpose —
+          // same as the panel itself, an internal tool with no shipped strings.
+          if (ref.watch(demoToolsEnabledProvider))
+            _MoreTile(
+              icon: Icons.bug_report_outlined,
+              title: 'Demo tools',
+              background: AppColors.amberSoft,
+              foreground: AppColors.amber,
+              onTap: () => context.push('/demo'),
+            ),
         ]),
       ),
       OutlinedButton.icon(

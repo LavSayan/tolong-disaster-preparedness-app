@@ -48,16 +48,14 @@ class TolMessage {
 
 /// What the app really knows, sent so the model can't present demo data as fact.
 class TolFacts {
-  const TolFacts({required this.alertsConnected, required this.centersVerified, required this.guidebookHasContent});
+  const TolFacts({required this.alertsConnected, required this.centersVerified});
 
   final bool alertsConnected;
   final bool centersVerified;
-  final bool guidebookHasContent;
 
   Map<String, Object?> toJson() => {
         'alertsConnected': alertsConnected,
         'centersVerified': centersVerified,
-        'guidebookHasContent': guidebookHasContent,
       };
 }
 

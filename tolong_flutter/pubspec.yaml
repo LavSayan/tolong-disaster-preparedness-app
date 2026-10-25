@@ -39,7 +39,6 @@ flutter:
   generate: true
   assets:
     - assets/data/
-    - assets/guidebook/
     - assets/fonts/DMSans-OFL.txt
     - assets/fonts/Fraunces-OFL.txt
     # Quezon City basemap and NOAH modelled-hazard overlays, both clipped from national archives.

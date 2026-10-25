@@ -40,7 +40,7 @@ class OfflineMapScreen extends ConsumerWidget {
       );
       if (!ok) return;
       await controller.delete();
-      if (context.mounted) showSoon(context, l.offDeleted);
+      if (context.mounted) showMessage(context, l.offDeleted);
     }
 
     return Scaffold(
@@ -66,8 +66,6 @@ class OfflineMapScreen extends ConsumerWidget {
               ]),
               const SizedBox(height: AppSpacing.lg),
               Text(l.offIncludes, style: sans(12, height: 1.45, color: AppColors.muted)),
-              const SizedBox(height: AppSpacing.sm),
-              Text(l.offNotIncluded, style: sans(12, height: 1.45, color: AppColors.muted)),
               if (tiles != null) ...[
                 const SizedBox(height: AppSpacing.sm),
                 Text('${l.offEstimate(tiles)} ${l.offWifi}', style: sans(11, color: AppColors.muted)),

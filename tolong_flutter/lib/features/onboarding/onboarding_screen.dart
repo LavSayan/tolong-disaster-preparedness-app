@@ -37,7 +37,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   bool _saving = false;
   HouseholdProfile _household = const HouseholdProfile();
   final List<EmergencyContact> _contacts = [];
-  late bool _notifications = ref.read(settingsProvider).notificationsOptIn;
   late bool _location = ref.read(settingsProvider).locationOptIn;
   late bool _offline = ref.read(settingsProvider).offlineDownloadsOptIn;
 
@@ -92,7 +91,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           contacts: List.of(_contacts),
         ));
     await ref.read(settingsProvider.notifier).update((s) => s.copyWith(
-          notificationsOptIn: _notifications,
           locationOptIn: _location,
           offlineDownloadsOptIn: _offline,
         ));
@@ -172,13 +170,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         title: l.onbPrefsTitle,
         subtitle: l.onbPrefsSub,
         child: Column(children: [
-          _PreferenceSwitch(
-            icon: Icons.notifications_none_rounded,
-            title: l.prefReminders,
-            subtitle: l.prefRemindersSub,
-            value: _notifications,
-            onChanged: (x) => setState(() => _notifications = x),
-          ),
           _PreferenceSwitch(
             icon: Icons.my_location_rounded,
             title: l.prefLocation,

@@ -1,0 +1,524 @@
+{
+ "accessibilityCases": [
+  {
+   "accessibility": 0.0,
+   "xAccessibility": 0.0
+  },
+  {
+   "accessibility": 0.5,
+   "xAccessibility": 0.5
+  },
+  {
+   "accessibility": 1.0,
+   "xAccessibility": 1.0
+  }
+ ],
+ "constants": {
+  "minExposureWeight": 30.0,
+  "neutralFeatureValue": 0.5,
+  "totalWeightConstraint": 100.0,
+  "travelTimeCapSeconds": 3600.0,
+  "walkingSpeedMetersPerSecond": 1.2
+ },
+ "exposureRows": [
+  {
+   "assetExposure": 0.0,
+   "assetFloodComposite": 0.0,
+   "assetLandslide": 0.0,
+   "bands": {
+    "debris_flow": 0,
+    "flood_100yr": 0,
+    "flood_25yr": 0,
+    "flood_5yr": 0,
+    "landslide": 0,
+    "storm_surge": null
+   },
+   "id": "bgy-000",
+   "origin": "asset",
+   "pythonExposure": 0.0,
+   "pythonFloodComposite": 0.0,
+   "pythonLandslide": 0.0
+  },
+  {
+   "assetExposure": 0.0,
+   "assetFloodComposite": 0.0,
+   "assetLandslide": 0.0,
+   "bands": {
+    "debris_flow": 0,
+    "flood_100yr": 0,
+    "flood_25yr": 0,
+    "flood_5yr": 0,
+    "landslide": 0,
+    "storm_surge": null
+   },
+   "id": "bgy-001",
+   "origin": "asset",
+   "pythonExposure": 0.0,
+   "pythonFloodComposite": 0.0,
+   "pythonLandslide": 0.0
+  },
+  {
+   "assetExposure": 0.0,
+   "assetFloodComposite": 0.0,
+   "assetLandslide": 0.0,
+   "bands": {
+    "debris_flow": 0,
+    "flood_100yr": 0,
+    "flood_25yr": 0,
+    "flood_5yr": 0,
+    "landslide": 0,
+    "storm_surge": null
+   },
+   "id": "bgy-002",
+   "origin": "asset",
+   "pythonExposure": 0.0,
+   "pythonFloodComposite": 0.0,
+   "pythonLandslide": 0.0
+  },
+  {
+   "assetExposure": 0.666666667,
+   "assetFloodComposite": 0.666666667,
+   "assetLandslide": 0.0,
+   "bands": {
+    "debris_flow": 0,
+    "flood_100yr": 2,
+    "flood_25yr": 2,
+    "flood_5yr": 2,
+    "landslide": 0,
+    "storm_surge": null
+   },
+   "id": "bgy-003",
+   "origin": "asset",
+   "pythonExposure": 0.666666667,
+   "pythonFloodComposite": 0.666666667,
+   "pythonLandslide": 0.0
+  },
+  {
+   "assetExposure": 0.333333333,
+   "assetFloodComposite": 0.333333333,
+   "assetLandslide": 0.0,
+   "bands": {
+    "debris_flow": 0,
+    "flood_100yr": 1,
+    "flood_25yr": 1,
+    "flood_5yr": 1,
+    "landslide": 0,
+    "storm_surge": null
+   },
+   "id": "bgy-004",
+   "origin": "asset",
+   "pythonExposure": 0.333333333,
+   "pythonFloodComposite": 0.333333333,
+   "pythonLandslide": 0.0
+  },
+  {
+   "assetExposure": 0.333333333,
+   "assetFloodComposite": 0.333333333,
+   "assetLandslide": 0.0,
+   "bands": {
+    "debris_flow": 0,
+    "flood_100yr": 1,
+    "flood_25yr": 1,
+    "flood_5yr": 1,
+    "landslide": 0,
+    "storm_surge": null
+   },
+   "id": "bgy-005",
+   "origin": "asset",
+   "pythonExposure": 0.333333333,
+   "pythonFloodComposite": 0.333333333,
+   "pythonLandslide": 0.0
+  },
+  {
+   "assetExposure": 0.166666667,
+   "assetFloodComposite": 0.166666667,
+   "assetLandslide": 0.0,
+   "bands": {
+    "debris_flow": 0,
+    "flood_100yr": 0,
+    "flood_25yr": 1,
+    "flood_5yr": 1,
+    "landslide": 0,
+    "storm_surge": null
+   },
+   "id": "bgy-006",
+   "origin": "asset",
+   "pythonExposure": 0.166666667,
+   "pythonFloodComposite": 0.166666667,
+   "pythonLandslide": 0.0
+  },
+  {
+   "assetExposure": 0.866666667,
+   "assetFloodComposite": 0.866666667,
+   "assetLandslide": 0.75,
+   "bands": {
+    "debris_flow": 0,
+    "flood_100yr": 3,
+    "flood_25yr": 3,
+    "flood_5yr": 1,
+    "landslide": 3,
+    "storm_surge": null
+   },
+   "id": "bgy-007",
+   "origin": "asset",
+   "pythonExposure": 0.866666667,
+   "pythonFloodComposite": 0.866666667,
+   "pythonLandslide": 0.75
+  },
+  {
+   "assetExposure": 0.266666667,
+   "assetFloodComposite": 0.266666667,
+   "assetLandslide": 0.0,
+   "bands": {
+    "debris_flow": 0,
+    "flood_100yr": 1,
+    "flood_25yr": 1,
+    "flood_5yr": 0,
+    "landslide": 0,
+    "storm_surge": null
+   },
+   "id": "bgy-011",
+   "origin": "asset",
+   "pythonExposure": 0.266666667,
+   "pythonFloodComposite": 0.266666667,
+   "pythonLandslide": 0.0
+  },
+  {
+   "assetExposure": 0.333333333,
+   "assetFloodComposite": 0.333333333,
+   "assetLandslide": 0.0,
+   "bands": {
+    "debris_flow": 0,
+    "flood_100yr": 1,
+    "flood_25yr": 1,
+    "flood_5yr": 1,
+    "landslide": 0,
+    "storm_surge": null
+   },
+   "id": "bgy-016",
+   "origin": "asset",
+   "pythonExposure": 0.333333333,
+   "pythonFloodComposite": 0.333333333,
+   "pythonLandslide": 0.0
+  },
+  {
+   "assetExposure": 0.666666667,
+   "assetFloodComposite": 0.666666667,
+   "assetLandslide": 0.0,
+   "bands": {
+    "debris_flow": 0,
+    "flood_100yr": 2,
+    "flood_25yr": 2,
+    "flood_5yr": 2,
+    "landslide": 0,
+    "storm_surge": null
+   },
+   "id": "bgy-017",
+   "origin": "asset",
+   "pythonExposure": 0.666666667,
+   "pythonFloodComposite": 0.666666667,
+   "pythonLandslide": 0.0
+  },
+  {
+   "assetExposure": 1.0,
+   "assetFloodComposite": 1.0,
+   "assetLandslide": 0.0,
+   "bands": {
+    "debris_flow": 0,
+    "flood_100yr": 3,
+    "flood_25yr": 3,
+    "flood_5yr": 3,
+    "landslide": 0,
+    "storm_surge": null
+   },
+   "id": "bgy-020",
+   "origin": "asset",
+   "pythonExposure": 1.0,
+   "pythonFloodComposite": 1.0,
+   "pythonLandslide": 0.0
+  },
+  {
+   "assetExposure": 0.833333333,
+   "assetFloodComposite": 0.833333333,
+   "assetLandslide": 0.0,
+   "bands": {
+    "debris_flow": 0,
+    "flood_100yr": 3,
+    "flood_25yr": 2,
+    "flood_5yr": 2,
+    "landslide": 0,
+    "storm_surge": null
+   },
+   "id": "bgy-021",
+   "origin": "asset",
+   "pythonExposure": 0.833333333,
+   "pythonFloodComposite": 0.833333333,
+   "pythonLandslide": 0.0
+  },
+  {
+   "assetExposure": 1.0,
+   "assetFloodComposite": 1.0,
+   "assetLandslide": 0.0,
+   "bands": {
+    "debris_flow": 0,
+    "flood_100yr": 3,
+    "flood_25yr": 3,
+    "flood_5yr": 3,
+    "landslide": 0,
+    "storm_surge": null
+   },
+   "id": "bgy-022",
+   "origin": "asset",
+   "pythonExposure": 1.0,
+   "pythonFloodComposite": 1.0,
+   "pythonLandslide": 0.0
+  },
+  {
+   "assetExposure": 0.5,
+   "assetFloodComposite": 0.5,
+   "assetLandslide": 0.0,
+   "bands": {
+    "debris_flow": 0,
+    "flood_100yr": 2,
+    "flood_25yr": 1,
+    "flood_5yr": 1,
+    "landslide": 0,
+    "storm_surge": null
+   },
+   "id": "bgy-025",
+   "origin": "asset",
+   "pythonExposure": 0.5,
+   "pythonFloodComposite": 0.5,
+   "pythonLandslide": 0.0
+  },
+  {
+   "assetExposure": 0.533333333,
+   "assetFloodComposite": 0.533333333,
+   "assetLandslide": 0.0,
+   "bands": {
+    "debris_flow": 0,
+    "flood_100yr": 2,
+    "flood_25yr": 2,
+    "flood_5yr": 0,
+    "landslide": 0,
+    "storm_surge": null
+   },
+   "id": "bgy-026",
+   "origin": "asset",
+   "pythonExposure": 0.533333333,
+   "pythonFloodComposite": 0.533333333,
+   "pythonLandslide": 0.0
+  },
+  {
+   "assetExposure": 0.0,
+   "assetFloodComposite": 0.0,
+   "assetLandslide": 0.0,
+   "bands": {
+    "debris_flow": 0,
+    "flood_100yr": 0,
+    "flood_25yr": 0,
+    "flood_5yr": 0,
+    "landslide": 0,
+    "storm_surge": null
+   },
+   "id": "demo-01",
+   "origin": "asset",
+   "pythonExposure": 0.0,
+   "pythonFloodComposite": 0.0,
+   "pythonLandslide": 0.0
+  },
+  {
+   "assetExposure": 0.6,
+   "assetFloodComposite": 0.6,
+   "assetLandslide": 0.0,
+   "bands": {
+    "debris_flow": 0,
+    "flood_100yr": 2,
+    "flood_25yr": 2,
+    "flood_5yr": 1,
+    "landslide": 0,
+    "storm_surge": null
+   },
+   "id": "demo-02",
+   "origin": "asset",
+   "pythonExposure": 0.6,
+   "pythonFloodComposite": 0.6,
+   "pythonLandslide": 0.0
+  },
+  {
+   "assetExposure": 0.333333333,
+   "assetFloodComposite": 0.333333333,
+   "assetLandslide": 0.0,
+   "bands": {
+    "debris_flow": 0,
+    "flood_100yr": 1,
+    "flood_25yr": 1,
+    "flood_5yr": 1,
+    "landslide": 0,
+    "storm_surge": null
+   },
+   "id": "demo-03",
+   "origin": "asset",
+   "pythonExposure": 0.333333333,
+   "pythonFloodComposite": 0.333333333,
+   "pythonLandslide": 0.0
+  },
+  {
+   "assetExposure": 0.666666667,
+   "assetFloodComposite": 0.666666667,
+   "assetLandslide": 0.0,
+   "bands": {
+    "debris_flow": 0,
+    "flood_100yr": 2,
+    "flood_25yr": 2,
+    "flood_5yr": 2,
+    "landslide": 0,
+    "storm_surge": null
+   },
+   "id": "demo-04",
+   "origin": "asset",
+   "pythonExposure": 0.666666667,
+   "pythonFloodComposite": 0.666666667,
+   "pythonLandslide": 0.0
+  },
+  {
+   "assetExposure": 0.833333333,
+   "assetFloodComposite": 0.833333333,
+   "assetLandslide": 0.0,
+   "bands": {
+    "debris_flow": 0,
+    "flood_100yr": 3,
+    "flood_25yr": 2,
+    "flood_5yr": 2,
+    "landslide": 0,
+    "storm_surge": null
+   },
+   "id": "demo-05",
+   "origin": "asset",
+   "pythonExposure": 0.833333333,
+   "pythonFloodComposite": 0.833333333,
+   "pythonLandslide": 0.0
+  },
+  {
+   "assetExposure": 0.0,
+   "assetFloodComposite": 0.0,
+   "assetLandslide": 0.0,
+   "bands": {
+    "debris_flow": 0,
+    "flood_100yr": 0,
+    "flood_25yr": 0,
+    "flood_5yr": 0,
+    "landslide": 0,
+    "storm_surge": null
+   },
+   "id": "demo-06",
+   "origin": "asset",
+   "pythonExposure": 0.0,
+   "pythonFloodComposite": 0.0,
+   "pythonLandslide": 0.0
+  },
+  {
+   "assetExposure": null,
+   "assetFloodComposite": null,
+   "assetLandslide": null,
+   "bands": {
+    "debris_flow": null,
+    "flood_100yr": null,
+    "flood_25yr": null,
+    "flood_5yr": null,
+    "landslide": null,
+    "storm_surge": null
+   },
+   "id": "syn-none",
+   "origin": "synthetic",
+   "pythonExposure": null,
+   "pythonFloodComposite": null,
+   "pythonLandslide": null
+  },
+  {
+   "assetExposure": null,
+   "assetFloodComposite": null,
+   "assetLandslide": null,
+   "bands": {
+    "debris_flow": null,
+    "flood_100yr": null,
+    "flood_25yr": null,
+    "flood_5yr": 2,
+    "landslide": null,
+    "storm_surge": null
+   },
+   "id": "syn-flood-only-5yr",
+   "origin": "synthetic",
+   "pythonExposure": 0.133333333,
+   "pythonFloodComposite": 0.133333333,
+   "pythonLandslide": null
+  },
+  {
+   "assetExposure": null,
+   "assetFloodComposite": null,
+   "assetLandslide": null,
+   "bands": {
+    "debris_flow": null,
+    "flood_100yr": null,
+    "flood_25yr": null,
+    "flood_5yr": null,
+    "landslide": 1,
+    "storm_surge": null
+   },
+   "id": "syn-landslide-1",
+   "origin": "synthetic",
+   "pythonExposure": 0.25,
+   "pythonFloodComposite": null,
+   "pythonLandslide": 0.25
+  }
+ ],
+ "meta": {
+  "formulas": {
+   "exposure": "max(floodComposite, landslide)",
+   "floodComposite": "0.5*(flood_100yr/3) + 0.3*(flood_25yr/3) + 0.2*(flood_5yr/3); absent band scores 0",
+   "landslide": "landslide_band/4",
+   "xAccessibility": "identity over {0.0, 0.5, 1.0}",
+   "xTravel": "clamp(1 - travelSeconds/3600, 0, 1)"
+  },
+  "purpose": "Dart<->Python feature parity (SHELTER_RANKING_ML.md §3); consumed by check_parity.py and test/ranking_parity_test.dart",
+  "source": {
+   "assetPath": "tolong_flutter/assets/data/hazard_bands.json",
+   "sha256": "f38f3ec96a98dc2e151c04ca8359b8001f628d0dbfea44bcc0a0a221c02a2c21"
+  },
+  "tolerance": 1e-09
+ },
+ "travelCases": [
+  {
+   "travelSeconds": 0.0,
+   "xTravel": 1.0
+  },
+  {
+   "travelSeconds": 450.5,
+   "xTravel": 0.8748611111111111
+  },
+  {
+   "travelSeconds": 900.0,
+   "xTravel": 0.75
+  },
+  {
+   "travelSeconds": 1800.0,
+   "xTravel": 0.5
+  },
+  {
+   "travelSeconds": 3599.9,
+   "xTravel": 2.777777777773771e-05
+  },
+  {
+   "travelSeconds": 3600.0,
+   "xTravel": 0.0
+  },
+  {
+   "travelSeconds": 4200.0,
+   "xTravel": 0.0
+  },
+  {
+   "travelSeconds": 7200.0,
+   "xTravel": 0.0
+  }
+ ]
+}

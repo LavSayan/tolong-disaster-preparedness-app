@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/clock.dart';
 import '../../../l10n/l10n.dart';
 import '../../auth/application/session.dart';
-import '../../guidebook/data/guidebook_repository.dart';
 import '../../household/data/household_repository.dart';
 import '../../readiness/application/readiness_providers.dart';
 import '../../safe_places/data/evacuation_center_repository.dart';
@@ -114,11 +113,9 @@ class TolController extends Notifier<TolState> {
 
   TolFacts _facts() {
     final centers = ref.read(evacuationCentersProvider).value ?? const [];
-    final guides = ref.read(guidebookProvider).value ?? const [];
     return TolFacts(
       alertsConnected: false,
       centersVerified: centers.isNotEmpty && centers.every((c) => c.verified),
-      guidebookHasContent: guides.any((g) => g.hasContent),
     );
   }
 
@@ -136,7 +133,6 @@ class TolController extends Notifier<TolState> {
         readiness: ref.read(readinessProvider),
         recommendations: ref.read(recommendationsProvider),
         contactCount: ref.read(householdProvider).value?.contacts.length ?? 0,
-        guides: ref.read(guidebookProvider).value ?? const [],
       );
 }
 

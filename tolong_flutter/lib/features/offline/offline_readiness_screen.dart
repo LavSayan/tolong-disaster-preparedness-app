@@ -8,7 +8,6 @@ import '../../l10n/l10n.dart';
 import '../../shared/widgets/animations.dart';
 import '../../shared/widgets/common.dart';
 import '../auth/application/session.dart';
-import '../guidebook/data/guidebook_repository.dart';
 import '../safe_places/data/evacuation_center_repository.dart';
 import '../safe_places/data/offline_map_service.dart';
 import '../safe_places/presentation/offline_map_screen.dart';
@@ -24,10 +23,8 @@ class OfflineReadinessScreen extends ConsumerWidget {
     final l = context.l10n;
     final map = ref.watch(offlineMapProvider);
     final centers = ref.watch(evacuationCentersProvider).value ?? const [];
-    final guides = ref.watch(guidebookProvider).value ?? const [];
     final session = ref.watch(sessionProvider);
     final sync = ref.watch(syncProvider);
-    final guidesReady = guides.where((g) => g.hasContent).length;
 
     String time(DateTime t) => DateFormat.yMMMd(l.localeName).add_jm().format(t.toLocal());
 
@@ -68,30 +65,11 @@ class OfflineReadinessScreen extends ConsumerWidget {
         onTap: () => context.go('/safe-places'),
       ),
       _Item(
-        icon: Icons.notifications_none_rounded,
-        title: l.orcAlerts,
-        body: l.orcAlertsBody,
-        state: Readiness.missing,
-      ),
-      _Item(
-        icon: Icons.menu_book_outlined,
-        title: l.orcGuidebook,
-        body: l.orcGuidebookBody(guidesReady, guides.length),
-        state: guidesReady == 0 ? Readiness.missing : (guidesReady == guides.length ? Readiness.ready : Readiness.partial),
-        onTap: () => context.push('/guidebook'),
-      ),
-      _Item(
         icon: Icons.lock_outline_rounded,
         title: l.orcHousehold,
         body: l.orcHouseholdBody,
         state: Readiness.ready,
         onTap: () => context.push('/profile'),
-      ),
-      _Item(
-        icon: Icons.chat_bubble_outline_rounded,
-        title: l.orcTol,
-        body: l.orcTolBody,
-        state: Readiness.missing,
       ),
       _Item(icon: Icons.cloud_sync_outlined, title: l.orcSync, body: syncBody, state: syncState),
     ];

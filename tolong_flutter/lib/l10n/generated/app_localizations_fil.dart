@@ -39,9 +39,6 @@ class AppLocalizationsFil extends AppLocalizations {
   String get ok => 'OK';
 
   @override
-  String get comingSoon => 'Malapit na';
-
-  @override
   String get notSet => 'Hindi pa nakatakda';
 
   @override
@@ -58,11 +55,6 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get couldNotLoad => 'Hindi mabasa ang naka-save na data.';
-
-  @override
-  String soonFeature(Object feature) {
-    return 'Hindi pa available ang $feature. Darating ito sa susunod na update.';
-  }
 
   @override
   String get tabHome => 'Tahanan';
@@ -84,14 +76,6 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get openProfile => 'Buksan ang profile';
-
-  @override
-  String get soonOfflineCenter =>
-      'Hindi pa available ang offline readiness center.';
-
-  @override
-  String get soonAlerts =>
-      'Hindi pa nakakonekta ang mga hazard alert. Sundan ang QC DRRMO para sa opisyal na abiso.';
 
   @override
   String get guestBanner =>
@@ -284,24 +268,42 @@ class AppLocalizationsFil extends AppLocalizations {
   String get homeFooter => 'Naka-save sa teleponong ito ang iyong data';
 
   @override
-  String get alertFloodAdvisory => 'ABISO SA BAHA';
+  String get alertTypeFlood => 'ABISO SA BAHA';
 
   @override
-  String get alertDemoTag => 'DEMO · HINDI LIVE';
+  String get alertTypeEarthquake => 'ABISO SA LINDOL';
 
   @override
-  String get alertDemoTitle =>
-      'Halimbawa: tumataas ang tubig malapit sa Ilog Marikina.';
+  String get alertTypeFire => 'ABISO SA SUNOG';
 
   @override
-  String get alertDemoBody =>
-      'Halimbawa lang ito ng magiging hitsura ng mga abiso. Hindi pa nakakonekta ang mga live na alerto.';
+  String get alertSeverityAdvisory => 'Abiso';
+
+  @override
+  String get alertSeverityWarning => 'Babala';
+
+  @override
+  String get alertSeveritySevere => 'Seryoso';
+
+  @override
+  String get alertSimulatedTag => 'SIMULADO · HINDI TOTOHANIN';
+
+  @override
+  String get alertSimulatedNote =>
+      'Simuladong scenario mula sa demo tools, hindi totoong mensahe sa emerhensiya. Sundan ang QC DRRMO at PAGASA para sa opisyal na abiso.';
 
   @override
   String get alertOpenSafePlaces => 'Buksan ang mga ligtas na lugar';
 
   @override
   String get alertDismiss => 'Isara ang alerto';
+
+  @override
+  String get demoBannerActive =>
+      'Aktibo ang demo overrides — simulated ang lokasyon, abiso, ruta o timbang sa screen na ito.';
+
+  @override
+  String get demoOpenTools => 'Buksan ang demo tools';
 
   @override
   String get soundPlay => 'Patugtugin ang babala';
@@ -376,7 +378,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get centersDemoNote =>
-      'Mga halimbawang punto lang ito para sa paggawa ng app, hindi totoong evacuation center. Papalitan ito ng opisyal na data ng QC DRRMO.';
+      'Mga halimbawang punto lang ito para sa paggawa ng app, hindi totoong evacuation center. Sundan ang QC DRRMO at ang inyong barangay para sa opisyal na lokasyon ng evacuation center.';
 
   @override
   String get centerNearest => 'PINAKAMALAPIT NA CENTER';
@@ -422,6 +424,75 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get notVerified => 'Hindi beripikado';
+
+  @override
+  String get rankNote =>
+      'Inilista para sa iyong sitwasyon ng modelled na iskor: exposure, oras ng biyahe at accessibility. Hindi ito garantiya ng kaligtasan at hindi nito nakikita ang kasalukuyang kalagayan.';
+
+  @override
+  String get rankWeightsTitle => 'MGA EVACUATION CENTER — PINANGRANGGO';
+
+  @override
+  String get rankWeightsLabel => 'Mga timbang';
+
+  @override
+  String get rankWeightsTrained => 'Naisanay na weights v1';
+
+  @override
+  String get rankWeightsDefault => 'Default na weights';
+
+  @override
+  String get rankExposureLabel => 'Modelled na exposure';
+
+  @override
+  String rankExposureValue(Object value) {
+    return '$value sa 1.00';
+  }
+
+  @override
+  String get rankExposureUnknown =>
+      'Walang hazard reading sa puntong ito — neutral ang itinuring';
+
+  @override
+  String get rankTravelLabel => 'Oras ng biyahe';
+
+  @override
+  String rankTravelEstimated(Object minutes) {
+    return '≈ $minutes min · tinantya';
+  }
+
+  @override
+  String rankTravelByRoute(Object minutes) {
+    return '$minutes min · ruta';
+  }
+
+  @override
+  String rankScore(Object score) {
+    return 'Iskor $score / 100';
+  }
+
+  @override
+  String get rankAccessibilityLabel => 'Data sa wheelchair';
+
+  @override
+  String get rankAccessibilityNeutral =>
+      'Hindi pa nasusuri — neutral ang itinuring';
+
+  @override
+  String get rankAccessibilityVerified =>
+      'Nakumpirma gamit ang wheelchair route';
+
+  @override
+  String get rankAccessibilityFailed =>
+      'Hindi nailatag ang wheelchair route — itinuring na hindi magamit';
+
+  @override
+  String get rankAccessibilityWalking =>
+      'Hindi kasama sa iskor sa walking mode';
+
+  @override
+  String get rankDistanceFallback =>
+      'Hindi available ang hazard data, kaya nakalista ang mga center ayon sa distansya.';
 
   @override
   String get tolTitle => 'Tol';
@@ -585,22 +656,32 @@ class AppLocalizationsFil extends AppLocalizations {
   }
 
   @override
-  String tolOffGuideReady(Object category) {
-    return 'Buksan ang gabay para sa $category sa Gabay sa sakuna. Naka-save ito para mabasa kahit offline.';
+  String tolOffGuideSoon(Object category) {
+    return 'Wala pa akong nasulat na gabay para sa $category. Sa ngayon, sundin ang opisyal na payo ng QC DRRMO, PAGASA at PHIVOLCS.';
   }
 
   @override
-  String tolOffGuideSoon(Object category) {
-    return 'Hindi pa nasusulat ang gabay para sa $category. Sa ngayon, sundin ang opisyal na payo ng QC DRRMO, PAGASA at PHIVOLCS.';
-  }
+  String get tolGuideNameFlood => 'baha';
+
+  @override
+  String get tolGuideNameEarthquake => 'lindol';
+
+  @override
+  String get tolGuideNameFire => 'sunog';
+
+  @override
+  String get tolGuideNameTyphoon => 'bagyo';
+
+  @override
+  String get tolGuideNameFirstAid => 'paunang lunas';
 
   @override
   String get tolOffGreeting =>
-      'Kumusta! Naka-offline mode ako, kaya ang naka-save lang sa teleponong ito ang magagamit ko. Itanong mo ang tungkol sa go-bag, tubig at pagkain, mag-e-expire na gamit, readiness score, emergency contacts, mga ligtas na lugar o ang gabay.';
+      'Kumusta! Naka-offline mode ako, kaya ang naka-save lang sa teleponong ito ang magagamit ko. Itanong mo ang tungkol sa go-bag, tubig at pagkain, mag-e-expire na gamit, readiness score, emergency contacts o mga ligtas na lugar.';
 
   @override
   String get tolOffFallback =>
-      'Hindi ko ito matugma nang offline. Makakatulong ako sa iyong go-bag, tubig at pagkain, mag-e-expire na gamit, readiness score, emergency contacts, mga ligtas na lugar at ang gabay.';
+      'Hindi ko ito matugma nang offline. Makakatulong ako sa iyong go-bag, tubig at pagkain, mag-e-expire na gamit, readiness score, emergency contacts at mga ligtas na lugar.';
 
   @override
   String get orcTitle => 'Offline na kahandaan';
@@ -633,33 +714,11 @@ class AppLocalizationsFil extends AppLocalizations {
   }
 
   @override
-  String get orcAlerts => 'Mga hazard alert';
-
-  @override
-  String get orcAlertsBody =>
-      'Wala pang nakakonektang pinagkukunan ng alerto, kaya walang naka-save na alerto. Sundan ang QC DRRMO at PAGASA para sa opisyal na abiso.';
-
-  @override
-  String get orcGuidebook => 'Gabay sa sakuna';
-
-  @override
-  String orcGuidebookBody(Object ready, Object total) {
-    return '$ready sa $total gabay ang may laman. Nasa app ang mga gabay at gumagana kahit offline.';
-  }
-
-  @override
   String get orcHousehold => 'Data ng iyong sambahayan';
 
   @override
   String get orcHouseholdBody =>
       'Naka-save nang naka-encrypt sa teleponong ito ang profile, contacts, supplies at checklist.';
-
-  @override
-  String get orcTol => 'Offline na tulong ni Tol';
-
-  @override
-  String get orcTolBody =>
-      'Hindi pa available. Darating ang offline na gabay kasama ng Tol assistant.';
 
   @override
   String get orcSync => 'Backup ng account';
@@ -708,60 +767,6 @@ class AppLocalizationsFil extends AppLocalizations {
   }
 
   @override
-  String get guidebookEyebrow => 'ALAMIN ANG GAGAWIN';
-
-  @override
-  String get guidebookTitle => 'Gabay sa sakuna';
-
-  @override
-  String get guidebookSeeAll => 'Tingnan lahat';
-
-  @override
-  String get guidebookIntro =>
-      'Paisa-isang hakbang na gabay para sa mga karaniwang panganib sa Quezon City. Babanggitin ng bawat gabay ang opisyal na pinagkunan nito at naka-save sa app para mabasa kahit offline.';
-
-  @override
-  String guideSectionCount(num count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count bahagi',
-      one: '1 bahagi',
-      zero: 'Malapit na',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String guideComingSoon(Object category) {
-    return 'Malapit na ang gabay sa paghahanda para sa $category.';
-  }
-
-  @override
-  String get guideVisualSoon =>
-      'Dito ilalagay ang may-larawang paisa-isang hakbang mula sa opisyal na pinagkunan.';
-
-  @override
-  String get guideOffline => 'Naka-save sa app · gumagana kahit offline';
-
-  @override
-  String guideSource(Object source) {
-    return 'Pinagkunan: $source';
-  }
-
-  @override
-  String get guideBefore => 'Bago';
-
-  @override
-  String get guideDuring => 'Habang';
-
-  @override
-  String get guideAfter => 'Pagkatapos';
-
-  @override
-  String get guideGeneral => 'Pangkalahatan';
-
-  @override
   String get brgySearch => 'Maghanap ng barangay';
 
   @override
@@ -802,10 +807,6 @@ class AppLocalizationsFil extends AppLocalizations {
   @override
   String get offIncludes =>
       'Kasama ang mga kalye at lugar sa buong Quezon City. Nasa app na ang mga evacuation center, barangay at hangganan ng lungsod.';
-
-  @override
-  String get offNotIncluded =>
-      'Hindi pa kasama: pagpaplano ng bagong ruta nang offline at live na alerto.';
 
   @override
   String offEstimate(Object tiles) {
@@ -944,7 +945,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get routeErrNotConfigured =>
-      'Hindi pa naka-set up ang pagpaplano ng ruta sa build na ito. Kailangan nito ang Supabase route service.';
+      'Hindi naka-configure ang pagpaplano ng ruta sa build na ito. Kailangan nito ang Supabase route service.';
 
   @override
   String get routeErrNetwork =>
@@ -1588,9 +1589,6 @@ class AppLocalizationsFil extends AppLocalizations {
   String get moreSupplies => 'Saklaw ng mga Suplay';
 
   @override
-  String get moreGuidebook => 'Gabay sa sakuna';
-
-  @override
   String get moreOffline => 'Offline na kahandaan';
 
   @override
@@ -1635,7 +1633,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get welcomeNotConfigured =>
-      'Hindi pa naka-configure ang online accounts sa build na ito, kaya hindi pa gagana ang pag-sign up at pag-log in. Gumagana ang emergency access sa device na ito.';
+      'Hindi naka-configure ang online accounts sa build na ito, kaya hindi available ang pag-sign up at pag-log in. Gumagana ang emergency access sa device na ito.';
 
   @override
   String get createAccount => 'Gumawa ng account';
@@ -1758,7 +1756,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get errNotConfigured =>
-      'Hindi pa naka-set up ang online accounts sa build na ito. Magagamit mo pa rin ang emergency access.';
+      'Hindi naka-configure ang online accounts sa build na ito. Magagamit mo pa rin ang emergency access.';
 
   @override
   String get errNetwork =>
@@ -1911,12 +1909,6 @@ class AppLocalizationsFil extends AppLocalizations {
   @override
   String get onbPrefsSub =>
       'Hihingi ng pahintulot ang Android sa unang beses na kailanganin ito ng isang feature. Mababago mo ito mamaya sa Mga Setting.';
-
-  @override
-  String get prefReminders => 'Paalala sa paghahanda';
-
-  @override
-  String get prefRemindersSub => 'Paalala na tingnan ang supplies at go-bag';
 
   @override
   String get prefLocation => 'Gamitin ang aking lokasyon';
@@ -2162,22 +2154,6 @@ class AppLocalizationsFil extends AppLocalizations {
   String get setDaysTargetSub => 'Default na 3 araw (72-hour kit)';
 
   @override
-  String get setNotifications => 'Mga notification';
-
-  @override
-  String get setNotificationsNote =>
-      'Naka-save ang iyong mga pinili. Magsisimula ang mga paalala kapag naidagdag na ang notifications sa susunod na update.';
-
-  @override
-  String get setReminders => 'Paalala sa paghahanda';
-
-  @override
-  String get setExpiry => 'Paalala sa expiration';
-
-  @override
-  String get setHazard => 'Notification ng hazard alert';
-
-  @override
   String get setLocation => 'Lokasyon at mapa';
 
   @override
@@ -2244,7 +2220,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get setDataSourcesBody =>
-      'Sumusunod ang mga target sa supplies sa malawakang inilathalang gabay sa paghahanda at mababago sa itaas. Ililista ng hazard alerts, mapa at evacuation centers ang kanilang pinagkunan kapag nakakonekta na.';
+      'Sumusunod ang mga target sa supplies sa malawakang inilathalang gabay sa paghahanda at mababago sa itaas. Ang mga evacuation center na kasalukuyang ipinapakita ay halimbawa para sa development, hindi opisyal na data.';
 
   @override
   String get setMapAttribution => 'Kredito ng mapa';

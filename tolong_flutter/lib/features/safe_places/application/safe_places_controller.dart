@@ -105,6 +105,15 @@ class SafePlacesController extends Notifier<SafePlacesState> {
 
   void setBarangay(Barangay? b) => state = state.copyWith(barangay: () => b);
 
+  /// Forgets the located point (demo tools clear their override with this). Keeps the
+  /// barangay/search reference, selection and profile; drops the route because it started
+  /// from the old point.
+  void clearLocation() => state = SafePlacesState(
+        selectedId: state.selectedId,
+        barangay: state.barangay,
+        profile: state.profile,
+      );
+
   /// Plans a road-based route from the user to [center]. Locates the user first if needed.
   Future<void> requestRoute(EvacuationCenter center) async {
     select(center.id);

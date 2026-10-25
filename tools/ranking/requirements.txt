@@ -1,0 +1,18 @@
+# Training dependencies for tools/ranking (SHELTER_RANKING_ML.md §5).
+#
+# Everything under tools/ranking that touches the PMTiles archive or the PHIVOLCS
+# catalogue is stdlib-only Python by repo convention — no install needed for:
+#   extract_bands.py      (hazard bands asset from qc_flood.pmtiles)
+#   seismic_context.py    (PHIVOLCS catalogue join, context)
+#
+# numpy/scipy/sklearn are required for Phase 3-4 (check_parity.py + train.py):
+# SLSQP comes from scipy.optimize.minimize; KFold and log-loss/accuracy metrics
+# come from scikit-learn (spec §5: folds/metrics only — no sklearn models).
+#
+# One-time setup, from this directory:
+#   python -m pip install -r requirements.txt
+#
+# Pins verified on Python 3.14.0 (2026-10): numpy already present, others resolve.
+numpy==2.4.6
+scipy==1.18.1
+scikit-learn==1.9.1

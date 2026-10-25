@@ -7,6 +7,7 @@ import '../../../l10n/l10n.dart';
 import '../../../shared/widgets/character.dart';
 import '../../../shared/widgets/common.dart';
 import '../../../shared/widgets/form_widgets.dart';
+import '../application/ranking_controller.dart';
 import '../application/safe_places_controller.dart';
 import '../data/evacuation_center_repository.dart';
 import '../data/hazard_layer_service.dart';
@@ -133,6 +134,9 @@ Future<void> _pickHazard(HazardOverlayController controller, HazardGroup? curren
     final selected = centers.where((c) => c.id == state.selectedId).firstOrNull;
     final nearestId =
         user == null || centers.isEmpty || state.outsideServiceArea ? null : byDistance(centers, user).first.$1.id;
+    final ranking = ref.watch(rankedCentersProvider);
+    final rankedSelected =
+        ranking.ranked.where((r) => r.center.id == state.selectedId).firstOrNull;
 
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       const ContextHero(scene: Scene.map, background: AppColors.blueSoft),
@@ -212,6 +216,9 @@ Future<void> _pickHazard(HazardOverlayController controller, HazardGroup? curren
             center: selected,
             heading: selected.id == nearestId ? l.centerNearest : l.centerSelected,
             distanceKm: user?.distanceKm(selected.location),
+            ranked: rankedSelected,
+            weightsTrained: ranking.weightsTrained,
+            profile: state.profile,
           )
         else
           Padding(
@@ -224,6 +231,7 @@ Future<void> _pickHazard(HazardOverlayController controller, HazardGroup? curren
           fromBarangay: user == null ? state.barangay?.name : null,
           selectedId: state.selectedId,
           onSelect: _select,
+          ranking: ranking,
         ),
         const _OfflineMapCard(),
       ],
@@ -449,15 +457,30 @@ class _LocationMessage extends ConsumerWidget {
 }
 
 class _CenterCard extends StatelessWidget {
-  const _CenterCard({required this.center, required this.heading, required this.distanceKm});
+  const _CenterCard({
+    required this.center,
+    required this.heading,
+    required this.distanceKm,
+    required this.profile,
+    this.ranked,
+    this.weightsTrained = false,
+  });
 
   final EvacuationCenter center;
   final String heading;
   final double? distanceKm;
 
+  /// Non-null when the ranking engine has a feature row for this centre, in which case the
+  /// card discloses weights provenance, exposure and travel (spec §6). Null when ranking is
+  /// unavailable, so the card shows no invented numbers.
+  final RankedCenter? ranked;
+  final bool weightsTrained;
+  final RouteProfile profile;
+
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
+    final rankedRow = ranked;
     String orUnverified(String? v) => (v == null || v.trim().isEmpty) ? l.notVerified : v;
 
     return CardBox(
@@ -498,6 +521,28 @@ class _CenterCard extends StatelessWidget {
         _Fact(l.centerStatus, orUnverified(center.status)),
         _Fact(l.centerSource, center.source),
         _Fact(l.centerLastVerified, center.lastVerified == null ? l.notVerified : l.date(center.lastVerified!)),
+        if (rankedRow != null) ...[
+          const Divider(color: AppColors.line),
+          _Fact(l.rankWeightsLabel, weightsTrained ? l.rankWeightsTrained : l.rankWeightsDefault),
+          _Fact(
+            l.rankExposureLabel,
+            rankedRow.exposureUnknown
+                ? l.rankExposureUnknown
+                : l.rankExposureValue(l.number(rankedRow.features.exposure)),
+          ),
+          _Fact(
+            l.rankTravelLabel,
+            rankedRow.features.travelEstimated
+                ? l.rankTravelEstimated(l.number((rankedRow.features.travelSeconds / 60).roundToDouble()))
+                : l.rankTravelByRoute(l.number((rankedRow.features.travelSeconds / 60).roundToDouble())),
+          ),
+          _Fact(
+            l.rankAccessibilityLabel,
+            profile == RouteProfile.walking
+                ? l.rankAccessibilityWalking
+                : _accessibilityText(rankedRow.features.accessibility, l),
+          ),
+        ],
         const SizedBox(height: AppSpacing.md),
         _RouteSection(center: center),
       ]),
@@ -584,6 +629,14 @@ class _RouteSection extends ConsumerWidget {
   }
 }
 
+/// Accessibility fact wording: marks what was actually checked and what is neutral, so a gap
+/// is never shown as a pass (spec §8: checked-not-verified shows as a gap).
+String _accessibilityText(double value, AppLocalizations l) {
+  if (value == 1.0) return l.rankAccessibilityVerified;
+  if (value == 0.0) return l.rankAccessibilityFailed;
+  return l.rankAccessibilityNeutral;
+}
+
 class _Fact extends StatelessWidget {
   const _Fact(this.label, this.value);
 
@@ -615,6 +668,7 @@ class _CenterList extends StatelessWidget {
     required this.fromBarangay,
     required this.selectedId,
     required this.onSelect,
+    required this.ranking,
   });
 
   final List<EvacuationCenter> centers;
@@ -627,13 +681,17 @@ class _CenterList extends StatelessWidget {
   final String? selectedId;
   final ValueChanged<EvacuationCenter> onSelect;
 
+  /// Ranking output; when `ranking.available` the list is score-ordered and discloses its
+  /// provenance and gaps. Otherwise the list stays in distance order and, if a reference
+  /// existed, says why (spec §3 asset failure must never read as "no hazard data").
+  final RankingState ranking;
+
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final rows = reference == null ? [for (final c in centers) (c, null as double?)] : byDistance(centers, reference!);
     return CardBox(
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Eyebrow(l.centersTitle.toUpperCase()),
+        Eyebrow(ranking.available ? l.rankWeightsTitle : l.centersTitle.toUpperCase()),
         if (centers.any((c) => !c.verified)) ...[
           const SizedBox(height: AppSpacing.sm),
           Text(l.centersDemoNote, style: sans(11, height: 1.45, color: AppColors.muted)),
@@ -643,20 +701,55 @@ class _CenterList extends StatelessWidget {
           Text(l.centersFromBarangay(fromBarangay!), style: sans(11, height: 1.45, color: AppColors.blue)),
         ],
         const SizedBox(height: AppSpacing.sm),
-        for (final (c, km) in rows)
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            selected: c.id == selectedId,
-            selectedColor: AppColors.terracotta,
-            onTap: () => onSelect(c),
-            leading: Icon(Icons.location_on_rounded, color: c.id == selectedId ? AppColors.terracotta : AppColors.blue),
-            title: Text(c.name, style: sans(13, weight: FontWeight.w600)),
-            subtitle: Text(
-              km == null ? l.facilityType(c.facilityType) : '${l.facilityType(c.facilityType)} · ≈ ${l.number(km)} km',
-              style: sans(11, color: AppColors.muted),
-            ),
-            trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFFAAB4AD)),
+        if (ranking.available) ...[
+          Text(l.rankNote, style: sans(11, height: 1.45, color: AppColors.muted)),
+          const SizedBox(height: 4),
+          Text(
+            '${l.rankWeightsLabel}: ${ranking.weightsTrained ? l.rankWeightsTrained : l.rankWeightsDefault}',
+            style: sans(10, weight: FontWeight.w600, color: AppColors.blue),
           ),
+          if (ranking.ranked.any((r) => r.exposureUnknown)) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Text(l.rankExposureUnknown, style: sans(11, height: 1.45, color: AppColors.terracotta)),
+          ],
+        ] else if (reference != null) ...[
+          const SizedBox(height: AppSpacing.sm),
+          Text(l.rankDistanceFallback, style: sans(11, height: 1.45, color: AppColors.muted)),
+        ],
+        const SizedBox(height: AppSpacing.sm),
+        if (ranking.available)
+          for (final r in ranking.ranked)
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              selected: r.center.id == selectedId,
+              selectedColor: AppColors.terracotta,
+              onTap: () => onSelect(r.center),
+              leading: Icon(Icons.location_on_rounded,
+                  color: r.center.id == selectedId ? AppColors.terracotta : AppColors.blue),
+              title: Text(r.center.name, style: sans(13, weight: FontWeight.w600)),
+              subtitle: Text(
+                '${l.facilityType(r.center.facilityType)} · ${l.rankScore(l.number(r.score))} · ${r.features.travelEstimated ? l.rankTravelEstimated(l.number((r.features.travelSeconds / 60).roundToDouble())) : l.rankTravelByRoute(l.number((r.features.travelSeconds / 60).roundToDouble()))}',
+                style: sans(11, color: AppColors.muted),
+              ),
+              trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFFAAB4AD)),
+            )
+        else
+          for (final (c, km) in reference == null ? [for (final c in centers) (c, null as double?)] : byDistance(centers, reference!))
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              selected: c.id == selectedId,
+              selectedColor: AppColors.terracotta,
+              onTap: () => onSelect(c),
+              leading: Icon(Icons.location_on_rounded, color: c.id == selectedId ? AppColors.terracotta : AppColors.blue),
+              title: Text(c.name, style: sans(13, weight: FontWeight.w600)),
+              subtitle: Text(
+                km == null
+                    ? l.facilityType(c.facilityType)
+                    : '${l.facilityType(c.facilityType)} · ≈ ${l.number(km)} km',
+                style: sans(11, color: AppColors.muted),
+              ),
+              trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFFAAB4AD)),
+            ),
       ]),
     );
   }

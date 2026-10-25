@@ -8,11 +8,11 @@ task, features, dataset, training, export, evaluation and its honesty constraint
 
 | Item | Status |
 |---|---|
-| Scoring engine (Dart, hand-set default weights) | Phases 0–4 of the ranking plan; ships first |
-| Feature parity fixture (Dart ≡ Python) | Planned with the engine |
-| Pairwise dataset (hand-authored labels) | Not yet written — `tools/ranking/data/pairs.jsonl` |
-| Trained weights (`assets/data/ranking_weights.json`) | Not yet fit |
-| Evaluation report (§7 tables) | Pending |
+| Scoring engine (Dart, hand-set default weights) | **Done 2026-10-25** — `features/safe_places/domain/ranking.dart`, integrated in Safe Places |
+| Feature parity fixture (Dart ≡ Python) | **Done** — `tools/ranking/check_parity.py` + `exposure_parity.json`, exact to 1e-9 |
+| Pairwise dataset (hand-authored labels) | **Done** — `tools/ranking/data/pairs.jsonl`, 119 pairs, gates green |
+| Trained weights (`assets/data/ranking_weights.json`) | **Done** — 30 / 58.1894 / 11.8106 (CV ties the baseline; provenance in the file) |
+| Evaluation report (§7 tables) | **Done** — results pasted at the end of §7 (run 2026-10-25) |
 
 **Phase order:** the engine works end to end on built-in default weights (45 / 35 / 20) before
 any training happens. Training is Phase 3b: the app never blocks on the model, and an app without
@@ -205,6 +205,70 @@ Produced by `test/evaluation/ranking_evaluation_test.dart` (runs under
 | Full ranking, N=6 and N=1000 | reported ms |
 | ORS calls per re-rank | ≤ 3 (asserted) |
 | Parity fixture Dart ≡ Python | exact, to 1e-9 |
+
+### Results (run 2026-10-25, `flutter test --concurrency=1`, analyze clean, 243 tests total)
+
+**Golden orderings** — `test/fixtures/ranking_golden.json`, 12 sets; both weight sets reproduce
+every ordering, the weakest chain margin at the two sets' per-factor minima is quoted per set:
+
+| set | baseline ok | trained ok | weakest margin |
+|---|---|---|---|
+| band3 vs band0, same walk | yes | yes | 22.50 |
+| safer wins even at 10 more minutes | yes | yes | 6.17 |
+| inside the league, the shorter walk wins | yes | yes | 3.71 |
+| verified access beats failed access at level features | yes | yes | 10.31 |
+| verified beats neutral gap | yes | yes | 5.91 |
+| marginally closer verified facility wins | yes | yes | 6.00 |
+| past the travel cap only exposure is signed | yes | yes | 12.90 |
+| equal travel and access: floor separates | yes | yes | 7.50 |
+| half the travel time wins inside band 0 | yes | yes | 17.50 |
+| verified access worth 10 extra minutes | yes | yes | 5.98 |
+| worst corner loses to anything moderate | yes | yes | 22.41 |
+| ten per cent exposure edge at everything else level | yes | yes | 0.90 |
+
+**Kendall's τ, full ranking vs one-factor ablations** (148-site asset universe, synthetic
+travel/accessibility on fixed seeds; caution for reading it: this universe's travel draw is
+built from the sites' latitude, so it correlates with exposure — the τ=1.00 travel row shows
+that construction, not a model property):
+
+| drop | baseline τ | trained τ |
+|---|---|---|
+| exposure | 0.4322 | 0.4225 |
+| travel | 1.0000 | 1.0000 |
+| accessibility | 0.6797 | 0.6895 |
+
+**Monotonicity under ablations** — violations 0/200 per ablation (exposure / travel /
+accessibility), sampled across non-negative weight space with the ablated factor at 0.
+
+**Trained vs hand-set** (5-fold CV, StratifiedKFold shuffle, seed 42, 119 pairs):
+
+| metric | trained v1 | hand-set baseline |
+|---|---|---|
+| cvPairwiseAccuracy | 0.9250 | 0.9250 |
+| chosen lambda | 0.0 | n/a |
+
+The trained fit ties the baseline: shipped weights are 30.0 / 58.1894 / 11.8106 with the tie in
+the shipped `fit` record. The disagreements inside these folds are the deliberate trade-offs the
+league rules contain (§4 labels); the report says "tie", not a win. A tie still ships full
+trained provenance because the fold numbers and dataset sha sit in the asset.
+
+**Explanation audit** — contributions decompose exactly (sum == score to 1e-9) for all 12 golden
+sets under both weight sets; zero-weight factors never appear as a reason.
+
+**Forbidden-claims scan** — 36 ranking strings across `app_en.arb` + `app_fil.arb`, 0
+occurrences of any forbidden phrase.
+
+**Benchmarks** (this run, dev laptop):
+
+| metric | value |
+|---|---|
+| `hazard_bands.json` size | 82 240 bytes (gate ≤ 5 MB) |
+| cold parse in an isolate | ~14 ms |
+| `exposureAt` × 10 000 points | ~93 ms (9.4 µs/point) |
+| full ranking, N=6 | ~175 µs |
+| full ranking, N=1000 | ~1.4 ms |
+| ORS calls per re-rank (engine run) | 0 (straight-line estimates; a route request happens only for the SELECTED centre, ≤ 1 per re-rank — budget ≤ 3 holds) |
+| parity fixture Dart ≡ Python | `exposure_parity.json`: exact to 1e-9, sha pinned |
 
 **Golden cases:** `test/fixtures/ranking_golden.json` — ~12 hand-authored candidate sets with
 expected orderings and rationale; both weight sets must satisfy them.

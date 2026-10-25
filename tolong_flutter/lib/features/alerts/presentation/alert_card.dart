@@ -9,9 +9,24 @@ import '../../../l10n/l10n.dart';
 import '../../../shared/widgets/common.dart';
 import 'warning_sound.dart';
 
+/// The one advisory card the app shows, rendered from four caller-supplied strings so the
+/// visuals and behaviour (sound, open-map, dismiss) stay shared while the content comes from
+/// whatever surface owns the advisory (demo simulation; real feeds later).
 class AlertCard extends StatefulWidget {
-  const AlertCard({super.key, required this.onDismiss, required this.onMap});
+  const AlertCard({
+    super.key,
+    required this.category,
+    required this.title,
+    required this.body,
+    required this.tag,
+    required this.onDismiss,
+    required this.onMap,
+  });
 
+  final String category;
+  final String title;
+  final String body;
+  final String tag;
   final VoidCallback onDismiss;
   final VoidCallback onMap;
 
@@ -77,15 +92,15 @@ class _AlertCardState extends State<AlertCard> with SingleTickerProviderStateMix
                   runSpacing: AppSpacing.xs,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    Text(l.alertFloodAdvisory,
+                    Text(widget.category,
                         style: sans(9, weight: FontWeight.w700, color: const Color(0xFFA55E48), letterSpacing: 1.08)),
-                    SampleTag(l.alertDemoTag),
+                    SampleTag(widget.tag),
                   ],
                 ),
                 const SizedBox(height: 6),
-                Text(l.alertDemoTitle, style: serif(18, height: 1.13, tracking: -0.03, color: const Color(0xFF60483E))),
+                Text(widget.title, style: serif(18, height: 1.13, tracking: -0.03, color: const Color(0xFF60483E))),
                 const SizedBox(height: 6),
-                Text(l.alertDemoBody, style: sans(11, height: 1.45, color: const Color(0xFF835F50))),
+                Text(widget.body, style: sans(11, height: 1.45, color: const Color(0xFF835F50))),
                 FloodAlertSound(onChanged: _onSoundChanged),
                 const SizedBox(height: 12),
                 Row(children: [

@@ -307,12 +307,12 @@ Two details worth preserving if you touch it:
 | `safe_places` | a/d/p | MapLibre map, GPS, evacuation centres, QC boundary, barangay search, routing, offline map, navigation, NOAH hazard overlay |
 | `sync` | a/d/p | Drift queue, engine, remote, store, conflict rules |
 | `tol` | a/d/p | AI assistant — Edge Function online, rule-based offline fallback, encrypted history |
-| `guidebook` | d/p | Bundled offline guide (structure only, see §11) |
+| `demo` | d/p/a | Demo/admin panel (`DEMO_TOOLS` builds only): location, advisory, fake routes, weights simulation — see `design/DEMO_TOOLS.md` |
 | `settings` | — | Preferences, local-data wipe, account deletion |
 | `home` | — | Dashboard |
 | `more` | — | Tab hub |
 | `onboarding` | — | 5-step wizard |
-| `alerts` | — | Flood alert card + warning sound |
+| `alerts` | — | Advisory card + warning sound (fed by demo simulation; real feeds later) |
 | `offline` | — | Offline Readiness Center |
 
 ### The NOAH hazard overlay (`safe_places`)
@@ -411,15 +411,19 @@ configured, and the app runs fully offline otherwise.
 
 A recurring, deliberate theme — an app about emergencies must not fake capability.
 
-- **`SampleTag`** (`lib/shared/widgets/common.dart`) — labels placeholder content
-  "SAMPLE DATA" / "NOT REAL DATA".
+- **`SampleTag`** (`lib/shared/widgets/common.dart`) — labels sample/simulated content
+  "SAMPLE DATA" / "NOT REAL DATA" / "SIMULATED".
 - **`Unconfigured*` repositories** — fail with a specific error code rather than silently
   degrading to a no-op.
-- **`showSoon(context, …)`** — unfinished buttons say so instead of doing nothing.
-- **Unverifiable guidebook content is dropped at parse time.** `assets/guidebook/guidebook.json`
-  currently has 5 categories and **0 sections**, because no section has a citable source yet.
-  The parser refuses to render uncited advice.
+- **`showMessage(context, …)`** — confirmations surface as snackbars (renamed from `showSoon`
+  when the placeholder copy was removed; nothing in the app promises a "soon").
+- **Uncited guidebook content is never rendered.** The guidebook feature shipped 0 cited
+  sections and was removed entirely on 2026-10-25 rather than showing "coming soon" stubs;
+  it returns only with reviewed, sourced material.
 - **`evacuation_centers_dev.json`** carries 6 centres all flagged `verified: false`.
+- **Demo tools never leak.** `DEMO_TOOLS` builds wrap location/routes/weights with simulators
+  and tag every simulated surface; without the flag the demo code path does not exist
+  ([`design/DEMO_TOOLS.md`](design/DEMO_TOOLS.md)).
 
 The Phase 1 checklist in [`CHANGELOG.md`](CHANGELOG.md) lists this as an explicit
 deliverable, and `accessibility_test.dart` + `phase4_test.dart` guard it with tests.
@@ -495,15 +499,16 @@ lib/
     ├── animations.dart       87   FadeSlideIn, Pressable
     └── scenes.dart           22   Scene enum: home / alert / guide / map
 
-test/                       17 files, 195 tests — inventory in STATUS.md;
-                            fixtures/ holds the PSGC provenance fixture and the
-                            hazard archive field fixture
+test/                       19 files, 245 tests — inventory in STATUS.md;
+                            fixtures/ holds the PSGC provenance fixture, the
+                            hazard archive field fixture and the ranking golden set
 android/                    app manifest, Gradle, launcher icon, splash
 assets/
 ├── data/                   qc_boundary.json (306 pts), qc_barangays.json (142, PSGC
-│                           cross-checked), evacuation_centers_dev.json (6, unverified)
+│                           cross-checked), evacuation_centers_dev.json (6, unverified),
+│                           hazard_bands.json (148 sites), ranking_weights.json (trained v1)
 ├── fonts/                  DM Sans + Fraunces variable fonts (OFL)
-└── guidebook/guidebook.json    5 categories, currently 0 sections
+└── (the guidebook asset was removed with the feature on 2026-10-25)
 datasets/                   bundled PMTiles, 77 MB (qc_base + qc_flood) — design/MAP_OPTIONS.md §4a
 supabase/
 ├── migrations/             3 SQL files — profiles, delete account, sync records

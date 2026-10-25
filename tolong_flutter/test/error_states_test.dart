@@ -24,13 +24,6 @@ void main() {
     expect(find.text('Search barangay'), findsOneWidget, reason: 'the rest of the screen stays usable');
   });
 
-  testWidgets('an unreadable guidebook shows an error, not a blank page', (tester) async {
-    await pumpApp(tester, prefs: {'guest_mode': true, 'language': 'en'}, failGuidebook: true);
-    await visit(tester, '/guidebook');
-
-    expect(find.text("Couldn't read saved data."), findsOneWidget);
-  });
-
   testWidgets('a failed offline map download explains why and offers a retry', (tester) async {
     final offline = FakeOfflineMapService();
     await pumpApp(tester, prefs: {'guest_mode': true, 'language': 'en'}, offline: offline);

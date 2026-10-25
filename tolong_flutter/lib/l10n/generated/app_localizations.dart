@@ -158,12 +158,6 @@ abstract class AppLocalizations {
   /// **'OK'**
   String get ok;
 
-  /// No description provided for @comingSoon.
-  ///
-  /// In en, this message translates to:
-  /// **'Coming soon'**
-  String get comingSoon;
-
   /// No description provided for @notSet.
   ///
   /// In en, this message translates to:
@@ -199,12 +193,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t read saved data.'**
   String get couldNotLoad;
-
-  /// No description provided for @soonFeature.
-  ///
-  /// In en, this message translates to:
-  /// **'{feature} isn\'t available yet. It\'s planned for a later update.'**
-  String soonFeature(Object feature);
 
   /// No description provided for @tabHome.
   ///
@@ -247,18 +235,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open profile'**
   String get openProfile;
-
-  /// No description provided for @soonOfflineCenter.
-  ///
-  /// In en, this message translates to:
-  /// **'The offline readiness center isn\'t available yet.'**
-  String get soonOfflineCenter;
-
-  /// No description provided for @soonAlerts.
-  ///
-  /// In en, this message translates to:
-  /// **'Hazard alerts aren\'t connected yet. Follow QC DRRMO for official advisories.'**
-  String get soonAlerts;
 
   /// No description provided for @guestBanner.
   ///
@@ -524,29 +500,53 @@ abstract class AppLocalizations {
   /// **'Your data is saved on this phone'**
   String get homeFooter;
 
-  /// No description provided for @alertFloodAdvisory.
+  /// No description provided for @alertTypeFlood.
   ///
   /// In en, this message translates to:
   /// **'FLOOD ADVISORY'**
-  String get alertFloodAdvisory;
+  String get alertTypeFlood;
 
-  /// No description provided for @alertDemoTag.
+  /// No description provided for @alertTypeEarthquake.
   ///
   /// In en, this message translates to:
-  /// **'DEMO · NOT LIVE'**
-  String get alertDemoTag;
+  /// **'EARTHQUAKE ADVISORY'**
+  String get alertTypeEarthquake;
 
-  /// No description provided for @alertDemoTitle.
+  /// No description provided for @alertTypeFire.
   ///
   /// In en, this message translates to:
-  /// **'Example: rising water near Marikina River.'**
-  String get alertDemoTitle;
+  /// **'FIRE ADVISORY'**
+  String get alertTypeFire;
 
-  /// No description provided for @alertDemoBody.
+  /// No description provided for @alertSeverityAdvisory.
   ///
   /// In en, this message translates to:
-  /// **'This sample shows how advisories will look. Live alerts aren\'t connected yet.'**
-  String get alertDemoBody;
+  /// **'Advisory'**
+  String get alertSeverityAdvisory;
+
+  /// No description provided for @alertSeverityWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning'**
+  String get alertSeverityWarning;
+
+  /// No description provided for @alertSeveritySevere.
+  ///
+  /// In en, this message translates to:
+  /// **'Severe'**
+  String get alertSeveritySevere;
+
+  /// No description provided for @alertSimulatedTag.
+  ///
+  /// In en, this message translates to:
+  /// **'SIMULATED · NOT LIVE'**
+  String get alertSimulatedTag;
+
+  /// No description provided for @alertSimulatedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'A simulated scenario from the demo tools, not a real emergency message. Follow QC DRRMO and PAGASA for official advisories.'**
+  String get alertSimulatedNote;
 
   /// No description provided for @alertOpenSafePlaces.
   ///
@@ -559,6 +559,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dismiss alert'**
   String get alertDismiss;
+
+  /// No description provided for @demoBannerActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Demo overrides active — the location, advisory, route or weights on this screen are simulated.'**
+  String get demoBannerActive;
+
+  /// No description provided for @demoOpenTools.
+  ///
+  /// In en, this message translates to:
+  /// **'Open demo tools'**
+  String get demoOpenTools;
 
   /// No description provided for @soundPlay.
   ///
@@ -695,7 +707,7 @@ abstract class AppLocalizations {
   /// No description provided for @centersDemoNote.
   ///
   /// In en, this message translates to:
-  /// **'These are sample points for building the app, not real evacuation centers. Official QC DRRMO data will replace them.'**
+  /// **'These are sample points for building the app, not real evacuation centers. Follow QC DRRMO and your barangay for official evacuation center locations.'**
   String get centersDemoNote;
 
   /// No description provided for @centerNearest.
@@ -781,6 +793,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not verified'**
   String get notVerified;
+
+  /// No description provided for @rankNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Ranked for your situation by a modelled score: exposure, travel time and accessibility. This is not a safety verdict and it does not know live conditions.'**
+  String get rankNote;
+
+  /// No description provided for @rankWeightsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'RANKED CENTERS'**
+  String get rankWeightsTitle;
+
+  /// No description provided for @rankWeightsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Weights'**
+  String get rankWeightsLabel;
+
+  /// No description provided for @rankWeightsTrained.
+  ///
+  /// In en, this message translates to:
+  /// **'Trained weights v1'**
+  String get rankWeightsTrained;
+
+  /// No description provided for @rankWeightsDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Default weights'**
+  String get rankWeightsDefault;
+
+  /// No description provided for @rankExposureLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Modelled exposure'**
+  String get rankExposureLabel;
+
+  /// No description provided for @rankExposureValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} of 1.00'**
+  String rankExposureValue(Object value);
+
+  /// No description provided for @rankExposureUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'No hazard reading at this point — treated as neutral'**
+  String get rankExposureUnknown;
+
+  /// No description provided for @rankTravelLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel time'**
+  String get rankTravelLabel;
+
+  /// No description provided for @rankTravelEstimated.
+  ///
+  /// In en, this message translates to:
+  /// **'≈ {minutes} min · estimated'**
+  String rankTravelEstimated(Object minutes);
+
+  /// No description provided for @rankTravelByRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min · route'**
+  String rankTravelByRoute(Object minutes);
+
+  /// No description provided for @rankScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Score {score} / 100'**
+  String rankScore(Object score);
+
+  /// No description provided for @rankAccessibilityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Wheelchair data'**
+  String get rankAccessibilityLabel;
+
+  /// No description provided for @rankAccessibilityNeutral.
+  ///
+  /// In en, this message translates to:
+  /// **'Not checked yet — treated as neutral'**
+  String get rankAccessibilityNeutral;
+
+  /// No description provided for @rankAccessibilityVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked with a wheelchair route'**
+  String get rankAccessibilityVerified;
+
+  /// No description provided for @rankAccessibilityFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The wheelchair route could not be planned — counted as unavailable'**
+  String get rankAccessibilityFailed;
+
+  /// No description provided for @rankAccessibilityWalking.
+  ///
+  /// In en, this message translates to:
+  /// **'Not part of the score in walking mode'**
+  String get rankAccessibilityWalking;
+
+  /// No description provided for @rankDistanceFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Hazard data is unavailable, so centers are listed by distance.'**
+  String get rankDistanceFallback;
 
   /// No description provided for @tolTitle.
   ///
@@ -1004,28 +1124,52 @@ abstract class AppLocalizations {
   /// **'{count, plural, =0{You haven\'t saved any emergency contacts yet. Add them in Profile & household.} =1{You have 1 emergency contact saved. Consider adding a backup.} other{You have {count} emergency contacts saved.}}'**
   String tolOffContacts(num count);
 
-  /// No description provided for @tolOffGuideReady.
-  ///
-  /// In en, this message translates to:
-  /// **'Open the {category} guide in the Disaster guidebook. It\'s saved for offline reading.'**
-  String tolOffGuideReady(Object category);
-
   /// No description provided for @tolOffGuideSoon.
   ///
   /// In en, this message translates to:
-  /// **'The {category} guide isn\'t written yet. For now, follow official advice from QC DRRMO, PAGASA and PHIVOLCS.'**
+  /// **'I don\'t have a written {category} guide yet. For now, follow official advice from QC DRRMO, PAGASA and PHIVOLCS.'**
   String tolOffGuideSoon(Object category);
+
+  /// No description provided for @tolGuideNameFlood.
+  ///
+  /// In en, this message translates to:
+  /// **'flood'**
+  String get tolGuideNameFlood;
+
+  /// No description provided for @tolGuideNameEarthquake.
+  ///
+  /// In en, this message translates to:
+  /// **'earthquake'**
+  String get tolGuideNameEarthquake;
+
+  /// No description provided for @tolGuideNameFire.
+  ///
+  /// In en, this message translates to:
+  /// **'fire'**
+  String get tolGuideNameFire;
+
+  /// No description provided for @tolGuideNameTyphoon.
+  ///
+  /// In en, this message translates to:
+  /// **'typhoon'**
+  String get tolGuideNameTyphoon;
+
+  /// No description provided for @tolGuideNameFirstAid.
+  ///
+  /// In en, this message translates to:
+  /// **'first aid'**
+  String get tolGuideNameFirstAid;
 
   /// No description provided for @tolOffGreeting.
   ///
   /// In en, this message translates to:
-  /// **'Hi! I\'m in offline mode, so I can only use what\'s saved on this phone. Ask me about your go-bag, water and food supplies, expiring items, readiness score, emergency contacts, safe places or the guidebook.'**
+  /// **'Hi! I\'m in offline mode, so I can only use what\'s saved on this phone. Ask me about your go-bag, water and food supplies, expiring items, readiness score, emergency contacts or safe places.'**
   String get tolOffGreeting;
 
   /// No description provided for @tolOffFallback.
   ///
   /// In en, this message translates to:
-  /// **'I couldn\'t match that offline. I can help with your go-bag, water and food supplies, expiring items, readiness score, emergency contacts, safe places and the guidebook.'**
+  /// **'I couldn\'t match that offline. I can help with your go-bag, water and food supplies, expiring items, readiness score, emergency contacts and safe places.'**
   String get tolOffFallback;
 
   /// No description provided for @orcTitle.
@@ -1076,30 +1220,6 @@ abstract class AppLocalizations {
   /// **'{count} centers built into the app. Development sample only, not verified.'**
   String orcCentersBody(Object count);
 
-  /// No description provided for @orcAlerts.
-  ///
-  /// In en, this message translates to:
-  /// **'Hazard alerts'**
-  String get orcAlerts;
-
-  /// No description provided for @orcAlertsBody.
-  ///
-  /// In en, this message translates to:
-  /// **'No alert source is connected yet, so there are no saved alerts. Follow QC DRRMO and PAGASA for official advisories.'**
-  String get orcAlertsBody;
-
-  /// No description provided for @orcGuidebook.
-  ///
-  /// In en, this message translates to:
-  /// **'Disaster guidebook'**
-  String get orcGuidebook;
-
-  /// No description provided for @orcGuidebookBody.
-  ///
-  /// In en, this message translates to:
-  /// **'{ready} of {total} guides have content. Guides are built into the app and work offline.'**
-  String orcGuidebookBody(Object ready, Object total);
-
   /// No description provided for @orcHousehold.
   ///
   /// In en, this message translates to:
@@ -1111,18 +1231,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile, contacts, supplies and checklist are saved encrypted on this phone.'**
   String get orcHouseholdBody;
-
-  /// No description provided for @orcTol.
-  ///
-  /// In en, this message translates to:
-  /// **'Tol offline help'**
-  String get orcTol;
-
-  /// No description provided for @orcTolBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Not available yet. Offline guidance arrives with the Tol assistant.'**
-  String get orcTolBody;
 
   /// No description provided for @orcSync.
   ///
@@ -1183,84 +1291,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Offline map storage: {size} MB'**
   String orcStorage(Object size);
-
-  /// No description provided for @guidebookEyebrow.
-  ///
-  /// In en, this message translates to:
-  /// **'LEARN WHAT TO DO'**
-  String get guidebookEyebrow;
-
-  /// No description provided for @guidebookTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Disaster guidebook'**
-  String get guidebookTitle;
-
-  /// No description provided for @guidebookSeeAll.
-  ///
-  /// In en, this message translates to:
-  /// **'See all'**
-  String get guidebookSeeAll;
-
-  /// No description provided for @guidebookIntro.
-  ///
-  /// In en, this message translates to:
-  /// **'Step-by-step guidance for common hazards in Quezon City. Every guide will cite its official source and is saved in the app for offline reading.'**
-  String get guidebookIntro;
-
-  /// No description provided for @guideSectionCount.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =0{Coming soon} =1{1 section} other{{count} sections}}'**
-  String guideSectionCount(num count);
-
-  /// No description provided for @guideComingSoon.
-  ///
-  /// In en, this message translates to:
-  /// **'{category} preparedness guide coming soon.'**
-  String guideComingSoon(Object category);
-
-  /// No description provided for @guideVisualSoon.
-  ///
-  /// In en, this message translates to:
-  /// **'Visual, step-by-step instructions from official sources will be added here.'**
-  String get guideVisualSoon;
-
-  /// No description provided for @guideOffline.
-  ///
-  /// In en, this message translates to:
-  /// **'Saved in the app · works offline'**
-  String get guideOffline;
-
-  /// No description provided for @guideSource.
-  ///
-  /// In en, this message translates to:
-  /// **'Source: {source}'**
-  String guideSource(Object source);
-
-  /// No description provided for @guideBefore.
-  ///
-  /// In en, this message translates to:
-  /// **'Before'**
-  String get guideBefore;
-
-  /// No description provided for @guideDuring.
-  ///
-  /// In en, this message translates to:
-  /// **'During'**
-  String get guideDuring;
-
-  /// No description provided for @guideAfter.
-  ///
-  /// In en, this message translates to:
-  /// **'After'**
-  String get guideAfter;
-
-  /// No description provided for @guideGeneral.
-  ///
-  /// In en, this message translates to:
-  /// **'General'**
-  String get guideGeneral;
 
   /// No description provided for @brgySearch.
   ///
@@ -1327,12 +1357,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Includes streets and places across Quezon City. Evacuation centers, barangays and the city boundary are already built into the app.'**
   String get offIncludes;
-
-  /// No description provided for @offNotIncluded.
-  ///
-  /// In en, this message translates to:
-  /// **'Not included yet: planning new routes offline and live alerts.'**
-  String get offNotIncluded;
 
   /// No description provided for @offEstimate.
   ///
@@ -1565,7 +1589,7 @@ abstract class AppLocalizations {
   /// No description provided for @routeErrNotConfigured.
   ///
   /// In en, this message translates to:
-  /// **'Route planning isn\'t set up in this build yet. It needs the Supabase route service.'**
+  /// **'Route planning is not configured in this build. It needs the Supabase route service.'**
   String get routeErrNotConfigured;
 
   /// No description provided for @routeErrNetwork.
@@ -2618,12 +2642,6 @@ abstract class AppLocalizations {
   /// **'Supply coverage'**
   String get moreSupplies;
 
-  /// No description provided for @moreGuidebook.
-  ///
-  /// In en, this message translates to:
-  /// **'Disaster guidebook'**
-  String get moreGuidebook;
-
   /// No description provided for @moreOffline.
   ///
   /// In en, this message translates to:
@@ -2705,7 +2723,7 @@ abstract class AppLocalizations {
   /// No description provided for @welcomeNotConfigured.
   ///
   /// In en, this message translates to:
-  /// **'Online accounts aren\'t configured in this build, so sign-up and login won\'t work yet. Emergency access works on this device.'**
+  /// **'Online accounts are not configured in this build, so sign-up and login are unavailable. Emergency access works on this device.'**
   String get welcomeNotConfigured;
 
   /// No description provided for @createAccount.
@@ -2933,7 +2951,7 @@ abstract class AppLocalizations {
   /// No description provided for @errNotConfigured.
   ///
   /// In en, this message translates to:
-  /// **'Online accounts aren\'t set up in this build yet. You can still use emergency access.'**
+  /// **'Online accounts are not configured in this build. You can still use emergency access.'**
   String get errNotConfigured;
 
   /// No description provided for @errNetwork.
@@ -3199,18 +3217,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Android will ask for permission the first time a feature needs it. You can change these later in Settings.'**
   String get onbPrefsSub;
-
-  /// No description provided for @prefReminders.
-  ///
-  /// In en, this message translates to:
-  /// **'Preparedness reminders'**
-  String get prefReminders;
-
-  /// No description provided for @prefRemindersSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Reminders to check supplies and your go-bag'**
-  String get prefRemindersSub;
 
   /// No description provided for @prefLocation.
   ///
@@ -3650,36 +3656,6 @@ abstract class AppLocalizations {
   /// **'Default 3 days (a 72-hour kit)'**
   String get setDaysTargetSub;
 
-  /// No description provided for @setNotifications.
-  ///
-  /// In en, this message translates to:
-  /// **'Notifications'**
-  String get setNotifications;
-
-  /// No description provided for @setNotificationsNote.
-  ///
-  /// In en, this message translates to:
-  /// **'Your choices are saved. Reminders start once notifications are added in a later update.'**
-  String get setNotificationsNote;
-
-  /// No description provided for @setReminders.
-  ///
-  /// In en, this message translates to:
-  /// **'Preparedness reminders'**
-  String get setReminders;
-
-  /// No description provided for @setExpiry.
-  ///
-  /// In en, this message translates to:
-  /// **'Expiration reminders'**
-  String get setExpiry;
-
-  /// No description provided for @setHazard.
-  ///
-  /// In en, this message translates to:
-  /// **'Hazard alert notifications'**
-  String get setHazard;
-
   /// No description provided for @setLocation.
   ///
   /// In en, this message translates to:
@@ -3803,7 +3779,7 @@ abstract class AppLocalizations {
   /// No description provided for @setDataSourcesBody.
   ///
   /// In en, this message translates to:
-  /// **'Supply targets follow widely published preparedness guidelines and can be changed above. Hazard alerts, maps and evacuation centers will list their sources once connected.'**
+  /// **'Supply targets follow widely published preparedness guidelines and can be changed above. Evacuation centers currently shown are development samples, not official data.'**
   String get setDataSourcesBody;
 
   /// No description provided for @setMapAttribution.

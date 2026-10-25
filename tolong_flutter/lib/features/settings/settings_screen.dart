@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../core/theme.dart';
+import '../../core/config/demo.dart';
 import '../../core/validation.dart';
 import '../../l10n/l10n.dart';
 import '../../shared/widgets/common.dart';
@@ -141,12 +142,6 @@ class SettingsScreen extends ConsumerWidget {
               },
             ),
           ]),
-          _Section(l.setNotifications, [
-            InlineMessage(l.setNotificationsNote),
-            _Switch(l.setReminders, s.notificationsOptIn, (x) => set((s) => s.copyWith(notificationsOptIn: x))),
-            _Switch(l.setExpiry, s.expiryRemindersOptIn, (x) => set((s) => s.copyWith(expiryRemindersOptIn: x))),
-            _Switch(l.setHazard, s.hazardAlertsOptIn, (x) => set((s) => s.copyWith(hazardAlertsOptIn: x))),
-          ]),
           _Section(l.setLocation, [
             _Switch(l.prefLocation, s.locationOptIn, (x) => set((s) => s.copyWith(locationOptIn: x)),
                 subtitle: l.setLocationNote),
@@ -189,6 +184,10 @@ class SettingsScreen extends ConsumerWidget {
               icon: Icons.tag_rounded,
               title: l.setVersion,
               trailing: ref.watch(appVersionProvider).value ?? '…',
+              // Demo builds only: the hidden admin entry (see core/config/demo.dart). A
+              // long-press keeps it invisible in day-to-day use, including every release build.
+              onLongPress:
+                  ref.watch(demoToolsEnabledProvider) ? () => context.push('/demo') : null,
             ),
             _Tile(
               icon: Icons.source_outlined,
@@ -237,9 +236,9 @@ class SettingsScreen extends ConsumerWidget {
     if (email == null) return;
     try {
       await ref.read(authRepositoryProvider).sendPasswordReset(email);
-      if (context.mounted) showSoon(context, l.setChangePasswordSent(email));
+      if (context.mounted) showMessage(context, l.setChangePasswordSent(email));
     } on AuthFailure catch (e) {
-      if (context.mounted) showSoon(context, l.authError(e));
+      if (context.mounted) showMessage(context, l.authError(e));
     }
   }
 
@@ -254,9 +253,9 @@ class SettingsScreen extends ConsumerWidget {
     if (!ok) return;
     try {
       await ref.read(sessionProvider.notifier).deleteAccount();
-      if (context.mounted) showSoon(context, l.setDeleteDone);
+      if (context.mounted) showMessage(context, l.setDeleteDone);
     } on AuthFailure catch (e) {
-      if (context.mounted) showSoon(context, l.authError(e));
+      if (context.mounted) showMessage(context, l.authError(e));
     }
   }
 
@@ -272,7 +271,7 @@ class SettingsScreen extends ConsumerWidget {
     );
     if (!ok) return;
     await ref.read(localDataProvider).clear(owner);
-    if (context.mounted) showSoon(context, l.setCleared);
+    if (context.mounted) showMessage(context, l.setCleared);
   }
 }
 
@@ -348,6 +347,7 @@ class _Tile extends StatelessWidget {
     this.subtitle,
     this.trailing,
     this.onTap,
+    this.onLongPress,
     this.danger = false,
   });
 
@@ -356,6 +356,7 @@ class _Tile extends StatelessWidget {
   final String? subtitle;
   final String? trailing;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
   final bool danger;
 
   @override
@@ -364,6 +365,7 @@ class _Tile extends StatelessWidget {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       onTap: onTap,
+      onLongPress: onLongPress,
       leading: Icon(icon, color: danger ? AppColors.error : AppColors.primary, size: AppIconSizes.lg),
       title: Text(title, style: sans(13, weight: FontWeight.w600, color: color)),
       subtitle: subtitle == null ? null : Text(subtitle!, style: sans(11, color: AppColors.muted)),
