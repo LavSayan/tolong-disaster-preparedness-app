@@ -28,6 +28,9 @@ import 'package:tolong_flutter/features/safe_places/data/offline_map_service.dar
 import 'package:tolong_flutter/features/safe_places/data/qc_area_repository.dart';
 import 'package:tolong_flutter/features/safe_places/data/ranking_weights_repository.dart';
 import 'package:tolong_flutter/features/safe_places/data/route_service.dart';
+import 'package:tolong_flutter/features/safe_places/data/shelter_review_repository.dart';
+import 'package:tolong_flutter/features/safe_places/data/shelter_submission_repository.dart';
+import 'package:tolong_flutter/features/safe_places/data/validated_shelter_repository.dart';
 import 'package:tolong_flutter/features/safe_places/domain/evacuation_center.dart';
 import 'package:tolong_flutter/features/safe_places/presentation/map_view.dart';
 import 'package:tolong_flutter/main.dart';
@@ -113,6 +116,10 @@ Future<SharedPreferences> pumpApp(
   SyncRemote? syncRemote,
   AppDatabase? database,
   OnlineTolService? tol,
+  ValidatedShelterSource? validatedSource,
+  ShelterSubmissionRepository? submissions,
+  ShelterReviewRepository? review,
+  AdminAccountRepository? admin,
   Size logicalSize = const Size(360, 780),
   bool failCenters = false,
   bool demoTools = false,
@@ -165,6 +172,11 @@ Future<SharedPreferences> pumpApp(
       connectivityProvider.overrideWithValue(const Stream.empty()),
       onlineTolServiceProvider.overrideWithValue(tol),
       demoToolsEnabledProvider.overrideWithValue(demoTools),
+      validatedShelterSourceProvider.overrideWithValue(validatedSource ?? UnconfiguredValidatedShelterSource()),
+      shelterSubmissionRepositoryProvider
+          .overrideWithValue(submissions ?? UnconfiguredShelterSubmissionRepository()),
+      shelterReviewRepositoryProvider.overrideWithValue(review ?? UnconfiguredShelterReviewRepository()),
+      adminAccountRepositoryProvider.overrideWithValue(admin ?? UnconfiguredAdminAccountRepository()),
       // The location/route fakes sit underneath the demo wrappers exactly as the real
       // Geolocator/ORS services would in a demo build.
       if (demoTools) ...[
@@ -312,6 +324,10 @@ class FakeRouteService implements RouteService {
 }
 
 class FakeAuthRepository implements AuthRepository {
+  FakeAuthRepository({this.role = AppUserRole.user, this.roleFetchFails = false});
+
+  AppUserRole role;
+  bool roleFetchFails;
   UserProfile? synced;
   bool deleted = false;
 
@@ -331,6 +347,9 @@ class FakeAuthRepository implements AuthRepository {
 
   @override
   Stream<AuthEvent> get changes => const Stream.empty();
+
+  @override
+  Future<AppUserRole?> fetchRole() async => roleFetchFails ? null : role;
 
   @override
   Future<void> syncProfile(UserProfile profile) async => synced = profile;

@@ -2234,4 +2234,212 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get setLicenses => 'Mga open-source na lisensya';
+
+  @override
+  String get moreReviewQueue =>
+      'Suriin ang mga submission ng evacuation center';
+
+  @override
+  String get moreAdminAccounts => 'Pamahalaan ang mga account';
+
+  @override
+  String get roleBadgeGovernment => 'Review ng pamahalaan';
+
+  @override
+  String get roleBadgeAdmin => 'Tagapangasiwa';
+
+  @override
+  String get shelterAddTitle => 'Magdagdag ng evacuation center';
+
+  @override
+  String get shelterAddSub =>
+      'May alam kang evacuation site na wala sa listahan? Ipadala para sa review.';
+
+  @override
+  String get submitTitle => 'Imungkahi ang isang evacuation center';
+
+  @override
+  String get submitSub =>
+      'Isang reviewer mula sa pamahalaan ng Quezon City ang magsisiguro ng mga detalye bago ito lumitaw sa ranked list. Awtomatikong kokwentahin ang score pagkatapos ng aprobasyon.';
+
+  @override
+  String get submitName => 'Pangalan ng evacuation center';
+
+  @override
+  String get submitNameHint => 'hal., Sto. Domingo Elementary School';
+
+  @override
+  String get submitFacility => 'Uri ng pasilidad';
+
+  @override
+  String get submitBarangay => 'Barangay';
+
+  @override
+  String get submitAddress => 'Address (opsyonal)';
+
+  @override
+  String get submitAccessibility => 'Impormasyon sa accessibility (opsyonal)';
+
+  @override
+  String get submitAccessibilityHint => 'hal., rampa sa pangunahing gate';
+
+  @override
+  String get submitCapacity => 'Bilang ng taong kaya (opsyonal)';
+
+  @override
+  String get submitFacilities =>
+      'Mga pasilidad, paghihiwalayin ng kuwit (opsyonal)';
+
+  @override
+  String get submitLocation => 'Lokasyon ng evacuation center';
+
+  @override
+  String get submitLocate => 'Gamitin ang aking lokasyon';
+
+  @override
+  String get submitLat => 'Latitude';
+
+  @override
+  String get submitLng => 'Longitude';
+
+  @override
+  String get submitMapHint =>
+      'Ayusin ang pin sa pamamagitan ng pag-edit ng coordinates o gamit ang iyong lokasyon.';
+
+  @override
+  String get submitSend => 'Ipadala para sa review';
+
+  @override
+  String get submitSent =>
+      'Naipadala para sa review. Lalabas ito sa ranked list matapos kumpirmahin ng reviewer ng pamahalaan.';
+
+  @override
+  String get mySubmissionsTitle => 'Mga submission ko';
+
+  @override
+  String get mySubmissionsEmpty => 'Wala pang submission.';
+
+  @override
+  String mySubmissionsPending(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count na submission sa paghihintay ng review.',
+      one: '1 na submission sa paghihintay ng review.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get mySubmissionsWithdraw => 'I-withdraw';
+
+  @override
+  String get mySubmissionsWithdrawn => 'Binawi ang submission.';
+
+  @override
+  String get subStatusPending => 'Naghihintay ng review';
+
+  @override
+  String get subStatusApproved => 'Aprubado';
+
+  @override
+  String get subStatusRejected => 'Hindi aprubado';
+
+  @override
+  String subRejection(Object reason) {
+    return 'Tala ng reviewer: $reason';
+  }
+
+  @override
+  String get subErrNotAuthenticated =>
+      'Mag-sign in upang makapagpadala ng shelter para sa review.';
+
+  @override
+  String get subErrOutsideQc => 'Dapat nasa loob ng Quezon City ang pin.';
+
+  @override
+  String get subErrUnknownBarangay => 'Pumili ng barangay mula sa listahan.';
+
+  @override
+  String get subErrDuplicateShelter =>
+      'Nakalista na ang isang shelter sa loob ng 100 m ng pin na ito.';
+
+  @override
+  String get subErrTooManyPending =>
+      'Hanggang 5 submission ang maaari mong hintayin sa review.';
+
+  @override
+  String get subErrInvalidFields =>
+      'Suriin ang mga detalye: pangalan na 1-120 characters, kapasidad na 1-100000, at pin sa loob ng Quezon City.';
+
+  @override
+  String get reviewTitle => 'Suriin ang mga submission ng evacuation center';
+
+  @override
+  String get reviewEmpty => 'Walang naghihintay na submission.';
+
+  @override
+  String get reviewApprove => 'Aprubahan at i-publish';
+
+  @override
+  String get reviewReject => 'Tanggihan';
+
+  @override
+  String get reviewSaveEdits => 'I-save ang mga pag-edit';
+
+  @override
+  String get reviewReasonLabel => 'Dahilan ng pagtanggi';
+
+  @override
+  String get reviewReasonRequired => 'Ipaliwanag sa submitter kung bakit.';
+
+  @override
+  String get reviewApproved =>
+      'Na-publish ang shelter. Lumilitaw na ito sa ranked list.';
+
+  @override
+  String get reviewRejected => 'Hindi naaprubahan ang submission.';
+
+  @override
+  String get reviewEditsSaved =>
+      'Na-save ang mga pag-edit. I-aprubahan kapag tama na ang mga detalye.';
+
+  @override
+  String reviewSubmittedBy(Object short) {
+    return 'Nagpadala si …$short';
+  }
+
+  @override
+  String get adminTitle => 'Pamahalaan ang mga account';
+
+  @override
+  String get adminSearchHint => 'Maghanap ng email';
+
+  @override
+  String get adminSearch => 'Hanapin';
+
+  @override
+  String get adminEmpty => 'Walang natagpuang account.';
+
+  @override
+  String get roleUser => 'Gumagamit';
+
+  @override
+  String get roleGovernment => 'Review ng pamahalaan';
+
+  @override
+  String get roleAdmin => 'Tagapangasiwa';
+
+  @override
+  String get adminPromote => 'Gawing reviewer ng pamahalaan';
+
+  @override
+  String get adminDemote => 'Gawing gumagamit';
+
+  @override
+  String get adminDone => 'Binago ang role.';
+
+  @override
+  String get adminErrNotAdmin =>
+      'Tanging mga admin lamang ang maaaring pamahalaan ang mga account.';
 }

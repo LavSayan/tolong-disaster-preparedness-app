@@ -65,6 +65,24 @@ class MoreScreen extends ConsumerWidget {
             foreground: AppColors.blue,
             onTap: () => context.push('/offline-readiness'),
           ),
+          // Role-gated: visible only to government reviewers (officials and admins).
+          if (ref.watch(sessionProvider.select((s) => s.canReview)))
+            _MoreTile(
+              icon: Icons.fact_check_outlined,
+              title: l.moreReviewQueue,
+              background: AppColors.amberSoft,
+              foreground: AppColors.amber,
+              onTap: () => context.push('/review-shelters'),
+            ),
+          // Role-gated: visible only to admins.
+          if (ref.watch(sessionProvider.select((s) => s.isAdmin)))
+            _MoreTile(
+              icon: Icons.manage_accounts_outlined,
+              title: l.moreAdminAccounts,
+              background: AppColors.terracottaSoft,
+              foreground: AppColors.terracotta,
+              onTap: () => context.push('/admin'),
+            ),
           // Visible only in demo builds (compile-time DEMO_TOOLS define); English on purpose —
           // same as the panel itself, an internal tool with no shipped strings.
           if (ref.watch(demoToolsEnabledProvider))

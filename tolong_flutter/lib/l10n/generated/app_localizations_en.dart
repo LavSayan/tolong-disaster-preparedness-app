@@ -2218,4 +2218,208 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get setLicenses => 'Open-source licenses';
+
+  @override
+  String get moreReviewQueue => 'Review shelter submissions';
+
+  @override
+  String get moreAdminAccounts => 'Manage accounts';
+
+  @override
+  String get roleBadgeGovernment => 'Government reviewer';
+
+  @override
+  String get roleBadgeAdmin => 'Administrator';
+
+  @override
+  String get shelterAddTitle => 'Add a shelter';
+
+  @override
+  String get shelterAddSub =>
+      'Know an evacuation site that isn\'t listed? Send it for review.';
+
+  @override
+  String get submitTitle => 'Suggest a shelter';
+
+  @override
+  String get submitSub =>
+      'A Quezon City government reviewer confirms the details before it can appear in the ranked list. Scores are computed automatically once it is approved.';
+
+  @override
+  String get submitName => 'Shelter name';
+
+  @override
+  String get submitNameHint => 'e.g., Sto. Domingo Elementary School';
+
+  @override
+  String get submitFacility => 'Facility type';
+
+  @override
+  String get submitBarangay => 'Barangay';
+
+  @override
+  String get submitAddress => 'Address (optional)';
+
+  @override
+  String get submitAccessibility => 'Accessibility information (optional)';
+
+  @override
+  String get submitAccessibilityHint => 'e.g., ramp at the main gate';
+
+  @override
+  String get submitCapacity => 'Person capacity (optional)';
+
+  @override
+  String get submitFacilities => 'Facilities, comma-separated (optional)';
+
+  @override
+  String get submitLocation => 'Shelter location';
+
+  @override
+  String get submitLocate => 'Use my location';
+
+  @override
+  String get submitLat => 'Latitude';
+
+  @override
+  String get submitLng => 'Longitude';
+
+  @override
+  String get submitMapHint =>
+      'Adjust the pin by editing the coordinates or using your location.';
+
+  @override
+  String get submitSend => 'Send for review';
+
+  @override
+  String get submitSent =>
+      'Sent for review. It appears in the ranked list after a government reviewer confirms it.';
+
+  @override
+  String get mySubmissionsTitle => 'My shelter submissions';
+
+  @override
+  String get mySubmissionsEmpty => 'No submissions yet.';
+
+  @override
+  String mySubmissionsPending(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count submissions waiting for review.',
+      one: '1 submission waiting for review.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get mySubmissionsWithdraw => 'Withdraw';
+
+  @override
+  String get mySubmissionsWithdrawn => 'Submission withdrawn.';
+
+  @override
+  String get subStatusPending => 'Pending review';
+
+  @override
+  String get subStatusApproved => 'Approved';
+
+  @override
+  String get subStatusRejected => 'Not approved';
+
+  @override
+  String subRejection(Object reason) {
+    return 'Reviewer\'s note: $reason';
+  }
+
+  @override
+  String get subErrNotAuthenticated => 'Sign in to send a shelter for review.';
+
+  @override
+  String get subErrOutsideQc => 'The pin has to be inside Quezon City.';
+
+  @override
+  String get subErrUnknownBarangay => 'Choose a barangay from the list.';
+
+  @override
+  String get subErrDuplicateShelter =>
+      'A shelter is already listed within 100 m of this pin.';
+
+  @override
+  String get subErrTooManyPending =>
+      'You can have up to 5 submissions waiting for review.';
+
+  @override
+  String get subErrInvalidFields =>
+      'Check the details: a name of 1-120 characters, capacity 1-100000, and a pin inside Quezon City.';
+
+  @override
+  String get reviewTitle => 'Review shelter submissions';
+
+  @override
+  String get reviewEmpty => 'No submissions waiting for review.';
+
+  @override
+  String get reviewApprove => 'Approve and publish';
+
+  @override
+  String get reviewReject => 'Reject';
+
+  @override
+  String get reviewSaveEdits => 'Save edits';
+
+  @override
+  String get reviewReasonLabel => 'Reason for rejection';
+
+  @override
+  String get reviewReasonRequired => 'Tell the submitter why.';
+
+  @override
+  String get reviewApproved =>
+      'Shelter published. It now appears in the ranked list.';
+
+  @override
+  String get reviewRejected => 'Submission rejected.';
+
+  @override
+  String get reviewEditsSaved =>
+      'Edits saved. Approve when the details are right.';
+
+  @override
+  String reviewSubmittedBy(Object short) {
+    return 'Submitted by …$short';
+  }
+
+  @override
+  String get adminTitle => 'Manage accounts';
+
+  @override
+  String get adminSearchHint => 'Search email';
+
+  @override
+  String get adminSearch => 'Search';
+
+  @override
+  String get adminEmpty => 'No accounts found.';
+
+  @override
+  String get roleUser => 'User';
+
+  @override
+  String get roleGovernment => 'Government reviewer';
+
+  @override
+  String get roleAdmin => 'Administrator';
+
+  @override
+  String get adminPromote => 'Make government reviewer';
+
+  @override
+  String get adminDemote => 'Make user';
+
+  @override
+  String get adminDone => 'Role updated.';
+
+  @override
+  String get adminErrNotAdmin => 'Only admins can manage accounts.';
 }

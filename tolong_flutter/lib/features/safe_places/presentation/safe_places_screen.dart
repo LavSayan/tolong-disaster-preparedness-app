@@ -9,6 +9,8 @@ import '../../../shared/widgets/common.dart';
 import '../../../shared/widgets/form_widgets.dart';
 import '../application/ranking_controller.dart';
 import '../application/safe_places_controller.dart';
+import '../application/submission_controllers.dart';
+import '../../auth/application/session.dart';
 import '../data/evacuation_center_repository.dart';
 import '../data/hazard_layer_service.dart';
 import '../data/location_service.dart';
@@ -17,6 +19,7 @@ import '../data/qc_area_repository.dart';
 import '../data/route_service.dart';
 import '../domain/evacuation_center.dart';
 import '../domain/hazard.dart';
+import '../domain/shelter_submission.dart';
 import 'barangay_widgets.dart';
 import 'map_view.dart';
 import 'navigation_screen.dart';
@@ -233,6 +236,7 @@ Future<void> _pickHazard(HazardOverlayController controller, HazardGroup? curren
           onSelect: _select,
           ranking: ranking,
         ),
+        const _AddShelterCard(),
         const _OfflineMapCard(),
       ],
     ]);
@@ -289,6 +293,54 @@ class _BarangayBar extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _AddShelterCard extends ConsumerWidget {
+  const _AddShelterCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    final signedIn = ref.watch(sessionProvider.select((s) => s.signedIn));
+    final pendingCount = signedIn
+        ? ref.watch(mySubmissionsProvider).value?.where((s) =>
+            s.status == SubmissionStatus.pending).length
+        : null;
+    return CardBox(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xs),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          onTap: () => context.push('/submit-shelter'),
+          leading: const IconTile(
+            icon: Icons.add_location_alt_outlined,
+            background: AppColors.sageSoft,
+            foreground: AppColors.primary,
+            size: 34,
+            radius: 11,
+          ),
+          title: Text(l.shelterAddTitle, style: sans(13, weight: FontWeight.w600)),
+          subtitle: Text(l.shelterAddSub, style: sans(11, color: AppColors.muted)),
+          trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFFAAB4AD)),
+        ),
+        if (pendingCount != null && pendingCount > 0)
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            onTap: () => context.push('/my-submissions'),
+            leading: const IconTile(
+              icon: Icons.fact_check_outlined,
+              background: AppColors.amberSoft,
+              foreground: Color(0xFF9A7036),
+              size: 34,
+              radius: 11,
+            ),
+            title: Text(l.mySubmissionsTitle, style: sans(13, weight: FontWeight.w600)),
+            subtitle: Text(l.mySubmissionsPending(pendingCount), style: sans(11, color: AppColors.muted)),
+            trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFFAAB4AD)),
+          ),
+      ]),
     );
   }
 }

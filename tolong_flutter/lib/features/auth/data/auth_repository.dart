@@ -15,6 +15,18 @@ class AuthUserInfo {
   final String? barangay;
 }
 
+/// Server-side role from `profiles.role`, seeded by the project owner and granted by
+/// admins (see supabase/migrations/20261029000000_roles.sql). Government *and* admin
+/// review submissions; admins additionally manage accounts. Guests carry no role.
+enum AppUserRole { user, government, admin }
+
+AppUserRole? appUserRoleFrom(String? code) => switch (code) {
+      'government' => AppUserRole.government,
+      'admin' => AppUserRole.admin,
+      'user' => AppUserRole.user,
+      _ => null,
+    };
+
 enum AuthEventType { changed, signedOut, passwordRecovery }
 
 class AuthEvent {
@@ -67,6 +79,11 @@ abstract interface class AuthRepository {
 
   /// Deletes the signed-in user's account on the server (profile rows cascade).
   Future<void> deleteAccount();
+
+  /// Reads the signed-in user's role from the `profiles` table. Returns null (never
+  /// throws) so a failed lookup degrades to the least-privileged case; the session
+  /// fallback is [AppUserRole.user].
+  Future<AppUserRole?> fetchRole();
 
   /// Best-effort push of profile fields to the `profiles` table. Local data stays authoritative offline.
   Future<void> syncProfile(UserProfile profile);
@@ -154,6 +171,19 @@ class SupabaseAuthRepository implements AuthRepository {
     }
   }
 
+  @override
+  Future<AppUserRole?> fetchRole() async {
+    final id = _auth.currentUser?.id;
+    if (id == null) return null;
+    try {
+      final row = await _client.from('profiles').select('role').eq('id', id).single();
+      return appUserRoleFrom(row['role'] as String?);
+    } catch (e) {
+      debugPrint('Role fetch failed: ${e.runtimeType}');
+      return null;
+    }
+  }
+
   AuthUserInfo? _map(User? u) {
     if (u == null) return null;
     final meta = u.userMetadata ?? const {};
@@ -231,6 +261,9 @@ class UnconfiguredAuthRepository implements AuthRepository {
 
   @override
   Future<void> syncProfile(UserProfile profile) async {}
+
+  @override
+  Future<AppUserRole?> fetchRole() async => null;
 }
 
 final authRepositoryProvider = Provider<AuthRepository>(

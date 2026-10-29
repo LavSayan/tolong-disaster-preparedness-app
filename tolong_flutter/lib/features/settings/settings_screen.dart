@@ -53,6 +53,15 @@ class SettingsScreen extends ConsumerWidget {
         children: [
           _Section(l.setAccount, [
             if (session.guest) InlineMessage(l.setGuestAccountNote),
+            if (session.signedIn)
+              _Tile(
+                icon: session.role == AppUserRole.admin
+                    ? Icons.shield_rounded
+                    : session.role == AppUserRole.government
+                        ? Icons.verified_user_outlined
+                        : Icons.person_outline_rounded,
+                title: l.roleName(session.role),
+              ),
             _Tile(icon: Icons.person_outline_rounded, title: l.setProfile, onTap: () => context.push('/profile')),
             if (session.signedIn) ...[
               _Tile(

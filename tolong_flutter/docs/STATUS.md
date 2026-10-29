@@ -16,13 +16,14 @@ For how the code is shaped: [`CODE_GUIDE.md`](CODE_GUIDE.md).
 | 5 | Tol chat, Edge Function, offline fallback | **Done in code.** Needs an AI provider key in Supabase secrets |
 | 6 | Hazard layers (**shipped** 2026-10-20), hazard-aware A\* routing (deferred), shelter ranking (**implemented** 2026-10-25) | **Partly done.** Ranking + evaluation: [`design/SHELTER_RANKING_ML.md`](design/SHELTER_RANKING_ML.md) |
 | — | Demo/admin tools (**added** 2026-10-25): isolated `DEMO_TOOLS` build with location, advisory, route and weights simulation | **Done.** Internal only, never shipped: [`design/DEMO_TOOLS.md`](design/DEMO_TOOLS.md) |
+| 8 | Role-based access control (user / government / admin) and moderated shelter submissions (**added** 2026-10-29) | **Done in code.** Needs a Supabase project to run the two new migrations: [`design/SHELTER_SUBMISSIONS.md`](design/SHELTER_SUBMISSIONS.md) |
 | 7 | Full testing, accessibility review, release build | **Automated pass done** (see §2); real-device pass pending |
 
 ## 2. How the app is verified
 
 ```bash
 cd tolong_flutter
-flutter test --concurrency=1     # 245 passing; --concurrency=1 is mandatory
+flutter test --concurrency=1     # 257 passing; --concurrency=1 is mandatory
 flutter analyze                   # clean
 ```
 
@@ -48,6 +49,7 @@ The suite covers:
 | `ranking_parity_test.dart` | Dart ≡ Python feature fixture (1e-9), asset sha pin |
 | `evaluation/ranking_evaluation_test.dart` | Golden orderings, τ ablations, explanation audit, benchmarks (prints the §7 tables) |
 | `demo_tools_test.dart` | Demo builds: panel reachability both ways, location/advisory/fake-route/weights simulation, banner honesty, flag-off isolation |
+| `shelter_submissions_test.dart` | Submission validation (bounds/barangay/capacity/dedupe), center merge, reviewer/admin route gating, submit flow |
 | `responsive_test.dart` | Every route at 320×568 and 320×2400 dp, in Filipino with larger text, with no overflow |
 | `accessibility_test.dart` | Flutter's tap-target (48 dp), labelled-control and WCAG text-contrast guidelines |
 | `error_states_test.dart` | Unreadable center data, failed offline map download |
@@ -63,7 +65,7 @@ that cheap: `test_helpers.dart` overrides `mapViewBuilderProvider` with `FakeMap
 | Check | Result |
 |---|---|
 | `flutter analyze` | No issues |
-| Automated tests (`flutter test --concurrency=1`) | **245 passed, 0 failed** (ranking v1 + demo tools included) |
+| Automated tests (`flutter test --concurrency=1`) | **257 passed, 0 failed** (RBAC + shelter submissions included) |
 | `python tools/hazard_archive_check/hazard_fields.py --check` | OK: 9 layers match the committed fixture |
 | `python tools/psgc_crosscheck/crosscheck.py --check` | OK: 142 barangays match the official PSGC fixture |
 | Accessibility guidelines (11 screens) | Pass |
@@ -79,6 +81,7 @@ that cheap: `test_helpers.dart` overrides `mapViewBuilderProvider` with `FakeMap
 | Hazard archive extraction on Android | Needs a phone; does MapLibre Native accept `pmtiles:///data/…`? | SETUP hazard rows on a real phone |
 | Offline map download in airplane mode | Needs device + MapLibre native | SETUP rows for offline maps |
 | Sign up / login / password reset / delete account | No Supabase project | Create project, apply 3 migrations, `env.json` |
+| Shelter submissions + roles | No Supabase project | Create project, apply the 2 new migrations (`roles`, `shelter_submissions`), seed an admin |
 | Backup sync across two phones | No Supabase project | SETUP Phase 4 rows |
 | Walking routes (`tol-route`) | Edge Function not deployed, no ORS key | SETUP "Walking routes" |
 | Tol online (`tol-chat`) | Edge Function not deployed, no AI key | SETUP "Tol online" |
@@ -157,7 +160,7 @@ that cheap: `test_helpers.dart` overrides `mapViewBuilderProvider` with `FakeMap
 ## 7. Next steps
 
 1. Supabase: project + migrations + `env.json`; deploy `tol-route` (ORS key) and `tol-chat`
-   (AI key) when ready.
+   (AI key) when ready. Then seed the first admin (see `SHELTER_SUBMISSIONS.md`).
 2. Run the SETUP manual checklist on a real Android phone, including the hazard overlay rows
    (69–71); confirm the archive extraction path works with MapLibre Native.
 3. Replace the six demo evacuation centres with QC DRRMO data when available.

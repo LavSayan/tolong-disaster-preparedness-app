@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../domain/evacuation_center.dart';
+import 'validated_shelter_repository.dart';
 
 /// Reads the bundled center list. The dataset carries its own "verified" flag, so swapping in
 /// official QC DRRMO data later is a data change, not a code change.
@@ -28,5 +29,19 @@ class EvacuationCenterRepository {
 
 final evacuationCenterRepositoryProvider = Provider((ref) => EvacuationCenterRepository(rootBundle));
 
-final evacuationCentersProvider =
-    FutureProvider<List<EvacuationCenter>>((ref) => ref.watch(evacuationCenterRepositoryProvider).load());
+/// The center list everything downstream already watches: the bundled demo/DRRMO asset
+/// merged with government-approved community submissions. Online the list refreshes from
+/// the server; offline the encrypted vault cache stands in. Failures never invent centers.
+final evacuationCentersProvider = FutureProvider<List<EvacuationCenter>>((ref) async {
+  final asset = await ref.watch(evacuationCenterRepositoryProvider).load();
+  final cache = ref.watch(validatedShelterCacheProvider);
+  final cached = await cache.load();
+  try {
+    final validated = await ref.watch(validatedShelterSourceProvider).fetchApproved();
+    await cache.save(validated);
+    return mergeCenters(asset, validated);
+  } catch (e) {
+    // Offline or unconfigured: the cached copy keeps approved shelters visible.
+    return mergeCenters(asset, cached);
+  }
+});

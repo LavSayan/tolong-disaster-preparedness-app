@@ -3805,6 +3805,372 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open-source licenses'**
   String get setLicenses;
+
+  /// No description provided for @moreReviewQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'Review shelter submissions'**
+  String get moreReviewQueue;
+
+  /// No description provided for @moreAdminAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage accounts'**
+  String get moreAdminAccounts;
+
+  /// No description provided for @roleBadgeGovernment.
+  ///
+  /// In en, this message translates to:
+  /// **'Government reviewer'**
+  String get roleBadgeGovernment;
+
+  /// No description provided for @roleBadgeAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Administrator'**
+  String get roleBadgeAdmin;
+
+  /// No description provided for @shelterAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a shelter'**
+  String get shelterAddTitle;
+
+  /// No description provided for @shelterAddSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Know an evacuation site that isn\'t listed? Send it for review.'**
+  String get shelterAddSub;
+
+  /// No description provided for @submitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggest a shelter'**
+  String get submitTitle;
+
+  /// No description provided for @submitSub.
+  ///
+  /// In en, this message translates to:
+  /// **'A Quezon City government reviewer confirms the details before it can appear in the ranked list. Scores are computed automatically once it is approved.'**
+  String get submitSub;
+
+  /// No description provided for @submitName.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelter name'**
+  String get submitName;
+
+  /// No description provided for @submitNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Sto. Domingo Elementary School'**
+  String get submitNameHint;
+
+  /// No description provided for @submitFacility.
+  ///
+  /// In en, this message translates to:
+  /// **'Facility type'**
+  String get submitFacility;
+
+  /// No description provided for @submitBarangay.
+  ///
+  /// In en, this message translates to:
+  /// **'Barangay'**
+  String get submitBarangay;
+
+  /// No description provided for @submitAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Address (optional)'**
+  String get submitAddress;
+
+  /// No description provided for @submitAccessibility.
+  ///
+  /// In en, this message translates to:
+  /// **'Accessibility information (optional)'**
+  String get submitAccessibility;
+
+  /// No description provided for @submitAccessibilityHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., ramp at the main gate'**
+  String get submitAccessibilityHint;
+
+  /// No description provided for @submitCapacity.
+  ///
+  /// In en, this message translates to:
+  /// **'Person capacity (optional)'**
+  String get submitCapacity;
+
+  /// No description provided for @submitFacilities.
+  ///
+  /// In en, this message translates to:
+  /// **'Facilities, comma-separated (optional)'**
+  String get submitFacilities;
+
+  /// No description provided for @submitLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelter location'**
+  String get submitLocation;
+
+  /// No description provided for @submitLocate.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my location'**
+  String get submitLocate;
+
+  /// No description provided for @submitLat.
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude'**
+  String get submitLat;
+
+  /// No description provided for @submitLng.
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude'**
+  String get submitLng;
+
+  /// No description provided for @submitMapHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust the pin by editing the coordinates or using your location.'**
+  String get submitMapHint;
+
+  /// No description provided for @submitSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send for review'**
+  String get submitSend;
+
+  /// No description provided for @submitSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent for review. It appears in the ranked list after a government reviewer confirms it.'**
+  String get submitSent;
+
+  /// No description provided for @mySubmissionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My shelter submissions'**
+  String get mySubmissionsTitle;
+
+  /// No description provided for @mySubmissionsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No submissions yet.'**
+  String get mySubmissionsEmpty;
+
+  /// No description provided for @mySubmissionsPending.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 submission waiting for review.} other{{count} submissions waiting for review.}}'**
+  String mySubmissionsPending(num count);
+
+  /// No description provided for @mySubmissionsWithdraw.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw'**
+  String get mySubmissionsWithdraw;
+
+  /// No description provided for @mySubmissionsWithdrawn.
+  ///
+  /// In en, this message translates to:
+  /// **'Submission withdrawn.'**
+  String get mySubmissionsWithdrawn;
+
+  /// No description provided for @subStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending review'**
+  String get subStatusPending;
+
+  /// No description provided for @subStatusApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get subStatusApproved;
+
+  /// No description provided for @subStatusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Not approved'**
+  String get subStatusRejected;
+
+  /// No description provided for @subRejection.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviewer\'s note: {reason}'**
+  String subRejection(Object reason);
+
+  /// No description provided for @subErrNotAuthenticated.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to send a shelter for review.'**
+  String get subErrNotAuthenticated;
+
+  /// No description provided for @subErrOutsideQc.
+  ///
+  /// In en, this message translates to:
+  /// **'The pin has to be inside Quezon City.'**
+  String get subErrOutsideQc;
+
+  /// No description provided for @subErrUnknownBarangay.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a barangay from the list.'**
+  String get subErrUnknownBarangay;
+
+  /// No description provided for @subErrDuplicateShelter.
+  ///
+  /// In en, this message translates to:
+  /// **'A shelter is already listed within 100 m of this pin.'**
+  String get subErrDuplicateShelter;
+
+  /// No description provided for @subErrTooManyPending.
+  ///
+  /// In en, this message translates to:
+  /// **'You can have up to 5 submissions waiting for review.'**
+  String get subErrTooManyPending;
+
+  /// No description provided for @subErrInvalidFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the details: a name of 1-120 characters, capacity 1-100000, and a pin inside Quezon City.'**
+  String get subErrInvalidFields;
+
+  /// No description provided for @reviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review shelter submissions'**
+  String get reviewTitle;
+
+  /// No description provided for @reviewEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No submissions waiting for review.'**
+  String get reviewEmpty;
+
+  /// No description provided for @reviewApprove.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve and publish'**
+  String get reviewApprove;
+
+  /// No description provided for @reviewReject.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get reviewReject;
+
+  /// No description provided for @reviewSaveEdits.
+  ///
+  /// In en, this message translates to:
+  /// **'Save edits'**
+  String get reviewSaveEdits;
+
+  /// No description provided for @reviewReasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for rejection'**
+  String get reviewReasonLabel;
+
+  /// No description provided for @reviewReasonRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell the submitter why.'**
+  String get reviewReasonRequired;
+
+  /// No description provided for @reviewApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelter published. It now appears in the ranked list.'**
+  String get reviewApproved;
+
+  /// No description provided for @reviewRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Submission rejected.'**
+  String get reviewRejected;
+
+  /// No description provided for @reviewEditsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Edits saved. Approve when the details are right.'**
+  String get reviewEditsSaved;
+
+  /// No description provided for @reviewSubmittedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted by …{short}'**
+  String reviewSubmittedBy(Object short);
+
+  /// No description provided for @adminTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage accounts'**
+  String get adminTitle;
+
+  /// No description provided for @adminSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search email'**
+  String get adminSearchHint;
+
+  /// No description provided for @adminSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get adminSearch;
+
+  /// No description provided for @adminEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No accounts found.'**
+  String get adminEmpty;
+
+  /// No description provided for @roleUser.
+  ///
+  /// In en, this message translates to:
+  /// **'User'**
+  String get roleUser;
+
+  /// No description provided for @roleGovernment.
+  ///
+  /// In en, this message translates to:
+  /// **'Government reviewer'**
+  String get roleGovernment;
+
+  /// No description provided for @roleAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Administrator'**
+  String get roleAdmin;
+
+  /// No description provided for @adminPromote.
+  ///
+  /// In en, this message translates to:
+  /// **'Make government reviewer'**
+  String get adminPromote;
+
+  /// No description provided for @adminDemote.
+  ///
+  /// In en, this message translates to:
+  /// **'Make user'**
+  String get adminDemote;
+
+  /// No description provided for @adminDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Role updated.'**
+  String get adminDone;
+
+  /// No description provided for @adminErrNotAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Only admins can manage accounts.'**
+  String get adminErrNotAdmin;
 }
 
 class _AppLocalizationsDelegate

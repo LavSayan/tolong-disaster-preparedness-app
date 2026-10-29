@@ -6,8 +6,10 @@ import '../features/prepare/domain/checklist.dart';
 import '../features/readiness/domain/readiness.dart';
 import '../features/readiness/domain/recommendations.dart';
 import '../features/safe_places/data/route_service.dart';
+import '../features/safe_places/data/shelter_review_repository.dart';
 import '../features/safe_places/domain/evacuation_center.dart';
 import '../features/safe_places/domain/hazard.dart';
+import '../features/safe_places/domain/shelter_submission.dart';
 import '../features/supplies/domain/supplies.dart';
 import 'generated/app_localizations.dart';
 
@@ -147,6 +149,37 @@ extension AppLocalizationsX on AppLocalizations {
         AuthErrorCode.rateLimited => errRateLimited,
         AuthErrorCode.weakPassword => errWeakPassword,
         AuthErrorCode.unknown => errUnknown,
+      };
+
+  String submissionError(SubmissionErrorCode c) => switch (c) {
+        SubmissionErrorCode.notConfigured => errNotConfigured,
+        SubmissionErrorCode.notAuthenticated => subErrNotAuthenticated,
+        SubmissionErrorCode.outsideQc => subErrOutsideQc,
+        SubmissionErrorCode.unknownBarangay => subErrUnknownBarangay,
+        SubmissionErrorCode.duplicateShelter => subErrDuplicateShelter,
+        SubmissionErrorCode.tooManyPending => subErrTooManyPending,
+        SubmissionErrorCode.invalidFields => subErrInvalidFields,
+        SubmissionErrorCode.network => errNetwork,
+        SubmissionErrorCode.unknown => errUnknown,
+      };
+
+  String submissionStatus(SubmissionStatus s) => switch (s) {
+        SubmissionStatus.pending => subStatusPending,
+        SubmissionStatus.approved => subStatusApproved,
+        SubmissionStatus.rejected => subStatusRejected,
+      };
+
+  String roleName(AppUserRole? r) => switch (r) {
+        AppUserRole.government => roleGovernment,
+        AppUserRole.admin => roleAdmin,
+        AppUserRole.user || null => roleUser,
+      };
+
+  String adminError(AdminErrorCode c) => switch (c) {
+        AdminErrorCode.notConfigured => errNotConfigured,
+        AdminErrorCode.notAdmin => adminErrNotAdmin,
+        AdminErrorCode.network => errNetwork,
+        AdminErrorCode.unknown => errUnknown,
       };
 
   String hazardGroupName(HazardGroup g) => switch (g) {
