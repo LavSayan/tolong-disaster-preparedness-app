@@ -83,7 +83,7 @@ def main() -> None:
         })
 
     # Synthetic edge rows: partial absence and total absence never occur in the
-    # shipped asset (all 148 points saw flood data), but the formula must agree
+    # shipped asset (all 153 points saw flood data), but the formula must agree
     # on them anyway — both sides read from this file.
     synthetic = [
         {"id": "syn-none", "bands": {k: None for k in BAND_KEYS}, "expect": None},

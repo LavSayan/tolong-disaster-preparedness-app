@@ -182,7 +182,7 @@ features, pairwise dataset, training, export and evaluation — is specified in
 |---|---|---|
 | QC boundary | OSM relation for Quezon City (ODbL), or HDX "Philippines – Subnational Administrative Boundaries" (NAMRIA/PSA via OCHA, files dated Nov 2023, levels incl. barangay) | HDX licence **not confirmed**; HDX itself calls these indicative, not official. Use OSM for display, cross-check with HDX |
 | Barangay list (142) | PSA PSGC | To import; replaces the free-text field |
-| Evacuation centers | QC government evacuation center pages and QC DRRMO earthquake evacuation guide; a UP Diliman study found **no centralized, up-to-date database** for Metro Manila | **No machine-readable official list found.** Email **qcdrrmo@quezoncity.gov.ph** for a CSV. Until then: a small dataset labelled *development data, not verified* |
+| Evacuation centers | QC government evacuation center pages and QC DRRMO earthquake evacuation guide; a UP Diliman study found **no centralized, up-to-date database** for Metro Manila | **No machine-readable official list found.** Email **qcdrrmo@quezoncity.gov.ph** for a CSV. For now: 5 designated centres from the QC Government / ProjectLIGTAS list (`assets/data/evacuation_centers.json`), coordinates resolved from OpenStreetMap |
 | Flood hazard, landslide, storm surge, debris flow | UP NOAH hazard maps (5-100-year rainfall scenarios, shapefiles; QC map validated in 2022) | **Downloaded, clipped to QC and bundled** as ``datasets/qc_flood.pmtiles`` (see 4a). **Reuse licence still not stated** - ask UP Resilience Institute before distributing |
 
 ## 6. Costs and risks

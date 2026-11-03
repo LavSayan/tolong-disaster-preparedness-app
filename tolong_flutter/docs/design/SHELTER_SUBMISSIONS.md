@@ -9,7 +9,7 @@ centre list. This feature lets the community *grow* that list safely: a signed-i
 suggest a shelter, and a government reviewer confirms or rejects it before it appears in the
 ranked list. The ranking engine is untouched — an approved shelter is simply *measured* by
 the same pipeline (exposure from hazard bands at its coordinates, travel time from routes,
-wheelchair accessibility) and scored with the same global weights (30 / 58.19 / 11.81).
+wheelchair accessibility) and scored with the same global weights (37.19 / 50.91 / 11.90).
 Weights are **never** retrained per shelter; they are a single global policy.
 
 ## Roles
@@ -77,7 +77,10 @@ everything through the `review_submission` RPC and the `is_government()` select 
 
 Routes: `/submit-shelter` (authenticated), `/my-submissions` (authenticated),
 `/review-shelters` (reviewer), `/admin` (admin). `redirectFor` fails closed: an unverified
-role is treated as no privilege, so deep links into review/admin land on `/home`.
+role is treated as no privilege, so deep links into review/admin land on `/home`. A guest
+tapping "Add a shelter" is not redirected (guests cannot reach the public login screens from
+inside the app) — the tile shows an in-place "sign in to submit" message with a Log in action
+that runs the leave-guest flow.
 
 ## Honesty constraints (unchanged)
 

@@ -33,6 +33,24 @@
     "landslide": 0,
     "storm_surge": null
    },
+   "id": "batasan-hills-nhs",
+   "origin": "asset",
+   "pythonExposure": 0.0,
+   "pythonFloodComposite": 0.0,
+   "pythonLandslide": 0.0
+  },
+  {
+   "assetExposure": 0.0,
+   "assetFloodComposite": 0.0,
+   "assetLandslide": 0.0,
+   "bands": {
+    "debris_flow": 0,
+    "flood_100yr": 0,
+    "flood_25yr": 0,
+    "flood_5yr": 0,
+    "landslide": 0,
+    "storm_surge": null
+   },
    "id": "bgy-000",
    "origin": "asset",
    "pythonExposure": 0.0,
@@ -127,24 +145,6 @@
    "origin": "asset",
    "pythonExposure": 0.333333333,
    "pythonFloodComposite": 0.333333333,
-   "pythonLandslide": 0.0
-  },
-  {
-   "assetExposure": 0.166666667,
-   "assetFloodComposite": 0.166666667,
-   "assetLandslide": 0.0,
-   "bands": {
-    "debris_flow": 0,
-    "flood_100yr": 0,
-    "flood_25yr": 1,
-    "flood_5yr": 1,
-    "landslide": 0,
-    "storm_surge": null
-   },
-   "id": "bgy-006",
-   "origin": "asset",
-   "pythonExposure": 0.166666667,
-   "pythonFloodComposite": 0.166666667,
    "pythonLandslide": 0.0
   },
   {

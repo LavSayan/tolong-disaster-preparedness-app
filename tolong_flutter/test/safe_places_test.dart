@@ -13,7 +13,7 @@ Future<void> openSafePlaces(WidgetTester tester, {FakeMap? map, LocationService?
   await tester.tap(find.text('Safe places').last);
   await tester.pumpAndSettle();
   // The map card sits below the hero; bring all four map controls into view like a user would.
-  await scrollTo(tester, find.text('DEMO DATA · CENTERS NOT VERIFIED'));
+  await scrollTo(tester, find.text('Search barangay'));
 }
 
 void main() {
@@ -38,45 +38,48 @@ void main() {
       expect(qcApproxBounds.contains(const GeoPoint(14.5547, 121.0244)), isFalse);
     });
 
-    test('the bundled dataset is marked unverified and lies inside the QC area', () {
+    test('the bundled dataset is verified QC data and lies inside the QC area', () {
       final centers =
           EvacuationCenterRepository.parse(File(EvacuationCenterRepository.assetPath).readAsStringSync());
-      expect(centers, isNotEmpty);
+      expect(centers, hasLength(5));
       for (final c in centers) {
-        expect(c.verified, isFalse, reason: c.id);
+        expect(c.verified, isTrue, reason: c.id);
         expect(qcApproxBounds.contains(c.location), isTrue, reason: c.id);
-        expect(c.capacity, isNull);
+        expect(c.capacity, isNotNull, reason: c.id);
       }
+      expect(centers.map((c) => c.source).toSet(),
+          ['Quezon City Government / ProjectLIGTAS Disaster Management Platform']);
     });
   });
 
-  testWidgets('shows the map with demo labels, controls, and the center list', (tester) async {
+  testWidgets('shows the map with real center markers, controls, and the center list', (tester) async {
     final map = FakeMap();
     await openSafePlaces(tester, map: map);
 
-    expect(find.text('DEMO DATA · CENTERS NOT VERIFIED'), findsOneWidget);
-    expect(find.byKey(const ValueKey('marker-demo-01')), findsOneWidget);
+    expect(find.text('DEMO DATA · CENTERS NOT VERIFIED'), findsNothing);
+    expect(find.byKey(const ValueKey('marker-qc-hall-grounds')), findsOneWidget);
     await tester.tap(find.byTooltip('Zoom in'));
     await tester.tap(find.byTooltip('Show all of Quezon City'));
     await tester.pump();
     expect(map.calls, containsAll(['zoomIn', 'bounds']));
 
     await scrollTo(tester, find.text('EVACUATION CENTERS'));
-    expect(find.textContaining('not real evacuation centers'), findsOneWidget);
+    expect(find.textContaining('not real evacuation centers'), findsNothing);
   });
 
-  testWidgets('tapping a marker selects the center, moves the camera, and shows unverified fields', (tester) async {
+  testWidgets('tapping a marker selects the center, moves the camera, and shows the facts', (tester) async {
     final map = FakeMap();
     await openSafePlaces(tester, map: map);
 
-    await tester.tap(find.byKey(const ValueKey('marker-demo-02')));
+    await tester.tap(find.byKey(const ValueKey('marker-cubao-araneta-coliseum')));
     await tester.pumpAndSettle();
-    expect(map.calls.last, 'focus 14.6869,121.1003');
+    expect(map.calls.last, 'focus 14.620716,121.053356');
 
     await scrollTo(tester, find.text('SELECTED CENTER'));
-    expect(find.text('NOT REAL DATA'), findsOneWidget);
-    expect(find.text('Not verified'), findsWidgets);
-    expect(find.text('TolongApp development sample'), findsOneWidget);
+    expect(find.text('NOT REAL DATA'), findsNothing);
+    expect(find.text('Not verified'), findsNothing);
+    expect(find.textContaining('Quezon City Government / ProjectLIGTAS'), findsOneWidget);
+    expect(find.textContaining('Limited data'), findsOneWidget);
 
     // Without a route service the app says so instead of pretending to route.
     await scrollTo(tester, find.text('Show route'));
@@ -85,15 +88,15 @@ void main() {
 
   testWidgets('finding the user inside QC picks the nearest center with a straight-line distance', (tester) async {
     final map = FakeMap();
-    await openSafePlaces(tester, map: map, location: FakeLocationService(const Located(GeoPoint(14.7270, 121.0425))));
+    await openSafePlaces(tester, map: map, location: FakeLocationService(const Located(GeoPoint(14.647, 121.05))));
 
     await tester.tap(find.byTooltip('Show my location'));
     await tester.pumpAndSettle();
 
     expect(find.text('user-dot'), findsOneWidget);
-    expect(map.calls.last, 'focus 14.727,121.0425');
+    expect(map.calls.last, 'focus 14.647,121.05');
     await scrollTo(tester, find.text('NEAREST CENTER'));
-    expect(find.text('Demo center 3'), findsWidgets);
+    expect(find.text('Quezon City Hall Grounds'), findsWidgets);
     expect(find.textContaining('straight line (not a walking route)'), findsOneWidget);
   });
 
@@ -158,6 +161,6 @@ void main() {
     expect(find.text('Travel time'), findsOneWidget);
     expect(find.text('Not part of the score in walking mode'), findsOneWidget);
     expect(find.text('No hazard reading at this point — treated as neutral'), findsNothing,
-        reason: 'the selected demo center sits exactly on an asset site');
+        reason: 'the selected center sits exactly on an asset site');
   });
 }

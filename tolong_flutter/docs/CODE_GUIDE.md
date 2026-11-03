@@ -420,7 +420,8 @@ A recurring, deliberate theme — an app about emergencies must not fake capabil
 - **Uncited guidebook content is never rendered.** The guidebook feature shipped 0 cited
   sections and was removed entirely on 2026-10-25 rather than showing "coming soon" stubs;
   it returns only with reviewed, sourced material.
-- **`evacuation_centers_dev.json`** carries 6 centres all flagged `verified: false`.
+- **`evacuation_centers.json`** carries 5 designated centres, all `verified: true`, sourced from
+  the Quezon City Government / ProjectLIGTAS list with coordinates resolved from OpenStreetMap.
 - **Demo tools never leak.** `DEMO_TOOLS` builds wrap location/routes/weights with simulators
   and tag every simulated surface; without the flag the demo code path does not exist
   ([`design/DEMO_TOOLS.md`](design/DEMO_TOOLS.md)).
@@ -505,8 +506,8 @@ test/                       19 files, 245 tests — inventory in STATUS.md;
 android/                    app manifest, Gradle, launcher icon, splash
 assets/
 ├── data/                   qc_boundary.json (306 pts), qc_barangays.json (142, PSGC
-│                           cross-checked), evacuation_centers_dev.json (6, unverified),
-│                           hazard_bands.json (148 sites), ranking_weights.json (trained v1)
+│                           cross-checked), evacuation_centers.json (5, verified),
+│                           hazard_bands.json (153 sites), ranking_weights.json (trained v1)
 ├── fonts/                  DM Sans + Fraunces variable fonts (OFL)
 └── (the guidebook asset was removed with the feature on 2026-10-25)
 datasets/                   bundled PMTiles, 77 MB (qc_base + qc_flood) — design/MAP_OPTIONS.md §4a
@@ -606,7 +607,7 @@ docs/                       SETUP, CODE_GUIDE, STATUS, CHANGELOG; design/ = MAP_
 | Hazard picker sheet + legend card | `lib/features/safe_places/presentation/safe_places_screen.dart` | `_pickHazard()`, `_HazardLegendCard` |
 | The bundled hazard and basemap data itself | `datasets/qc_flood.pmtiles`, `qc_base.pmtiles` | 77 MB, committed on purpose |
 | Map tile style | `lib/features/safe_places/data/map_style.dart` | `BasemapStyle` |
-| Evacuation centres | `assets/data/evacuation_centers_dev.json` | all 6 are `verified: false` |
+| Evacuation centres | `assets/data/evacuation_centers.json` | 5, `verified: true` (QC Government / ProjectLIGTAS) |
 | QC boundary / barangay list | `assets/data/qc_boundary.json`, `qc_barangays.json` | |
 | Barangay names/codes vs the PSA list | `tools/psgc_crosscheck/crosscheck.py` + `test/fixtures/psgc_qc_official.json` | run `--check` after any data edit |
 | Point-in-polygon test | `lib/features/safe_places/domain/qc_area.dart` :15 `contains()` |

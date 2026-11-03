@@ -76,6 +76,8 @@ The old placeholder surfaces were removed rather than hidden (2026-10-25):
 - Dead l10n (`comingSoon`, `soon*`, `alertDemo*`, all guide/notification keys) and the
   misleading `showSoon` helper name (now `showMessage`).
 
-Kept on purpose: the `DEMO DATA · CENTERS NOT VERIFIED` banner, `NOT REAL DATA` tags and the
-sample-centre sentences — the six centres are genuinely unverified sample data, and the app
-says so everywhere they appear.
+Note: the bundled evacuation centres are now real (QC Government / ProjectLIGTAS, `verified:
+true`), so the `DEMO DATA · CENTERS NOT VERIFIED` banner and `NOT REAL DATA` tags no longer
+appear for them. Those honesty labels remain wired and will reappear automatically only if a
+centre is later marked `verified: false`. The demo *tools* (simulated location, advisory,
+routes, weights) are unchanged and still isolated behind the `DEMO_TOOLS` build flag.

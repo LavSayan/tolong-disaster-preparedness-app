@@ -11,7 +11,7 @@ task, features, dataset, training, export, evaluation and its honesty constraint
 | Scoring engine (Dart, hand-set default weights) | **Done 2026-10-25** — `features/safe_places/domain/ranking.dart`, integrated in Safe Places |
 | Feature parity fixture (Dart ≡ Python) | **Done** — `tools/ranking/check_parity.py` + `exposure_parity.json`, exact to 1e-9 |
 | Pairwise dataset (hand-authored labels) | **Done** — `tools/ranking/data/pairs.jsonl`, 119 pairs, gates green |
-| Trained weights (`assets/data/ranking_weights.json`) | **Done** — 30 / 58.1894 / 11.8106 (CV ties the baseline; provenance in the file) |
+| Trained weights (`assets/data/ranking_weights.json`) | **Done** — 37.1932 / 50.9094 / 11.8974 (CV 1.0000, ties the corrected baseline; provenance in the file) |
 | Evaluation report (§7 tables) | **Done** — results pasted at the end of §7 (run 2026-10-25) |
 
 **Phase order:** the engine works end to end on built-in default weights (45 / 35 / 20) before
@@ -112,9 +112,17 @@ once and stored on the pair so the fit never silently drifts from a recompute.
 
 ### Candidate pool
 
-The 142 barangay centroids (`assets/data/qc_barangays.json`) + seeded jitter + the 6 demo centres.
+The 142 barangay centroids (`assets/data/qc_barangays.json`) + seeded jitter + the 5 bundled
+centres (`assets/data/evacuation_centers.json`) + the 6 demo-centre seeds kept only for the ML
+pipeline (`tools/ranking/data/demo_candidate_sites.json`).
 Pairs are chosen to be **non-trivial**: deliberate trade-offs (nearer but far more exposed),
 otherwise every label is obvious and the fit is meaningless.
+
+Pairs where **both** legs exceed the 3600 s travel cap are labelled by exposure (the safer site
+wins): past the cap `x_travel` floors to 0 on both sides (§3), so travel cannot decide and the
+`over60` coverage bucket is satisfied by these exposure-decided pairs. A 2026-11-02 correction
+relabelled nine such pairs that had been written as travel decisions; that inconsistency had
+capped CV accuracy at 0.9250.
 
 ### Coverage requirements (enforced by `tools/ranking/train.py`, fails the fit if unmet)
 
@@ -206,25 +214,25 @@ Produced by `test/evaluation/ranking_evaluation_test.dart` (runs under
 | ORS calls per re-rank | ≤ 3 (asserted) |
 | Parity fixture Dart ≡ Python | exact, to 1e-9 |
 
-### Results (run 2026-10-25, `flutter test --concurrency=1`, analyze clean, 243 tests total)
+### Results (re-run 2026-11-02 after the label correction, `flutter test --concurrency=1`, analyze clean, full suite passing)
 
 **Golden orderings** — `test/fixtures/ranking_golden.json`, 12 sets; both weight sets reproduce
 every ordering, the weakest chain margin at the two sets' per-factor minima is quoted per set:
 
 | set | baseline ok | trained ok | weakest margin |
 |---|---|---|---|
-| band3 vs band0, same walk | yes | yes | 22.50 |
-| safer wins even at 10 more minutes | yes | yes | 6.17 |
-| inside the league, the shorter walk wins | yes | yes | 3.71 |
-| verified access beats failed access at level features | yes | yes | 10.31 |
-| verified beats neutral gap | yes | yes | 5.91 |
-| marginally closer verified facility wins | yes | yes | 6.00 |
-| past the travel cap only exposure is signed | yes | yes | 12.90 |
-| equal travel and access: floor separates | yes | yes | 7.50 |
+| band3 vs band0, same walk | yes | yes | 27.89 |
+| safer wins even at 10 more minutes | yes | yes | 9.04 |
+| inside the league, the shorter walk wins | yes | yes | 3.85 |
+| verified access beats failed access at level features | yes | yes | 10.04 |
+| verified beats neutral gap | yes | yes | 5.95 |
+| marginally closer verified facility wins | yes | yes | 6.05 |
+| past the travel cap only exposure is signed | yes | yes | 15.99 |
+| equal travel and access: floor separates | yes | yes | 9.30 |
 | half the travel time wins inside band 0 | yes | yes | 17.50 |
-| verified access worth 10 extra minutes | yes | yes | 5.98 |
-| worst corner loses to anything moderate | yes | yes | 22.41 |
-| ten per cent exposure edge at everything else level | yes | yes | 0.90 |
+| verified access worth 10 extra minutes | yes | yes | 6.06 |
+| worst corner loses to anything moderate | yes | yes | 26.40 |
+| ten per cent exposure edge at everything else level | yes | yes | 1.12 |
 
 **Kendall's τ, full ranking vs one-factor ablations** (148-site asset universe, synthetic
 travel/accessibility on fixed seeds; caution for reading it: this universe's travel draw is
@@ -233,9 +241,9 @@ that construction, not a model property):
 
 | drop | baseline τ | trained τ |
 |---|---|---|
-| exposure | 0.4322 | 0.4225 |
+| exposure | 0.4322 | 0.3381 |
 | travel | 1.0000 | 1.0000 |
-| accessibility | 0.6797 | 0.6895 |
+| accessibility | 0.6797 | 0.7739 |
 
 **Monotonicity under ablations** — violations 0/200 per ablation (exposure / travel /
 accessibility), sampled across non-negative weight space with the ablated factor at 0.
@@ -244,13 +252,17 @@ accessibility), sampled across non-negative weight space with the ablated factor
 
 | metric | trained v1 | hand-set baseline |
 |---|---|---|
-| cvPairwiseAccuracy | 0.9250 | 0.9250 |
+| cvPairwiseAccuracy | 1.0000 | 1.0000 |
 | chosen lambda | 0.0 | n/a |
 
-The trained fit ties the baseline: shipped weights are 30.0 / 58.1894 / 11.8106 with the tie in
-the shipped `fit` record. The disagreements inside these folds are the deliberate trade-offs the
-league rules contain (§4 labels); the report says "tie", not a win. A tie still ships full
-trained provenance because the fold numbers and dataset sha sit in the asset.
+The 2026-11-02 label correction: nine R2 pairs beyond the travel cap had been labelled as
+travel decisions even though both legs exceed 3600 s, where `x_travel` floors to 0 on both sides
+(§3). They now follow §3 — the safer site wins with `decidingFactor=exposure` — which removes the
+0.9250 ceiling those unreachable pairs imposed. The refit ties the hand-set baseline at 1.0000:
+shipped weights are 37.1932 / 50.9094 / 11.8974 with the tie in the shipped `fit` record. A tie
+still ships full trained provenance because the fold numbers and dataset sha sit in the asset.
+(CV 1.0000 on 119 expert-authored pairs is expected for a corrected, self-consistent label set;
+it is not a claim about real-world generalization — see §10.)
 
 **Explanation audit** — contributions decompose exactly (sum == score to 1e-9) for all 12 golden
 sets under both weight sets; zero-weight factors never appear as a reason.
@@ -263,10 +275,10 @@ occurrences of any forbidden phrase.
 | metric | value |
 |---|---|
 | `hazard_bands.json` size | 82 240 bytes (gate ≤ 5 MB) |
-| cold parse in an isolate | ~14 ms |
-| `exposureAt` × 10 000 points | ~93 ms (9.4 µs/point) |
-| full ranking, N=6 | ~175 µs |
-| full ranking, N=1000 | ~1.4 ms |
+| cold parse in an isolate | ~13 ms |
+| `exposureAt` × 10 000 | ~96 ms (9.7 µs/point) |
+| full ranking, N=6 | ~199 µs |
+| full ranking, N=1000 | ~1.2 ms |
 | ORS calls per re-rank (engine run) | 0 (straight-line estimates; a route request happens only for the SELECTED centre, ≤ 1 per re-rank — budget ≤ 3 holds) |
 | parity fixture Dart ≡ Python | `exposure_parity.json`: exact to 1e-9, sha pinned |
 

@@ -1,7 +1,7 @@
 {
-  "dataset": "TolongApp development sample",
+  "dataset": "ML candidate seed (not bundled app data)",
   "verified": false,
-  "note": "Sample points for building the app. These are NOT real evacuation centers. Replace with the official list from QC DRRMO (qcdrrmo@quezoncity.gov.ph) before any real use.",
+  "note": "The six demo centres are kept only as a candidate seed for the ranking ML pipeline (hazard_bands.json sampling, make_pairs.py, exposure parity). They are not loaded by the app, whose centre list is assets/data/evacuation_centers.json.",
   "centers": [
     { "id": "demo-01", "name": "Demo center 1", "facilityType": "school", "lat": 14.6537, "lng": 121.0480 },
     { "id": "demo-02", "name": "Demo center 2", "facilityType": "coveredCourt", "lat": 14.6869, "lng": 121.1003 },

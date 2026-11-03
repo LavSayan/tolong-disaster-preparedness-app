@@ -1,0 +1,62 @@
+{
+  "dataset": "Quezon City Government / ProjectLIGTAS Disaster Management Platform",
+  "verified": true,
+  "note": "Five designated evacuation sites. Coordinates resolved from OpenStreetMap; capacity, status and facility type transcribed from the Quezon City Government / ProjectLIGTAS list. Follow QC DRRMO for live status before operational use.",
+  "centers": [
+    {
+      "id": "qc-hall-grounds",
+      "name": "Quezon City Hall Grounds",
+      "facilityType": "other",
+      "barangay": "Central",
+      "lat": 14.646377,
+      "lng": 121.050007,
+      "capacity": 2000,
+      "status": "Open / Designated Evacuation Site",
+      "lastVerified": "2026-11-03"
+    },
+    {
+      "id": "cubao-araneta-coliseum",
+      "name": "Cubao Araneta Coliseum Area",
+      "facilityType": "coveredCourt",
+      "barangay": "Socorro",
+      "lat": 14.620716,
+      "lng": 121.053356,
+      "capacity": 1500,
+      "status": "Open / Designated Evacuation Site",
+      "lastVerified": "2026-11-03"
+    },
+    {
+      "id": "batasan-hills-nhs",
+      "name": "Batasan Hills National High School",
+      "facilityType": "school",
+      "barangay": "Batasan Hills",
+      "lat": 14.689003,
+      "lng": 121.094894,
+      "capacity": 800,
+      "status": "Open / Designated Evacuation Site",
+      "lastVerified": "2026-11-03"
+    },
+    {
+      "id": "commonwealth-es",
+      "name": "Commonwealth Elementary School",
+      "facilityType": "school",
+      "barangay": "Commonwealth",
+      "lat": 14.697665,
+      "lng": 121.088221,
+      "capacity": 600,
+      "status": "Open / Designated Evacuation Site",
+      "lastVerified": "2026-11-03"
+    },
+    {
+      "id": "san-bartolome-hs",
+      "name": "San Bartolome High School",
+      "facilityType": "school",
+      "barangay": "San Bartolome",
+      "lat": 14.700065,
+      "lng": 121.030770,
+      "capacity": 600,
+      "status": "Open / Designated Evacuation Site",
+      "lastVerified": "2026-11-03"
+    }
+  ]
+}

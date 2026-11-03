@@ -13,10 +13,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Offline readiness'), findsOneWidget);
-    // Guest: street map not downloaded, area data ready, sample centres partial, household
+    // Guest: street map not downloaded, area data ready, centres ready, household
     // ready, backup off — and the guidebook/alerts/Tol placeholder rows are gone.
-    expect(find.text('2 of 5 ready offline'), findsOneWidget);
-    expect(find.textContaining('Development sample only'), findsOneWidget);
+    expect(find.text('3 of 5 ready offline'), findsOneWidget);
+    expect(find.textContaining('Quezon City Government / ProjectLIGTAS'), findsOneWidget);
     expect(find.textContaining('Hazard alerts'), findsNothing);
     expect(find.textContaining('Disaster guidebook'), findsNothing);
     await scrollTo(tester, find.textContaining('data stays on this phone and is not backed up'));

@@ -41,7 +41,7 @@ void main() {
 
     await tester.tap(find.text('Safe places'));
     await tester.pumpAndSettle();
-    expect(find.text('DEMO DATA · CENTERS NOT VERIFIED'), findsOneWidget);
+    expect(find.textContaining('Explore the Quezon City map'), findsOneWidget);
   });
 
   testWidgets('guest mode is remembered across launches', (tester) async {

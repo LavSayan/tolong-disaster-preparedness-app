@@ -8,6 +8,7 @@ import 'package:tolong_flutter/features/safe_places/data/validated_shelter_repos
 import 'package:tolong_flutter/features/safe_places/domain/evacuation_center.dart';
 import 'package:tolong_flutter/features/safe_places/domain/qc_area.dart';
 import 'package:tolong_flutter/features/safe_places/domain/shelter_submission.dart';
+import 'package:tolong_flutter/features/safe_places/presentation/submit_shelter_screen.dart';
 
 import 'test_helpers.dart';
 
@@ -220,6 +221,26 @@ void main() {
     expect(submissions.submitted.first.name, 'Sto. Domingo ES');
     expect(submissions.submitted.first.location.lat, closeTo(14.7000, 1e-4));
     await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('a guest tapping Add a shelter is told to sign in and never sees the form', (tester) async {
+    await pumpApp(tester, prefs: {'language': 'en', 'guest_mode': true});
+
+    await tester.tap(find.text('Safe places').last);
+    await tester.pumpAndSettle();
+    await scrollTo(tester, find.text('Add a shelter'));
+    await tester.tap(find.text('Add a shelter'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Sign in to send a shelter for review.'), findsOneWidget);
+    expect(find.byType(SubmitShelterScreen), findsNothing);
+
+    // The action offers the leave-guest path: a confirm dialog appears.
+    await tester.tap(find.text('Log in'));
+    await tester.pumpAndSettle();
+    expect(find.byType(AlertDialog), findsOneWidget);
+    await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
   });
 }

@@ -19,7 +19,7 @@ import 'package:tolong_flutter/features/safe_places/domain/ranking.dart';
 /// shipped assets, never hoped. Runs under `flutter test --concurrency=1`.
 ///
 /// The candidate universe for the ablation reports is the real asset site set
-/// (148 points), with synthetic travel and accessibility draws (Random(42),
+/// (153 points), with synthetic travel and accessibility draws (Random(42),
 /// documented ranges) — the label set is §4's expert pairs, so evaluation uses a
 /// different universe than training on purpose.
 void main() {

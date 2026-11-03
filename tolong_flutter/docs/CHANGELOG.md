@@ -331,9 +331,11 @@ Changes:
   synthetic absence rows included); `train.py` fits Bradley-Terry logistic weights with SLSQP
   (sums to exactly 100, exposure floored at 30, 4-decimal rounding with exact-sum repair,
   lambda by 5-fold out-of-fold log loss, byte-deterministic re-runs) and ships
-  `assets/data/ranking_weights.json` (30.0 / 58.1894 / 11.8106 with the training metrics in the
-  file). The trained fit **ties** the hand-set baseline's CV accuracy (0.9250), so the shipped
-  file keeps full provenance about the tie — documented rather than hidden.
+  `assets/data/ranking_weights.json` (37.1932 / 50.9094 / 11.8974 with the training metrics in the
+  file). Nine over-cap pairs originally labelled as travel decisions were corrected to §3 exposure
+  decisions (travel floors to 0 past 3600 s); after the correction the fit reaches CV accuracy
+  1.0000 and **ties** the hand-set baseline. The shipped file keeps full provenance about the tie
+  and the dataset sha — documented rather than hidden.
 - **Evaluation (test/evaluation/ranking_evaluation_test.dart + test/fixtures/ranking_golden.json).**
   12 golden candidate sets pin orderings under both weight sets; ablation tables (Kendall's τ)
   over the 148-site universe; monotonicity violations 0/200 per ablation for any non-negative
@@ -412,3 +414,26 @@ attribution) — the six centres are genuinely unverified, and the app says so e
 3. ~~Feature-folder move~~: confirmed and done in Phase 2.
 4. Initialise git (`git init`) so every change can be reviewed and reverted. Done — the repo is now git-managed.
 5. Phase 3 needs a decision on the map tile source and routing service *(superseded: PMTiles chosen for the hazard overlay — see §4 — and `tol-route` deployment deferred by the team)*.
+
+## 10. Real evacuation centres and centre-card declutter (2026-11-03)
+
+- **Replaced the 6 demo centres with 5 designated sites** from the Quezon City Government /
+  ProjectLIGTAS list, `verified: true`, `lastVerified: 2026-11-03`. Coordinates resolved from
+  OpenStreetMap; capacity/status transcribed from the source list. The bundled asset is now
+  `assets/data/evacuation_centers.json`.
+- Centres: Quezon City Hall Grounds (Central), Cubao Araneta Coliseum Area (Socorro), Batasan
+  Hills National High School, Commonwealth Elementary School, San Bartolome High School.
+- **Centre-card declutter (Option B):** removed the Address and Facilities rows; Barangay,
+  Accessibility, Capacity and Status show only when present; Source and Last verified are merged
+  into one provenance line; a single "Limited data" note appears when any shown field is missing.
+- **Hazard/ML assets regenerated:** `hazard_bands.json` now has 153 sites (142 barangays + 5
+  centres + 6 demo-centre seeds), so the real centres get exact exposure samples. The six demo
+  entries moved to `tools/ranking/data/demo_candidate_sites.json` and remain only as an ML
+  candidate seed — they are no longer bundled or shown in the app. `exposure_parity.json` and
+  `seismic_context.json` were regenerated to match.
+- The demo *tools* (simulated location/advisory/routes/weights, `DEMO_TOOLS` build) are unchanged.
+
+| Check | Result |
+|---|---|
+| `flutter analyze` | No issues |
+| `flutter test --concurrency=1` | all affected suites pass |

@@ -37,7 +37,7 @@ The suite covers:
 | `widget_test.dart` | Welcome without backend, honest login error, guest mode, every tab, Filipino switch |
 | `onboarding_test.dart` | Onboarding to dashboard, Filipino chosen during onboarding |
 | `phase2_flows_test.dart` | Checklist, custom items, supplies → Home coverage, settings and reduced motion, account deletion |
-| `safe_places_test.dart` | Map with demo labels, marker taps, nearest center, outside-QC, location denied/blocked/off |
+| `safe_places_test.dart` | Map with real centre markers, marker taps, nearest center, outside-QC, location denied/blocked/off |
 | `hazard_layer_test.dart` | Hazard grouping, numeric per-band filters, draw-state classification, honest legend wording |
 | `hazard_archive_fields_test.dart` | Severity codes pinned to values decoded from the bundled PMTiles archive |
 | `qc_area_test.dart` | QC boundary, 142 barangays, barangay search, offline map download/delete |
@@ -94,8 +94,8 @@ that cheap: `test_helpers.dart` overrides `mapViewBuilderProvider` with `FakeMap
   It can't be changed after publishing.
 - Release builds are signed with the **debug key**. Create an upload keystore and a
   `key.properties` (kept out of git) before distributing.
-- Evacuation centers are **demo data**, clearly labelled; hazard alerts have no data source. All
-  are shown honestly in the app.
+- Evacuation centers come from the **Quezon City Government / ProjectLIGTAS** list (coordinates
+  from OpenStreetMap); hazard alerts still have no live data source. Both are shown honestly.
 - Phase 6 hazard-aware A\* routing was deferred by the team; the ranking part of the
   shelter-ranking spec ([`design/SHELTER_RANKING_ML.md`](design/SHELTER_RANKING_ML.md)) is
   **implemented (2026-10-25)**: ranked safe-places list with trained weights, gap disclosures and
@@ -111,8 +111,8 @@ that cheap: `test_helpers.dart` overrides `mapViewBuilderProvider` with `FakeMap
 - **Guidebook is absent, not stubbed** — it was removed on 2026-10-25 because it shipped zero
   cited sections. It returns only with reviewed, sourced content (NDRRMC, QC DRRMO, PAGASA,
   PHIVOLCS, Red Cross); the pre-cleanup code is in git history.
-- **Evacuation centres are unverified demo data** (6 records, `verified: false`); real QC DRRMO
-  data not yet obtained.
+- **Evacuation centres are bundled and verified** (5 records from the QC Government / ProjectLIGTAS
+  list, coordinates from OpenStreetMap); a live, machine-readable QC DRRMO feed is not yet obtained.
 - **Hazard-aware A\*** is deferred and blocked on a QC road graph; **hazard alerts** have no data
   source yet, so nothing is cached for offline use.
 - **Shelter ranking is implemented but ranked by expert-labelled policy, not usage data**: the
@@ -163,6 +163,6 @@ that cheap: `test_helpers.dart` overrides `mapViewBuilderProvider` with `FakeMap
    (AI key) when ready. Then seed the first admin (see `SHELTER_SUBMISSIONS.md`).
 2. Run the SETUP manual checklist on a real Android phone, including the hazard overlay rows
    (69–71); confirm the archive extraction path works with MapLibre Native.
-3. Replace the six demo evacuation centres with QC DRRMO data when available.
+3. Replace the five bundled evacuation centres with a live QC DRRMO feed when one is available.
 4. Choose the final `applicationId` and create a release keystore.
 5. Review the Filipino translations as a team.

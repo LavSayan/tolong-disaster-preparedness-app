@@ -9,7 +9,7 @@ against the committed copy, so CI (or a quick command) doubles as a drift guard.
 
 | Tool | Consumes | Emits | Status |
 | --- | --- | --- | --- |
-| `extract_bands.py` | `tolong_flutter/datasets/qc_flood.pmtiles`, `assets/data/qc_barangays.json`, `assets/data/evacuation_centers_dev.json` | `tolong_flutter/assets/data/hazard_bands.json` | Phase 0 — done, stdlib-only |
+| `extract_bands.py` | `tolong_flutter/datasets/qc_flood.pmtiles`, `assets/data/qc_barangays.json`, `assets/data/evacuation_centers.json`, `data/demo_candidate_sites.json` | `tolong_flutter/assets/data/hazard_bands.json` | Phase 0 — done, stdlib-only |
 | `seismic_context.py` | `tolong_flutter/datasets/phivolcs_datasets/{2016..2022}/*.csv`, `hazard_bands.json` (site list) | `tools/ranking/data/seismic_context.json` | Phase 0 — done, stdlib-only |
 | `make_pairs.py` | `hazard_bands.json` | `data/pairs.jsonl` (119 expert-labelled pairs, coverage-gated) | Phase 3 — done |
 | `check_parity.py` | `hazard_bands.json`, `extract_bands.py` (formula home) | `data/exposure_parity.json` | Phase 3 — done, stdlib-only |
@@ -77,7 +77,10 @@ python -u tools/ranking/make_pairs.py     # deterministic (Seed 42); coverage ga
 - `travelSec` values are the app's own straight-line estimate (haversine / 1.2 m/s) — the fit
   sees exactly what the runtime computes;
 - coverage gates mirror spec §4 (`>= 25` per deciding factor, flood bands 1-3 present, travel
-  buckets < 10 min / 10-60 min / > 60 min, 100-150 pairs total).
+  buckets < 10 min / 10-60 min / > 60 min, 100-150 pairs total);
+- pairs with **both** legs past the 3600 s travel cap are labelled by exposure (the safer site
+  wins) because `x_travel` floors to 0 on both sides — travel cannot decide there (§3). The
+  `over60` bucket is satisfied by these exposure-decided pairs.
 
 ### `exposure_parity.json` (`check_parity.py`)
 
@@ -107,8 +110,11 @@ the same folds, then writes `assets/data/ranking_weights.json` with dataset sha 
 4-decimal weight rounding with an exact-sum repair step keeps the constraint set intact.
 Determinism: re-running on unchanged inputs byte-reproduces the file (same-day `fittedAt`).
 
-2026-10-25 run: chosen λ 0.0, CV accuracy 0.9250 — **ties** the hand-set baseline; shipped
-weights 30.0 / 58.1894 / 11.8106 with the tie recorded in the fit fields.
+2026-11-02 run (after correcting nine over-cap labels to §3 exposure decisions): chosen λ 0.0,
+CV accuracy 1.0000 — **ties** the hand-set baseline at 1.0000; shipped weights
+37.1932 / 50.9094 / 11.8974 with the tie recorded in the fit fields. The earlier 0.9250 was the
+ceiling imposed by the nine contradictory labels: past 3600 s travel floors to 0 on both sides,
+so no weights could separate them.
 
 ## Dependencies
 

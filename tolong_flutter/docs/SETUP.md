@@ -140,9 +140,9 @@ Note: Supabase's built-in email sender is rate limited on the free tier. For hea
 
 | # | Steps | Expected |
 |---|---|---|
-| 30 | Safe places | Real map of Quezon City, "DEMO DATA" label, OpenFreeMap/OSM attribution, 6 markers |
+| 30 | Safe places | Real map of Quezon City, OpenFreeMap/OSM attribution, 5 verified markers |
 | 31 | Drag/pinch the map | Map moves; page doesn't scroll while dragging on the map |
-| 32 | Tap a marker | Center card shows "NOT REAL DATA" and "Not verified" fields |
+| 32 | Tap a marker | Center card shows the centre name, barangay, capacity, status and source |
 | 33 | Show my location → Deny | Message says you can still browse; no crash |
 | 34 | Show my location → Allow (inside QC) | Blue dot, nearest center selected, straight-line distance shown |
 | 35 | Same, but outside QC (e.g. Makati) | "You seem to be outside Quezon City", no nearest center |

@@ -6,14 +6,14 @@ import 'package:tolong_flutter/features/safe_places/domain/evacuation_center.dar
 
 import 'test_helpers.dart';
 
-const userInQc = GeoPoint(14.7270, 121.0425);
+const userInQc = GeoPoint(14.6470, 121.0500);
 
-// A short made-up line from the user toward demo center 3 (14.7268, 121.0420).
+// A short made-up line from the user toward Quezon City Hall Grounds (14.646377, 121.050007).
 const plan = RoutePlan(
   profile: RouteProfile.walking,
   distanceMeters: 1240,
   durationSeconds: 900,
-  points: [GeoPoint(14.7270, 121.0425), GeoPoint(14.7269, 121.0423), GeoPoint(14.7268, 121.0420)],
+  points: [GeoPoint(14.6470, 121.0500), GeoPoint(14.6467, 121.0500), GeoPoint(14.646377, 121.050007)],
   attribution: 'Routing © openrouteservice.org by HeiGIT',
 );
 
@@ -21,12 +21,12 @@ Future<void> openCenter(
   WidgetTester tester, {
   required FakeLocationService location,
   required FakeRouteService routes,
-  String marker = 'demo-03',
+  String marker = 'qc-hall-grounds',
 }) async {
   await pumpApp(tester, prefs: {'guest_mode': true, 'language': 'en'}, location: location, routes: routes);
   await tester.tap(find.text('Safe places').last);
   await tester.pumpAndSettle();
-  await scrollTo(tester, find.text('DEMO DATA · CENTERS NOT VERIFIED'));
+  await scrollTo(tester, find.text('Search barangay'));
   await tester.tap(find.byKey(ValueKey('marker-$marker')));
   await tester.pumpAndSettle();
   await scrollTo(tester, find.text('Show route'));
@@ -134,13 +134,13 @@ void main() {
     expect(find.text('Navigation'), findsOneWidget);
     expect(find.textContaining('not turn-by-turn'), findsOneWidget);
 
-    location.positions.add(const GeoPoint(14.7300, 121.0425)); // ~330 m north of the line
+    location.positions.add(const GeoPoint(14.6500, 121.0500)); // ~330 m north of the line
     await tester.pumpAndSettle();
     expect(find.textContaining('off the route'), findsOneWidget);
 
-    location.positions.add(const GeoPoint(14.7268, 121.0421)); // at the center
+    location.positions.add(const GeoPoint(14.6464, 121.0500)); // at the center
     await tester.pumpAndSettle();
-    expect(find.text('You\'ve arrived near Demo center 3.'), findsOneWidget);
+    expect(find.text('You\'ve arrived near Quezon City Hall Grounds.'), findsOneWidget);
 
     await tester.tap(find.text('End navigation'));
     await tester.pumpAndSettle();

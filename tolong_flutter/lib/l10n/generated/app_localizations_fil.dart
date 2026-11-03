@@ -378,7 +378,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get centersDemoNote =>
-      'Mga halimbawang punto lang ito para sa paggawa ng app, hindi totoong evacuation center. Sundan ang QC DRRMO at ang inyong barangay para sa opisyal na lokasyon ng evacuation center.';
+      'May mga center sa listahang ito na hindi pa beripikado. Sundan ang QC DRRMO at ang inyong barangay para sa opisyal na lokasyon ng evacuation center.';
 
   @override
   String get centerNearest => 'PINAKAMALAPIT NA CENTER';
@@ -421,6 +421,10 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get centerLastVerified => 'Huling beripikasyon';
+
+  @override
+  String get centerLimitedData =>
+      'Limitadong data — may mga detalyeng hindi pa beripikado.';
 
   @override
   String get notVerified => 'Hindi beripikado';
@@ -640,7 +644,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get tolOffEvacuation =>
-      'Buksan ang Mga Ligtas na Lugar para makita ang mapa. Halimbawang data pa lang ang mga evacuation center doon at hindi beripikado, kaya sundin ang QC DRRMO at ang inyong barangay para sa opisyal na evacuation center.';
+      'Buksan ang Mga Ligtas na Lugar para makita ang mapa. Ang mga evacuation center ay mula sa listahan ng Quezon City Government / ProjectLIGTAS. Sundin ang QC DRRMO at ang inyong barangay para sa mga pagbabago.';
 
   @override
   String tolOffContacts(num count) {
@@ -710,7 +714,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String orcCentersBody(Object count) {
-    return '$count center ang nasa app. Halimbawa lang para sa development, hindi beripikado.';
+    return '$count center ang nasa app mula sa listahan ng evacuation ng Quezon City Government / ProjectLIGTAS.';
   }
 
   @override
@@ -2220,14 +2224,14 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get setDataSourcesBody =>
-      'Sumusunod ang mga target sa supplies sa malawakang inilathalang gabay sa paghahanda at mababago sa itaas. Ang mga evacuation center na kasalukuyang ipinapakita ay halimbawa para sa development, hindi opisyal na data.';
+      'Sumusunod ang mga target sa supplies sa malawakang inilathalang gabay sa paghahanda at mababago sa itaas. Ang mga evacuation center ay mula sa listahan ng Quezon City Government / ProjectLIGTAS (mga coordinate mula sa OpenStreetMap).';
 
   @override
   String get setMapAttribution => 'Kredito ng mapa';
 
   @override
   String get setMapAttributionBody =>
-      'Map tiles: OpenFreeMap, © OpenMapTiles. Map data, hangganan ng Quezon City at listahan ng barangay © OpenStreetMap contributors (ODbL). Routing: openrouteservice.org by HeiGIT. Rendering: MapLibre. Mga halimbawa lang para sa development ang mga evacuation center na ipinapakita ngayon, hindi opisyal na data.';
+      'Map tiles: OpenFreeMap, © OpenMapTiles. Map data, hangganan ng Quezon City at listahan ng barangay © OpenStreetMap contributors (ODbL). Routing: openrouteservice.org by HeiGIT. Rendering: MapLibre. Mga evacuation center: Quezon City Government / ProjectLIGTAS (mga coordinate mula sa OpenStreetMap).';
 
   @override
   String get setDisclaimer => 'Paalala sa emergency';

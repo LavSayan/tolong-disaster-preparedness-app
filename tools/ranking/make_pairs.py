@@ -12,7 +12,8 @@ Writes tools/ranking/data/pairs.jsonl, one JSON object per line:
 Authoring decisions, stated so the labels can be audited:
 
 - The candidate pool is the real sampled sites in `hazard_bands.json`
-  (142 barangay centroids + 6 demo centres). Exposure values are copied from
+  (142 barangay centroids + 5 bundled centres + 6 demo-centre seeds). Exposure
+  values are copied from
   the asset and never recomputed here, so the dataset cannot drift from the
   asset the app ships.
 - `travelSec` is the straight-line walk estimate the runtime itself computes
@@ -294,7 +295,9 @@ class Author:
                 f"Two band-0 sites in leasing range: about {minutes(ts_big)} and {minutes(ts_small)} min walking "
                 f"(exposure {anchor['exposure']:.2f} vs {partner['exposure']:.2f}); the shorter walk decides.",
             )
-        # Both legs over an hour: a sunk-cost trade-off, travel at the far end.
+        # Both legs over an hour: past the 3600 s cap x_travel floors to 0 on both
+        # sides, so travel no longer discriminates and exposure alone decides
+        # (spec §3). The safer band-0 site wins despite the longer walk.
         for anchor in self.rng.sample(self.by_band[2] + self.by_band[1], min(len(self.by_band[2]) + len(self.by_band[1]), 16)):
             partner = self.window(self.by_band[0], anchor, 5200, 9000)
             if partner is None or anchor["exposure"] - partner["exposure"] > 0.35:
@@ -306,10 +309,11 @@ class Author:
             self.col.add(
                 self.side(anchor, ts_near, 0.5),
                 self.side(partner, ts_far, 0.5),
-                "a", "travel",
-                f"Both legs exceed an hour; {partner['id']} is band 0 against band {anchor['flood100']} "
-                f"(exposure {anchor['exposure']:.2f} vs {partner['exposure']:.2f}), but {minutes(ts_far)} min is a "
-                f"long extra walk for that margin.",
+                "b", "exposure",
+                f"Both legs exceed the one-hour cap, so travel floors to zero on both sides; "
+                f"{partner['id']} is band 0 against band {anchor['flood100']} "
+                f"(exposure {anchor['exposure']:.2f} vs {partner['exposure']:.2f}), so the safer site wins "
+                f"even at {minutes(ts_far)} min.",
             )
 
     # --------------------------------------------------------------

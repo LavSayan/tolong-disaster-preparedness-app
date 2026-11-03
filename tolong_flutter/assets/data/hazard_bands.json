@@ -13,7 +13,8 @@
     "extractedBy": "tools/ranking/extract_bands.py --extract",
     "siteLists": [
       "tolong_flutter/assets/data/qc_barangays.json",
-      "tolong_flutter/assets/data/evacuation_centers_dev.json"
+      "tolong_flutter/assets/data/evacuation_centers.json",
+      "tools/ranking/data/demo_candidate_sites.json"
     ],
     "specReference": "tolong_flutter/docs/design/SHELTER_RANKING_ML.md §3"
   },
@@ -3580,6 +3581,126 @@
       "lng": 121.072401,
       "name": "White Plains",
       "psgc": "1381300134"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "qc-hall-grounds",
+      "kind": "center",
+      "lat": 14.646377,
+      "lng": 121.050007,
+      "name": "Quezon City Hall Grounds"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "cubao-araneta-coliseum",
+      "kind": "center",
+      "lat": 14.620716,
+      "lng": 121.053356,
+      "name": "Cubao Araneta Coliseum Area"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "batasan-hills-nhs",
+      "kind": "center",
+      "lat": 14.689003,
+      "lng": 121.094894,
+      "name": "Batasan Hills National High School"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "commonwealth-es",
+      "kind": "center",
+      "lat": 14.697665,
+      "lng": 121.088221,
+      "name": "Commonwealth Elementary School"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.166666667,
+        "floodComposite": 0.166666667,
+        "landslide": 0.0
+      },
+      "id": "san-bartolome-hs",
+      "kind": "center",
+      "lat": 14.700065,
+      "lng": 121.03077,
+      "name": "San Bartolome High School"
     },
     {
       "bands": {

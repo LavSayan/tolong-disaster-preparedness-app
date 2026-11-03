@@ -1573,6 +1573,61 @@
     },
     {
       "eventsMag4Plus": 2,
+      "eventsWithin50km": 112,
+      "id": "qc-hall-grounds",
+      "lat": 14.646377,
+      "lng": 121.050007,
+      "magnitudeWeightedSum": 508.43,
+      "maxMagnitude": 4.2,
+      "meanDepthWithin50km": 23.3,
+      "seismicProximityIndex": 0.768892
+    },
+    {
+      "eventsMag4Plus": 2,
+      "eventsWithin50km": 115,
+      "id": "cubao-araneta-coliseum",
+      "lat": 14.620716,
+      "lng": 121.053356,
+      "magnitudeWeightedSum": 539.17,
+      "maxMagnitude": 4.2,
+      "meanDepthWithin50km": 22.0,
+      "seismicProximityIndex": 0.81538
+    },
+    {
+      "eventsMag4Plus": 2,
+      "eventsWithin50km": 124,
+      "id": "batasan-hills-nhs",
+      "lat": 14.689003,
+      "lng": 121.094894,
+      "magnitudeWeightedSum": 528.06,
+      "maxMagnitude": 4.2,
+      "meanDepthWithin50km": 22.5,
+      "seismicProximityIndex": 0.798578
+    },
+    {
+      "eventsMag4Plus": 2,
+      "eventsWithin50km": 120,
+      "id": "commonwealth-es",
+      "lat": 14.697665,
+      "lng": 121.088221,
+      "magnitudeWeightedSum": 514.47,
+      "maxMagnitude": 4.2,
+      "meanDepthWithin50km": 22.4,
+      "seismicProximityIndex": 0.778026
+    },
+    {
+      "eventsMag4Plus": 2,
+      "eventsWithin50km": 91,
+      "id": "san-bartolome-hs",
+      "lat": 14.700065,
+      "lng": 121.03077,
+      "magnitudeWeightedSum": 390.4,
+      "maxMagnitude": 4.2,
+      "meanDepthWithin50km": 24.1,
+      "seismicProximityIndex": 0.590397
+    },
+    {
+      "eventsMag4Plus": 2,
       "eventsWithin50km": 110,
       "id": "demo-01",
       "lat": 14.6537,

@@ -45,7 +45,7 @@ supabase secrets set TOL_PROVIDER=gemini TOL_MODEL=gemini-2.5-flash-lite GEMINI_
 
 ## Safety design (what makes Tol defensible)
 - Tol is told it is **not an official authority**; it must not invent hazards, rescue operations, shelter availability, weather, or phone numbers, and must say when the app lacks data.
-- The function tells the model **what the app actually knows**: alerts connected = no; evacuation centers = unverified sample; guidebook = no reviewed content yet. So it can't present demo data as fact.
+- The function tells the model **what the app actually knows**: alerts connected = no; evacuation centers = bundled QC Government / ProjectLIGTAS list (still not live availability); guidebook = no reviewed content yet. So it can't present demo data as fact.
 - **Output guard:** phone-number-looking sequences are removed from replies (except the national emergency number 911), so a hallucinated hotline can't reach the user.
 - Every online reply is labelled "AI-generated · may be wrong · not an official advisory"; offline replies are labelled "Offline guidance".
 - Household context is sent **only with the user's consent** (off by default), and only as a summary: household size, whether there are children/seniors/pets, barangay, readiness score and missing supply categories. No names, phone numbers or contacts.

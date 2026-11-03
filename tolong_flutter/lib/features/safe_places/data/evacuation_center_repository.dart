@@ -13,7 +13,7 @@ class EvacuationCenterRepository {
 
   final AssetBundle _bundle;
 
-  static const assetPath = 'assets/data/evacuation_centers_dev.json';
+  static const assetPath = 'assets/data/evacuation_centers.json';
 
   Future<List<EvacuationCenter>> load() async => parse(await _bundle.loadString(assetPath));
 
@@ -29,9 +29,10 @@ class EvacuationCenterRepository {
 
 final evacuationCenterRepositoryProvider = Provider((ref) => EvacuationCenterRepository(rootBundle));
 
-/// The center list everything downstream already watches: the bundled demo/DRRMO asset
-/// merged with government-approved community submissions. Online the list refreshes from
-/// the server; offline the encrypted vault cache stands in. Failures never invent centers.
+/// The center list everything downstream already watches: the bundled QC
+/// Government / ProjectLIGTAS asset merged with government-approved community
+/// submissions. Online the list refreshes from the server; offline the encrypted vault
+/// cache stands in. Failures never invent centers.
 final evacuationCentersProvider = FutureProvider<List<EvacuationCenter>>((ref) async {
   final asset = await ref.watch(evacuationCenterRepositoryProvider).load();
   final cache = ref.watch(validatedShelterCacheProvider);

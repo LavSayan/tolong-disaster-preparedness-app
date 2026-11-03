@@ -195,12 +195,13 @@ void main() {
       expect(File('assets/data/hazard_bands.json').lengthSync(), lessThanOrEqualTo(5 * 1024 * 1024));
     });
 
-    test('describes all 148 sites: 142 barangay proxies + 6 demo centres', () {
-      expect(bands.sites, hasLength(148));
+    test('describes all 153 sites: 142 barangay proxies + 5 centres + 6 demo seeds', () {
+      expect(bands.sites, hasLength(153));
       expect(bands.sites.where((s) => s.kind == 'barangay'), hasLength(142));
+      expect(bands.sites.where((s) => s.kind == 'center'), hasLength(5));
       expect(bands.sites.where((s) => s.kind == 'demo'), hasLength(6));
       final byId = bands.byId;
-      for (final id in ['demo-01', 'demo-06', 'bgy-000', 'bgy-141']) {
+      for (final id in ['demo-01', 'demo-06', 'bgy-000', 'bgy-141', 'qc-hall-grounds', 'san-bartolome-hs']) {
         expect(byId[id], isNotNull, reason: id);
       }
       expect(bands.version, 1);
@@ -431,7 +432,7 @@ void main() {
       c.read(safePlacesProvider.notifier).setBarangay(const Barangay(name: 'Batasan Hills', psgc: null, center: GeoPoint(14.706, 121.091)));
       final ranking = c.read(rankedCentersProvider);
       expect(ranking.available, isTrue);
-      expect(ranking.ranked, hasLength(6));
+      expect(ranking.ranked, hasLength(5));
       expect(ranking.weightsTrained, isFalse);
       for (var i = 1; i < ranking.ranked.length; i++) {
         expect(ranking.ranked[i].score, lessThanOrEqualTo(ranking.ranked[i - 1].score),
@@ -439,8 +440,8 @@ void main() {
         expect(ranking.ranked[i].rank, i + 1);
       }
       final first = ranking.ranked.first;
-      // demo centres ship exact coordinates in the asset: no exposure unknowns among them.
-      expect(ranking.ranked.any((r) => r.exposureUnknown), isFalse, reason: 'all 6 demo ids are in the asset');
+      // centres ship exact coordinates in the asset: no exposure unknowns among them.
+      expect(ranking.ranked.any((r) => r.exposureUnknown), isFalse, reason: 'all 5 center ids are in the asset');
       expect(first.features.travelEstimated, isTrue, reason: 'no route fetched yet → always the estimate');
     });
 

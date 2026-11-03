@@ -376,7 +376,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get centersDemoNote =>
-      'These are sample points for building the app, not real evacuation centers. Follow QC DRRMO and your barangay for official evacuation center locations.';
+      'Some centers in this list are not yet verified. Follow QC DRRMO and your barangay for official evacuation center locations.';
 
   @override
   String get centerNearest => 'NEAREST CENTER';
@@ -419,6 +419,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get centerLastVerified => 'Last verified';
+
+  @override
+  String get centerLimitedData =>
+      'Limited data — some details are not yet verified.';
 
   @override
   String get notVerified => 'Not verified';
@@ -634,7 +638,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tolOffEvacuation =>
-      'Open Safe places to see the map. The evacuation centers there are still sample data, not verified, so follow QC DRRMO and your barangay for official evacuation centers.';
+      'Open Safe places to see the map. The evacuation centers come from the Quezon City Government / ProjectLIGTAS list. Follow QC DRRMO and your barangay for live changes.';
 
   @override
   String tolOffContacts(num count) {
@@ -704,7 +708,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String orcCentersBody(Object count) {
-    return '$count centers built into the app. Development sample only, not verified.';
+    return '$count centers built into the app from the Quezon City Government / ProjectLIGTAS evacuation list.';
   }
 
   @override
@@ -2204,14 +2208,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get setDataSourcesBody =>
-      'Supply targets follow widely published preparedness guidelines and can be changed above. Evacuation centers currently shown are development samples, not official data.';
+      'Supply targets follow widely published preparedness guidelines and can be changed above. Evacuation centers come from the Quezon City Government / ProjectLIGTAS list (coordinates from OpenStreetMap).';
 
   @override
   String get setMapAttribution => 'Map attribution';
 
   @override
   String get setMapAttributionBody =>
-      'Map tiles: OpenFreeMap, © OpenMapTiles. Map data, Quezon City boundary and barangay list © OpenStreetMap contributors (ODbL). Routing: openrouteservice.org by HeiGIT. Rendering: MapLibre. Evacuation centers currently shown are development samples, not official data.';
+      'Map tiles: OpenFreeMap, © OpenMapTiles. Map data, Quezon City boundary and barangay list © OpenStreetMap contributors (ODbL). Routing: openrouteservice.org by HeiGIT. Rendering: MapLibre. Evacuation centers: Quezon City Government / ProjectLIGTAS (coordinates from OpenStreetMap).';
 
   @override
   String get setDisclaimer => 'Emergency disclaimer';

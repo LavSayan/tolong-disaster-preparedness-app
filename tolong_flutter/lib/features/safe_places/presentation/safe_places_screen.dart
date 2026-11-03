@@ -11,6 +11,7 @@ import '../application/ranking_controller.dart';
 import '../application/safe_places_controller.dart';
 import '../application/submission_controllers.dart';
 import '../../auth/application/session.dart';
+import '../../household/presentation/profile_screen.dart';
 import '../data/evacuation_center_repository.dart';
 import '../data/hazard_layer_service.dart';
 import '../data/location_service.dart';
@@ -313,7 +314,21 @@ class _AddShelterCard extends ConsumerWidget {
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         ListTile(
           contentPadding: EdgeInsets.zero,
-          onTap: () => context.push('/submit-shelter'),
+          // Guests cannot reach the public login screens from inside the app (the router
+          // sends them home), so the sign-in gate is an in-place explanation: the message
+          // says why, and the action runs the existing leave-guest flow to Welcome/Login.
+          onTap: () {
+            if (signedIn) {
+              context.push('/submit-shelter');
+              return;
+            }
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(SnackBar(
+                content: Text(l.subErrNotAuthenticated),
+                action: SnackBarAction(label: l.logIn, onPressed: () => confirmSignOut(context, ref)),
+              ));
+          },
           leading: const IconTile(
             icon: Icons.add_location_alt_outlined,
             background: AppColors.sageSoft,
@@ -533,7 +548,12 @@ class _CenterCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final rankedRow = ranked;
-    String orUnverified(String? v) => (v == null || v.trim().isEmpty) ? l.notVerified : v;
+    bool present(String? v) => v != null && v.trim().isNotEmpty;
+    final hasLimitedData = !present(center.barangay) ||
+        !present(center.accessibility) ||
+        center.capacity == null ||
+        !present(center.status) ||
+        center.lastVerified == null;
 
     return CardBox(
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -565,14 +585,20 @@ class _CenterCard extends StatelessWidget {
           ),
         ]),
         const SizedBox(height: AppSpacing.md),
-        _Fact(l.centerBarangay, orUnverified(center.barangay)),
-        _Fact(l.centerAddress, orUnverified(center.address)),
-        _Fact(l.centerAccessibility, orUnverified(center.accessibility)),
-        _Fact(l.centerCapacity, center.capacity?.toString() ?? l.notVerified),
-        _Fact(l.centerFacilities, center.facilities.isEmpty ? l.notVerified : center.facilities.join(', ')),
-        _Fact(l.centerStatus, orUnverified(center.status)),
-        _Fact(l.centerSource, center.source),
-        _Fact(l.centerLastVerified, center.lastVerified == null ? l.notVerified : l.date(center.lastVerified!)),
+        if (present(center.barangay)) _Fact(l.centerBarangay, center.barangay!),
+        if (present(center.accessibility)) _Fact(l.centerAccessibility, center.accessibility!),
+        if (center.capacity != null) _Fact(l.centerCapacity, center.capacity!.toString()),
+        if (present(center.status)) _Fact(l.centerStatus, center.status!),
+        _Fact(
+          l.centerSource,
+          center.lastVerified == null
+              ? center.source
+              : '${center.source} · ${l.centerLastVerified}: ${l.date(center.lastVerified!)}',
+        ),
+        if (hasLimitedData) ...[
+          const SizedBox(height: 6),
+          Text(l.centerLimitedData, style: sans(11, height: 1.4, color: AppColors.muted)),
+        ],
         if (rankedRow != null) ...[
           const Divider(color: AppColors.line),
           _Fact(l.rankWeightsLabel, weightsTrained ? l.rankWeightsTrained : l.rankWeightsDefault),

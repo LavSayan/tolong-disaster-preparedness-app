@@ -40,7 +40,8 @@ import sys
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ARCHIVE = os.path.join(REPO_ROOT, "tolong_flutter", "datasets", "qc_flood.pmtiles")
 BARANGAYS = os.path.join(REPO_ROOT, "tolong_flutter", "assets", "data", "qc_barangays.json")
-CENTERS = os.path.join(REPO_ROOT, "tolong_flutter", "assets", "data", "evacuation_centers_dev.json")
+CENTERS = os.path.join(REPO_ROOT, "tolong_flutter", "assets", "data", "evacuation_centers.json")
+DEMO_SEED = os.path.join(REPO_ROOT, "tools", "ranking", "data", "demo_candidate_sites.json")
 OUT_DEFAULT = os.path.join(REPO_ROOT, "tolong_flutter", "assets", "data", "hazard_bands.json")
 
 HEADER_LEN = 127
@@ -554,6 +555,16 @@ def load_sites():
     for center in data["centers"]:
         sites.append({
             "id": center["id"],
+            "kind": "center",
+            "name": center["name"],
+            "lat": center["lat"],
+            "lng": center["lng"],
+        })
+    with open(DEMO_SEED, encoding="utf-8") as handle:
+        data = json.load(handle)
+    for center in data["centers"]:
+        sites.append({
+            "id": center["id"],
             "kind": "demo",
             "name": center["name"],
             "lat": center["lat"],
@@ -606,7 +617,8 @@ def build_document(tiles, provenance, sites):
             "extractedBy": "tools/ranking/extract_bands.py --extract",
             "siteLists": [
                 "tolong_flutter/assets/data/qc_barangays.json",
-                "tolong_flutter/assets/data/evacuation_centers_dev.json",
+                "tolong_flutter/assets/data/evacuation_centers.json",
+                "tools/ranking/data/demo_candidate_sites.json",
             ],
             "specReference": "tolong_flutter/docs/design/SHELTER_RANKING_ML.md §3",
         },

@@ -707,7 +707,7 @@ abstract class AppLocalizations {
   /// No description provided for @centersDemoNote.
   ///
   /// In en, this message translates to:
-  /// **'These are sample points for building the app, not real evacuation centers. Follow QC DRRMO and your barangay for official evacuation center locations.'**
+  /// **'Some centers in this list are not yet verified. Follow QC DRRMO and your barangay for official evacuation center locations.'**
   String get centersDemoNote;
 
   /// No description provided for @centerNearest.
@@ -787,6 +787,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Last verified'**
   String get centerLastVerified;
+
+  /// No description provided for @centerLimitedData.
+  ///
+  /// In en, this message translates to:
+  /// **'Limited data — some details are not yet verified.'**
+  String get centerLimitedData;
 
   /// No description provided for @notVerified.
   ///
@@ -1115,7 +1121,7 @@ abstract class AppLocalizations {
   /// No description provided for @tolOffEvacuation.
   ///
   /// In en, this message translates to:
-  /// **'Open Safe places to see the map. The evacuation centers there are still sample data, not verified, so follow QC DRRMO and your barangay for official evacuation centers.'**
+  /// **'Open Safe places to see the map. The evacuation centers come from the Quezon City Government / ProjectLIGTAS list. Follow QC DRRMO and your barangay for live changes.'**
   String get tolOffEvacuation;
 
   /// No description provided for @tolOffContacts.
@@ -1217,7 +1223,7 @@ abstract class AppLocalizations {
   /// No description provided for @orcCentersBody.
   ///
   /// In en, this message translates to:
-  /// **'{count} centers built into the app. Development sample only, not verified.'**
+  /// **'{count} centers built into the app from the Quezon City Government / ProjectLIGTAS evacuation list.'**
   String orcCentersBody(Object count);
 
   /// No description provided for @orcHousehold.
@@ -3779,7 +3785,7 @@ abstract class AppLocalizations {
   /// No description provided for @setDataSourcesBody.
   ///
   /// In en, this message translates to:
-  /// **'Supply targets follow widely published preparedness guidelines and can be changed above. Evacuation centers currently shown are development samples, not official data.'**
+  /// **'Supply targets follow widely published preparedness guidelines and can be changed above. Evacuation centers come from the Quezon City Government / ProjectLIGTAS list (coordinates from OpenStreetMap).'**
   String get setDataSourcesBody;
 
   /// No description provided for @setMapAttribution.
@@ -3791,7 +3797,7 @@ abstract class AppLocalizations {
   /// No description provided for @setMapAttributionBody.
   ///
   /// In en, this message translates to:
-  /// **'Map tiles: OpenFreeMap, © OpenMapTiles. Map data, Quezon City boundary and barangay list © OpenStreetMap contributors (ODbL). Routing: openrouteservice.org by HeiGIT. Rendering: MapLibre. Evacuation centers currently shown are development samples, not official data.'**
+  /// **'Map tiles: OpenFreeMap, © OpenMapTiles. Map data, Quezon City boundary and barangay list © OpenStreetMap contributors (ODbL). Routing: openrouteservice.org by HeiGIT. Rendering: MapLibre. Evacuation centers: Quezon City Government / ProjectLIGTAS (coordinates from OpenStreetMap).'**
   String get setMapAttributionBody;
 
   /// No description provided for @setDisclaimer.

@@ -33,7 +33,7 @@ void main() {
       expect(boundary.contains(pasigCorner), isFalse);
     });
 
-    test('all demo centers lie inside the real boundary', () {
+    test('all bundled centers lie inside the real boundary', () {
       final centers =
           EvacuationCenterRepository.parse(File(EvacuationCenterRepository.assetPath).readAsStringSync());
       for (final c in centers) {
@@ -88,7 +88,7 @@ void main() {
     );
     await tester.tap(find.text('Safe places').last);
     await tester.pumpAndSettle();
-    await scrollTo(tester, find.text('DEMO DATA · CENTERS NOT VERIFIED'));
+    await scrollTo(tester, find.text('Search barangay'));
     expect(find.text('qc-outline'), findsOneWidget);
     await tester.tap(find.byTooltip('Show my location'));
     await tester.pumpAndSettle();
