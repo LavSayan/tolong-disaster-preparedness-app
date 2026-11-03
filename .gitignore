@@ -2,3 +2,10 @@
 /.claude/launch.json
 /.idea/
 tools/.idea/
+
+# Python bytecode / caches
+*.pyc
+__pycache__/
+
+# Supabase CLI local state
+**/supabase/.temp/
