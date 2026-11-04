@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -52,6 +53,17 @@ void main() {
       expect(barangays.length, 142);
       expect(barangays.map((b) => b.name).toSet().length, 142);
       expect(barangays.every((b) => b.psgc != null), isTrue);
+    });
+
+    test('names and codes match the official PSGC fixture exactly', () {
+      final fixture = jsonDecode(File('test/fixtures/psgc_qc_official.json').readAsStringSync())
+          as Map<String, dynamic>;
+      final official = {
+        for (final b in fixture['barangays'] as List)
+          (b as Map<String, dynamic>)['psgc']! as String: b['name']! as String,
+      };
+      final actual = {for (final b in barangays) b.psgc!: b.name};
+      expect(actual, official);
     });
 
     test('search ignores case, accents, punctuation and common abbreviations', () {

@@ -24,9 +24,6 @@ class AppSettings {
     this.language = AppLanguage.english,
     this.reducedMotion = false,
     this.textSize = TextSize.normal,
-    this.notificationsOptIn = true,
-    this.expiryRemindersOptIn = true,
-    this.hazardAlertsOptIn = true,
     this.locationOptIn = true,
     this.offlineDownloadsOptIn = true,
     this.targets = const PreparednessTargets(),
@@ -39,9 +36,6 @@ class AppSettings {
   final AppLanguage language;
   final bool reducedMotion;
   final TextSize textSize;
-  final bool notificationsOptIn;
-  final bool expiryRemindersOptIn;
-  final bool hazardAlertsOptIn;
   final bool locationOptIn;
   final bool offlineDownloadsOptIn;
   final PreparednessTargets targets;
@@ -50,9 +44,6 @@ class AppSettings {
     AppLanguage? language,
     bool? reducedMotion,
     TextSize? textSize,
-    bool? notificationsOptIn,
-    bool? expiryRemindersOptIn,
-    bool? hazardAlertsOptIn,
     bool? locationOptIn,
     bool? offlineDownloadsOptIn,
     PreparednessTargets? targets,
@@ -63,9 +54,6 @@ class AppSettings {
         language: language ?? this.language,
         reducedMotion: reducedMotion ?? this.reducedMotion,
         textSize: textSize ?? this.textSize,
-        notificationsOptIn: notificationsOptIn ?? this.notificationsOptIn,
-        expiryRemindersOptIn: expiryRemindersOptIn ?? this.expiryRemindersOptIn,
-        hazardAlertsOptIn: hazardAlertsOptIn ?? this.hazardAlertsOptIn,
         locationOptIn: locationOptIn ?? this.locationOptIn,
         offlineDownloadsOptIn: offlineDownloadsOptIn ?? this.offlineDownloadsOptIn,
         targets: targets ?? this.targets,
@@ -89,9 +77,6 @@ class SettingsController extends Notifier<AppSettings> {
       language: savedLanguage == null ? _deviceLanguage() : AppLanguage.fromCode(savedLanguage),
       reducedMotion: p.getBool('reduced_motion') ?? false,
       textSize: TextSize.values.asNameMap()[p.getString('text_size')] ?? TextSize.normal,
-      notificationsOptIn: p.getBool('opt_in_notifications') ?? true,
-      expiryRemindersOptIn: p.getBool('opt_in_expiry_reminders') ?? true,
-      hazardAlertsOptIn: p.getBool('opt_in_hazard_alerts') ?? true,
       locationOptIn: p.getBool('opt_in_location') ?? true,
       offlineDownloadsOptIn: p.getBool('opt_in_offline_downloads') ?? true,
       targets: PreparednessTargets(
@@ -108,9 +93,6 @@ class SettingsController extends Notifier<AppSettings> {
     await _prefs.setString('language', s.language.code);
     await _prefs.setBool('reduced_motion', s.reducedMotion);
     await _prefs.setString('text_size', s.textSize.name);
-    await _prefs.setBool('opt_in_notifications', s.notificationsOptIn);
-    await _prefs.setBool('opt_in_expiry_reminders', s.expiryRemindersOptIn);
-    await _prefs.setBool('opt_in_hazard_alerts', s.hazardAlertsOptIn);
     await _prefs.setBool('opt_in_location', s.locationOptIn);
     await _prefs.setBool('opt_in_offline_downloads', s.offlineDownloadsOptIn);
     await _prefs.setDouble('target_water_l', s.targets.waterLitersPerPersonPerDay);

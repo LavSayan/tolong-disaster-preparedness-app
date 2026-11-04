@@ -104,6 +104,9 @@ class UnavailableRouteService implements RouteService {
       const RouteFailed(RouteErrorCode.notConfigured);
 }
 
-final routeServiceProvider = Provider<RouteService>(
-  (ref) => Env.supabaseConfigured ? EdgeFunctionRouteService() : UnavailableRouteService(),
-);
+/// The plain production choice, factored out so the demo tools (demo builds only) can wrap
+/// exactly the same service instead of duplicating the configuration check.
+RouteService defaultRouteService() =>
+    Env.supabaseConfigured ? EdgeFunctionRouteService() : UnavailableRouteService();
+
+final routeServiceProvider = Provider<RouteService>((ref) => defaultRouteService());

@@ -6,12 +6,13 @@ import 'package:intl/intl.dart';
 import '../core/clock.dart';
 import '../core/theme.dart';
 import '../features/auth/application/session.dart';
+import '../features/demo/application/demo_session.dart';
+import '../features/demo/presentation/demo_banner.dart';
 import '../features/household/data/household_repository.dart';
 import '../features/tol/presentation/tol_chat_screen.dart';
 import '../l10n/l10n.dart';
 import '../shared/widgets/animations.dart';
 import '../shared/widgets/common.dart';
-import '../shared/widgets/form_widgets.dart';
 
 List<String> _tabTitles(AppLocalizations l) => [l.tabHome, l.tabPrepare, l.tabSafePlaces, l.tabMore];
 
@@ -32,6 +33,7 @@ class AppShell extends ConsumerWidget {
             child: Column(children: [
               const SafeArea(bottom: false, child: _Header()),
               if (guest) const _GuestBanner(),
+              if (ref.watch(demoBannerActiveProvider)) const DemoBanner(),
               Expanded(
                 child: Stack(children: [
                   Positioned.fill(child: shell),
@@ -129,8 +131,11 @@ class _Header extends ConsumerWidget {
           ),
           _HeaderIcon(Icons.sensors_rounded,
               tooltip: l.headerOfflineStatus, onTap: () => context.push('/offline-readiness')),
-          _HeaderIcon(Icons.notifications_none_rounded,
-              tooltip: l.headerAlerts, onTap: () => showSoon(context, l.soonAlerts)),
+          // The bell exists only while a simulated advisory is live (demo builds). Normal
+          // builds have no alert source, so a fake alert entry would be a placeholder.
+          if (ref.watch(demoAdvisoryProvider) != null)
+            _HeaderIcon(Icons.notifications_active_rounded,
+                tooltip: l.headerAlerts, onTap: () => showSimulatedAdvisorySheet(context)),
           Semantics(
             button: true,
             label: l.openProfile,

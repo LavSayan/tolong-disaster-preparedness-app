@@ -1,0 +1,3741 @@
+{
+  "asset": "hazard_bands",
+  "exposureFormula": {
+    "exposure": "max(floodComposite, landslide)",
+    "floodComposite": "0.5*(flood_100yr/3) + 0.3*(flood_25yr/3) + 0.2*(flood_5yr/3)",
+    "landslide": "landslide/4"
+  },
+  "notes": [
+    "storm_surge: reported once, never per site — the SSA layers in this archive are national-resolution and simplified low-zoom rings overlap inland Quezon City; per spec §3 storm surge is excluded from the exposure feature (landlocked QC), so every site carries storm_surge: null.",
+    "this archive carries national NOAH extent (millions of polygon features spanning the Philippines), despite the repo note saying clipped-to-QC; band sampling is point-in-polygon against the real geometry so values remain geodetically exact, and sampling stays independent of the archive's clip claims."
+  ],
+  "provenance": {
+    "extractedBy": "tools/ranking/extract_bands.py --extract",
+    "siteLists": [
+      "tolong_flutter/assets/data/qc_barangays.json",
+      "tolong_flutter/assets/data/evacuation_centers_dev.json"
+    ],
+    "specReference": "tolong_flutter/docs/design/SHELTER_RANKING_ML.md §3"
+  },
+  "sampling": {
+    "aggregation": "maxBandAcrossSamples",
+    "nullSemantics": "band null = layer never shipped data near the site; band 0 = map data exists there and contains no hazard polygon at that point",
+    "offsetMeters": 50.0,
+    "samples": [
+      "center",
+      "north",
+      "east",
+      "south",
+      "west"
+    ],
+    "zoomStrategy": "each sample evaluated once, at the finest zoom whose tile contains it and carries the layer; lower zooms are never mixed (their simplified rings can swallow neighbouring inland areas)"
+  },
+  "sites": [
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-000",
+      "kind": "barangay",
+      "lat": 14.661441,
+      "lng": 121.024749,
+      "name": "Alicia",
+      "psgc": "1381300001"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-001",
+      "kind": "barangay",
+      "lat": 14.631981,
+      "lng": 121.068281,
+      "name": "Amihan",
+      "psgc": "1381300002"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-002",
+      "kind": "barangay",
+      "lat": 14.654301,
+      "lng": 121.009311,
+      "name": "Apolonio Samson",
+      "psgc": "1381300003"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 2,
+        "flood_5yr": 2,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.666666667,
+        "floodComposite": 0.666666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-003",
+      "kind": "barangay",
+      "lat": 14.670743,
+      "lng": 121.010565,
+      "name": "Baesa",
+      "psgc": "1381300005"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.333333333,
+        "floodComposite": 0.333333333,
+        "landslide": 0.0
+      },
+      "id": "bgy-004",
+      "kind": "barangay",
+      "lat": 14.698558,
+      "lng": 121.032116,
+      "name": "Bagbag",
+      "psgc": "1381300006"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.333333333,
+        "floodComposite": 0.333333333,
+        "landslide": 0.0
+      },
+      "id": "bgy-005",
+      "kind": "barangay",
+      "lat": 14.610435,
+      "lng": 121.049979,
+      "name": "Bagong Lipunan Ng Crame",
+      "psgc": "1381300008"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.166666667,
+        "floodComposite": 0.166666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-006",
+      "kind": "barangay",
+      "lat": 14.655076,
+      "lng": 121.035387,
+      "name": "Bagong Pag-asa",
+      "psgc": "1381300009"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 3,
+        "flood_25yr": 3,
+        "flood_5yr": 1,
+        "landslide": 3,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.866666667,
+        "floodComposite": 0.866666667,
+        "landslide": 0.75
+      },
+      "id": "bgy-007",
+      "kind": "barangay",
+      "lat": 14.711885,
+      "lng": 121.106944,
+      "name": "Bagong Silangan",
+      "psgc": "1381300010"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-008",
+      "kind": "barangay",
+      "lat": 14.607347,
+      "lng": 121.082259,
+      "name": "Bagumbayan",
+      "psgc": "1381300011"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-009",
+      "kind": "barangay",
+      "lat": 14.625164,
+      "lng": 121.065021,
+      "name": "Bagumbuhay",
+      "psgc": "1381300007"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-010",
+      "kind": "barangay",
+      "lat": 14.666162,
+      "lng": 121.029071,
+      "name": "Bahay Toro",
+      "psgc": "1381300012"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 1,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.266666667,
+        "floodComposite": 0.266666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-011",
+      "kind": "barangay",
+      "lat": 14.651203,
+      "lng": 121.001505,
+      "name": "Balingasa",
+      "psgc": "1381300013"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-012",
+      "kind": "barangay",
+      "lat": 14.663276,
+      "lng": 121.002687,
+      "name": "Balong Bato",
+      "psgc": "1381300135"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-013",
+      "kind": "barangay",
+      "lat": 14.682456,
+      "lng": 121.097416,
+      "name": "Batasan Hills",
+      "psgc": "1381300139"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 1,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.1,
+        "floodComposite": 0.1,
+        "landslide": 0.0
+      },
+      "id": "bgy-014",
+      "kind": "barangay",
+      "lat": 14.615791,
+      "lng": 121.069193,
+      "name": "Bayanihan",
+      "psgc": "1381300014"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-015",
+      "kind": "barangay",
+      "lat": 14.619111,
+      "lng": 121.073558,
+      "name": "Blue Ridge A",
+      "psgc": "1381300015"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.333333333,
+        "floodComposite": 0.333333333,
+        "landslide": 0.0
+      },
+      "id": "bgy-016",
+      "kind": "barangay",
+      "lat": 14.618027,
+      "lng": 121.075845,
+      "name": "Blue Ridge B",
+      "psgc": "1381300016"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 2,
+        "flood_5yr": 2,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.666666667,
+        "floodComposite": 0.666666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-017",
+      "kind": "barangay",
+      "lat": 14.636155,
+      "lng": 121.062566,
+      "name": "Botocan",
+      "psgc": "1381300017"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-018",
+      "kind": "barangay",
+      "lat": 14.65089,
+      "lng": 121.024986,
+      "name": "Bungad",
+      "psgc": "1381300018"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-019",
+      "kind": "barangay",
+      "lat": 14.607087,
+      "lng": 121.062805,
+      "name": "Camp Aguinaldo",
+      "psgc": "1381300019"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 3,
+        "flood_25yr": 3,
+        "flood_5yr": 3,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 1.0,
+        "floodComposite": 1.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-020",
+      "kind": "barangay",
+      "lat": 14.716533,
+      "lng": 121.028296,
+      "name": "Capri",
+      "psgc": "1381300136"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 3,
+        "flood_25yr": 2,
+        "flood_5yr": 2,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.833333333,
+        "floodComposite": 0.833333333,
+        "landslide": 0.0
+      },
+      "id": "bgy-021",
+      "kind": "barangay",
+      "lat": 14.647322,
+      "lng": 121.048064,
+      "name": "Central",
+      "psgc": "1381300020"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 3,
+        "flood_25yr": 3,
+        "flood_5yr": 3,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 1.0,
+        "floodComposite": 1.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-022",
+      "kind": "barangay",
+      "lat": 14.631526,
+      "lng": 121.064401,
+      "name": "Claro",
+      "psgc": "1381300021"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-023",
+      "kind": "barangay",
+      "lat": 14.70252,
+      "lng": 121.082094,
+      "name": "Commonwealth",
+      "psgc": "1381300022"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.166666667,
+        "floodComposite": 0.166666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-024",
+      "kind": "barangay",
+      "lat": 14.667735,
+      "lng": 121.056802,
+      "name": "Culiat",
+      "psgc": "1381300025"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.5,
+        "floodComposite": 0.5,
+        "landslide": 0.0
+      },
+      "id": "bgy-025",
+      "kind": "barangay",
+      "lat": 14.647119,
+      "lng": 121.00064,
+      "name": "Damar",
+      "psgc": "1381300026"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 2,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.533333333,
+        "floodComposite": 0.533333333,
+        "landslide": 0.0
+      },
+      "id": "bgy-026",
+      "kind": "barangay",
+      "lat": 14.637472,
+      "lng": 121.013963,
+      "name": "Damayan",
+      "psgc": "1381300027"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-027",
+      "kind": "barangay",
+      "lat": 14.615531,
+      "lng": 121.022795,
+      "name": "Damayang Lagi",
+      "psgc": "1381300028"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 3,
+        "flood_25yr": 3,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.866666667,
+        "floodComposite": 0.866666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-028",
+      "kind": "barangay",
+      "lat": 14.643352,
+      "lng": 121.015032,
+      "name": "Del Monte",
+      "psgc": "1381300029"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-029",
+      "kind": "barangay",
+      "lat": 14.619703,
+      "lng": 121.064805,
+      "name": "Dioquino Zobel",
+      "psgc": "1381300030"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 2,
+        "flood_5yr": 2,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.666666667,
+        "floodComposite": 0.666666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-030",
+      "kind": "barangay",
+      "lat": 14.616133,
+      "lng": 121.004456,
+      "name": "Don Manuel",
+      "psgc": "1381300033"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-031",
+      "kind": "barangay",
+      "lat": 14.616185,
+      "lng": 121.009185,
+      "name": "Aurora",
+      "psgc": "1381300004"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 3,
+        "flood_25yr": 3,
+        "flood_5yr": 2,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.933333333,
+        "floodComposite": 0.933333333,
+        "landslide": 0.0
+      },
+      "id": "bgy-032",
+      "kind": "barangay",
+      "lat": 14.611079,
+      "lng": 121.016074,
+      "name": "Doña Imelda",
+      "psgc": "1381300031"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.166666667,
+        "floodComposite": 0.166666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-033",
+      "kind": "barangay",
+      "lat": 14.620657,
+      "lng": 121.005755,
+      "name": "Doña Josefa",
+      "psgc": "1381300032"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-034",
+      "kind": "barangay",
+      "lat": 14.630228,
+      "lng": 121.067911,
+      "name": "Duyan-duyan",
+      "psgc": "1381300034"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-035",
+      "kind": "barangay",
+      "lat": 14.626131,
+      "lng": 121.052039,
+      "name": "E. Rodriguez",
+      "psgc": "1381300035"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 2,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.433333333,
+        "floodComposite": 0.433333333,
+        "landslide": 0.0
+      },
+      "id": "bgy-036",
+      "kind": "barangay",
+      "lat": 14.632129,
+      "lng": 121.056904,
+      "name": "East Kamias",
+      "psgc": "1381300036"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.333333333,
+        "floodComposite": 0.333333333,
+        "landslide": 0.0
+      },
+      "id": "bgy-037",
+      "kind": "barangay",
+      "lat": 14.62421,
+      "lng": 121.073467,
+      "name": "Escopa I",
+      "psgc": "1381300037"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-038",
+      "kind": "barangay",
+      "lat": 14.624453,
+      "lng": 121.074499,
+      "name": "Escopa II",
+      "psgc": "1381300038"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.166666667,
+        "floodComposite": 0.166666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-039",
+      "kind": "barangay",
+      "lat": 14.626568,
+      "lng": 121.073185,
+      "name": "Escopa III",
+      "psgc": "1381300039"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-040",
+      "kind": "barangay",
+      "lat": 14.625613,
+      "lng": 121.074367,
+      "name": "Escopa IV",
+      "psgc": "1381300040"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-041",
+      "kind": "barangay",
+      "lat": 14.702243,
+      "lng": 121.070533,
+      "name": "Fairview",
+      "psgc": "1381300041"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 2,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.6,
+        "floodComposite": 0.6,
+        "landslide": 0.0
+      },
+      "id": "bgy-042",
+      "kind": "barangay",
+      "lat": 14.723251,
+      "lng": 121.06425,
+      "name": "Greater Lagro",
+      "psgc": "1381300141"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 2,
+        "flood_5yr": 2,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.666666667,
+        "floodComposite": 0.666666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-043",
+      "kind": "barangay",
+      "lat": 14.711836,
+      "lng": 121.040471,
+      "name": "Gulod",
+      "psgc": "1381300043"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-044",
+      "kind": "barangay",
+      "lat": 14.682402,
+      "lng": 121.078214,
+      "name": "Holy Spirit",
+      "psgc": "1381300140"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-045",
+      "kind": "barangay",
+      "lat": 14.612731,
+      "lng": 121.041989,
+      "name": "Horseshoe",
+      "psgc": "1381300044"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 1,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.1,
+        "floodComposite": 0.1,
+        "landslide": 0.0
+      },
+      "id": "bgy-046",
+      "kind": "barangay",
+      "lat": 14.622257,
+      "lng": 121.043798,
+      "name": "Immaculate Concepcion",
+      "psgc": "1381300045"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-047",
+      "kind": "barangay",
+      "lat": 14.733794,
+      "lng": 121.045214,
+      "name": "Kaligayahan",
+      "psgc": "1381300046"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-048",
+      "kind": "barangay",
+      "lat": 14.622766,
+      "lng": 121.021332,
+      "name": "Kalusugan",
+      "psgc": "1381300047"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 2,
+        "flood_5yr": 2,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.666666667,
+        "floodComposite": 0.666666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-049",
+      "kind": "barangay",
+      "lat": 14.627845,
+      "lng": 121.040128,
+      "name": "Kamuning",
+      "psgc": "1381300048"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 3,
+        "flood_25yr": 3,
+        "flood_5yr": 3,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 1.0,
+        "floodComposite": 1.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-050",
+      "kind": "barangay",
+      "lat": 14.656076,
+      "lng": 121.017366,
+      "name": "Katipunan",
+      "psgc": "1381300049"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-051",
+      "kind": "barangay",
+      "lat": 14.616639,
+      "lng": 121.042968,
+      "name": "Kaunlaran",
+      "psgc": "1381300050"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 3,
+        "flood_25yr": 3,
+        "flood_5yr": 3,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 1.0,
+        "floodComposite": 1.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-052",
+      "kind": "barangay",
+      "lat": 14.624604,
+      "lng": 121.031937,
+      "name": "Kristong Hari",
+      "psgc": "1381300024"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-053",
+      "kind": "barangay",
+      "lat": 14.642374,
+      "lng": 121.062904,
+      "name": "Krus Na Ligas",
+      "psgc": "1381300051"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 1,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.266666667,
+        "floodComposite": 0.266666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-054",
+      "kind": "barangay",
+      "lat": 14.632468,
+      "lng": 121.030444,
+      "name": "Laging Handa",
+      "psgc": "1381300052"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-055",
+      "kind": "barangay",
+      "lat": 14.616165,
+      "lng": 121.075941,
+      "name": "Libis",
+      "psgc": "1381300053"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.333333333,
+        "floodComposite": 0.333333333,
+        "landslide": 0.0
+      },
+      "id": "bgy-056",
+      "kind": "barangay",
+      "lat": 14.625505,
+      "lng": 121.002202,
+      "name": "Lourdes",
+      "psgc": "1381300054"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.333333333,
+        "floodComposite": 0.333333333,
+        "landslide": 0.0
+      },
+      "id": "bgy-057",
+      "kind": "barangay",
+      "lat": 14.6379,
+      "lng": 121.073493,
+      "name": "Loyola Heights",
+      "psgc": "1381300055"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 3,
+        "flood_25yr": 3,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.866666667,
+        "floodComposite": 0.866666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-058",
+      "kind": "barangay",
+      "lat": 14.633332,
+      "lng": 120.996894,
+      "name": "Maharlika",
+      "psgc": "1381300056"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-059",
+      "kind": "barangay",
+      "lat": 14.636297,
+      "lng": 121.056025,
+      "name": "Malaya",
+      "psgc": "1381300057"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.166666667,
+        "floodComposite": 0.166666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-060",
+      "kind": "barangay",
+      "lat": 14.62541,
+      "lng": 121.061852,
+      "name": "Mangga",
+      "psgc": "1381300059"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-061",
+      "kind": "barangay",
+      "lat": 14.641505,
+      "lng": 121.000898,
+      "name": "Manresa",
+      "psgc": "1381300058"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.333333333,
+        "floodComposite": 0.333333333,
+        "landslide": 0.0
+      },
+      "id": "bgy-062",
+      "kind": "barangay",
+      "lat": 14.618357,
+      "lng": 121.033606,
+      "name": "Mariana",
+      "psgc": "1381300060"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 3,
+        "flood_25yr": 3,
+        "flood_5yr": 3,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 1.0,
+        "floodComposite": 1.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-063",
+      "kind": "barangay",
+      "lat": 14.634817,
+      "lng": 121.016284,
+      "name": "Mariblo",
+      "psgc": "1381300061"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-064",
+      "kind": "barangay",
+      "lat": 14.625417,
+      "lng": 121.070041,
+      "name": "Marilag",
+      "psgc": "1381300062"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-065",
+      "kind": "barangay",
+      "lat": 14.618272,
+      "lng": 121.066754,
+      "name": "Masagana",
+      "psgc": "1381300063"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 3,
+        "flood_25yr": 2,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.766666667,
+        "floodComposite": 0.766666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-066",
+      "kind": "barangay",
+      "lat": 14.642336,
+      "lng": 121.009235,
+      "name": "Masambong",
+      "psgc": "1381300064"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-067",
+      "kind": "barangay",
+      "lat": 14.663213,
+      "lng": 121.082352,
+      "name": "Matandang Balara",
+      "psgc": "1381300066"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.5,
+        "floodComposite": 0.5,
+        "landslide": 0.0
+      },
+      "id": "bgy-068",
+      "kind": "barangay",
+      "lat": 14.620282,
+      "lng": 121.069031,
+      "name": "Milagrosa",
+      "psgc": "1381300067"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 3,
+        "flood_25yr": 2,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.766666667,
+        "floodComposite": 0.766666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-069",
+      "kind": "barangay",
+      "lat": 14.633576,
+      "lng": 120.993538,
+      "name": "N.S. Amoranto",
+      "psgc": "1381300042"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 3,
+        "flood_25yr": 3,
+        "flood_5yr": 3,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 1.0,
+        "floodComposite": 1.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-070",
+      "kind": "barangay",
+      "lat": 14.718034,
+      "lng": 121.024479,
+      "name": "Nagkaisang Nayon",
+      "psgc": "1381300068"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-071",
+      "kind": "barangay",
+      "lat": 14.640264,
+      "lng": 121.024224,
+      "name": "Nayong Kanluran",
+      "psgc": "1381300069"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 2,
+        "flood_5yr": 2,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.666666667,
+        "floodComposite": 0.666666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-072",
+      "kind": "barangay",
+      "lat": 14.664722,
+      "lng": 121.060911,
+      "name": "New Era",
+      "psgc": "1381300023"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-073",
+      "kind": "barangay",
+      "lat": 14.714169,
+      "lng": 121.060243,
+      "name": "North Fairview",
+      "psgc": "1381300142"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-074",
+      "kind": "barangay",
+      "lat": 14.720494,
+      "lng": 121.03743,
+      "name": "Novaliches Proper",
+      "psgc": "1381300070"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.166666667,
+        "floodComposite": 0.166666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-075",
+      "kind": "barangay",
+      "lat": 14.628231,
+      "lng": 121.029514,
+      "name": "Obrero",
+      "psgc": "1381300071"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-076",
+      "kind": "barangay",
+      "lat": 14.650314,
+      "lng": 121.053233,
+      "name": "Old Capitol Site",
+      "psgc": "1381300072"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.333333333,
+        "floodComposite": 0.333333333,
+        "landslide": 0.0
+      },
+      "id": "bgy-077",
+      "kind": "barangay",
+      "lat": 14.627867,
+      "lng": 120.992324,
+      "name": "Paang Bundok",
+      "psgc": "1381300073"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-078",
+      "kind": "barangay",
+      "lat": 14.647264,
+      "lng": 120.996754,
+      "name": "Pag-ibig Sa Nayon",
+      "psgc": "1381300074"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-079",
+      "kind": "barangay",
+      "lat": 14.632808,
+      "lng": 121.022412,
+      "name": "Paligsahan",
+      "psgc": "1381300075"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 1,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.1,
+        "floodComposite": 0.1,
+        "landslide": 0.0
+      },
+      "id": "bgy-080",
+      "kind": "barangay",
+      "lat": 14.642972,
+      "lng": 121.023163,
+      "name": "Paltok",
+      "psgc": "1381300076"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 2,
+        "flood_5yr": 2,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.666666667,
+        "floodComposite": 0.666666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-081",
+      "kind": "barangay",
+      "lat": 14.652373,
+      "lng": 121.081925,
+      "name": "Pansol",
+      "psgc": "1381300077"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.166666667,
+        "floodComposite": 0.166666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-082",
+      "kind": "barangay",
+      "lat": 14.637986,
+      "lng": 121.017466,
+      "name": "Paraiso",
+      "psgc": "1381300078"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-083",
+      "kind": "barangay",
+      "lat": 14.730242,
+      "lng": 121.062866,
+      "name": "Pasong Putik Proper",
+      "psgc": "1381300079"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 2,
+        "flood_5yr": 2,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.5,
+        "floodComposite": 0.5,
+        "landslide": 0.0
+      },
+      "id": "bgy-084",
+      "kind": "barangay",
+      "lat": 14.681163,
+      "lng": 121.056442,
+      "name": "Pasong Tamo",
+      "psgc": "1381300080"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.166666667,
+        "floodComposite": 0.166666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-085",
+      "kind": "barangay",
+      "lat": 14.709643,
+      "lng": 121.099787,
+      "name": "Payatas",
+      "psgc": "1381300138"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-086",
+      "kind": "barangay",
+      "lat": 14.650467,
+      "lng": 121.031451,
+      "name": "Phil-Am",
+      "psgc": "1381300081"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-087",
+      "kind": "barangay",
+      "lat": 14.625875,
+      "lng": 121.043827,
+      "name": "Pinagkaisahan",
+      "psgc": "1381300083"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-088",
+      "kind": "barangay",
+      "lat": 14.638485,
+      "lng": 121.046227,
+      "name": "Pinyahan",
+      "psgc": "1381300082"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.333333333,
+        "floodComposite": 0.333333333,
+        "landslide": 0.0
+      },
+      "id": "bgy-089",
+      "kind": "barangay",
+      "lat": 14.656173,
+      "lng": 121.041127,
+      "name": "Project 6",
+      "psgc": "1381300084"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.333333333,
+        "floodComposite": 0.333333333,
+        "landslide": 0.0
+      },
+      "id": "bgy-090",
+      "kind": "barangay",
+      "lat": 14.630695,
+      "lng": 121.058839,
+      "name": "Quirino 2-A",
+      "psgc": "1381300085"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-091",
+      "kind": "barangay",
+      "lat": 14.632145,
+      "lng": 121.061613,
+      "name": "Quirino 2-B",
+      "psgc": "1381300086"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-092",
+      "kind": "barangay",
+      "lat": 14.634545,
+      "lng": 121.062964,
+      "name": "Quirino 2-C",
+      "psgc": "1381300087"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-093",
+      "kind": "barangay",
+      "lat": 14.628643,
+      "lng": 121.063539,
+      "name": "Quirino 3-A",
+      "psgc": "1381300088"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-094",
+      "kind": "barangay",
+      "lat": 14.65907,
+      "lng": 121.023074,
+      "name": "Ramon Magsaysay",
+      "psgc": "1381300089"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-095",
+      "kind": "barangay",
+      "lat": 14.627758,
+      "lng": 121.022189,
+      "name": "Roxas",
+      "psgc": "1381300090"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.333333333,
+        "floodComposite": 0.333333333,
+        "landslide": 0.0
+      },
+      "id": "bgy-096",
+      "kind": "barangay",
+      "lat": 14.631231,
+      "lng": 121.039722,
+      "name": "Sacred Heart",
+      "psgc": "1381300091"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-097",
+      "kind": "barangay",
+      "lat": 14.613069,
+      "lng": 121.072822,
+      "name": "Saint Ignatius",
+      "psgc": "1381300092"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 3,
+        "flood_25yr": 2,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.7,
+        "floodComposite": 0.7,
+        "landslide": 0.0
+      },
+      "id": "bgy-098",
+      "kind": "barangay",
+      "lat": 14.634473,
+      "lng": 120.999559,
+      "name": "Saint Peter",
+      "psgc": "1381300093"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-099",
+      "kind": "barangay",
+      "lat": 14.626785,
+      "lng": 120.993758,
+      "name": "Salvacion",
+      "psgc": "1381300094"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-100",
+      "kind": "barangay",
+      "lat": 14.732039,
+      "lng": 121.035135,
+      "name": "San Agustin",
+      "psgc": "1381300095"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.5,
+        "floodComposite": 0.5,
+        "landslide": 0.0
+      },
+      "id": "bgy-101",
+      "kind": "barangay",
+      "lat": 14.650127,
+      "lng": 121.016581,
+      "name": "San Antonio",
+      "psgc": "1381300096"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-102",
+      "kind": "barangay",
+      "lat": 14.707742,
+      "lng": 121.032892,
+      "name": "San Bartolome",
+      "psgc": "1381300097"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-103",
+      "kind": "barangay",
+      "lat": 14.612583,
+      "lng": 121.008057,
+      "name": "San Isidro",
+      "psgc": "1381300098"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 1,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.266666667,
+        "floodComposite": 0.266666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-104",
+      "kind": "barangay",
+      "lat": 14.624165,
+      "lng": 120.995818,
+      "name": "San Isidro Labrador",
+      "psgc": "1381300099"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 2,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.433333333,
+        "floodComposite": 0.433333333,
+        "landslide": 0.0
+      },
+      "id": "bgy-105",
+      "kind": "barangay",
+      "lat": 14.640559,
+      "lng": 120.993573,
+      "name": "San Jose",
+      "psgc": "1381300100"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.166666667,
+        "floodComposite": 0.166666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-106",
+      "kind": "barangay",
+      "lat": 14.618044,
+      "lng": 121.049712,
+      "name": "San Martin De Porres",
+      "psgc": "1381300101"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.5,
+        "floodComposite": 0.5,
+        "landslide": 0.0
+      },
+      "id": "bgy-107",
+      "kind": "barangay",
+      "lat": 14.619633,
+      "lng": 121.062157,
+      "name": "San Roque",
+      "psgc": "1381300102"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-108",
+      "kind": "barangay",
+      "lat": 14.653285,
+      "lng": 121.05548,
+      "name": "San Vicente",
+      "psgc": "1381300103"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.5,
+        "floodComposite": 0.5,
+        "landslide": 0.0
+      },
+      "id": "bgy-109",
+      "kind": "barangay",
+      "lat": 14.673937,
+      "lng": 121.02047,
+      "name": "Sangandaan",
+      "psgc": "1381300137"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-110",
+      "kind": "barangay",
+      "lat": 14.634604,
+      "lng": 121.020419,
+      "name": "Santa Cruz",
+      "psgc": "1381300104"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-111",
+      "kind": "barangay",
+      "lat": 14.70631,
+      "lng": 121.05131,
+      "name": "Santa Lucia",
+      "psgc": "1381300105"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-112",
+      "kind": "barangay",
+      "lat": 14.718577,
+      "lng": 121.046281,
+      "name": "Santa Monica",
+      "psgc": "1381300106"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 2,
+        "flood_5yr": 2,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.666666667,
+        "floodComposite": 0.666666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-113",
+      "kind": "barangay",
+      "lat": 14.620753,
+      "lng": 120.999875,
+      "name": "Santa Teresita",
+      "psgc": "1381300107"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-114",
+      "kind": "barangay",
+      "lat": 14.6603,
+      "lng": 121.030127,
+      "name": "Santo Cristo",
+      "psgc": "1381300108"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 3,
+        "flood_25yr": 3,
+        "flood_5yr": 3,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 1.0,
+        "floodComposite": 1.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-115",
+      "kind": "barangay",
+      "lat": 14.629704,
+      "lng": 121.008295,
+      "name": "Santo Domingo",
+      "psgc": "1381300065"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.166666667,
+        "floodComposite": 0.166666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-116",
+      "kind": "barangay",
+      "lat": 14.610905,
+      "lng": 121.011548,
+      "name": "Santo Niño",
+      "psgc": "1381300109"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-117",
+      "kind": "barangay",
+      "lat": 14.609914,
+      "lng": 121.015382,
+      "name": "Santol",
+      "psgc": "1381300110"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.166666667,
+        "floodComposite": 0.166666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-118",
+      "kind": "barangay",
+      "lat": 14.694025,
+      "lng": 121.045269,
+      "name": "Sauyo",
+      "psgc": "1381300111"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-119",
+      "kind": "barangay",
+      "lat": 14.635922,
+      "lng": 121.004874,
+      "name": "Sienna",
+      "psgc": "1381300112"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-120",
+      "kind": "barangay",
+      "lat": 14.638607,
+      "lng": 121.058974,
+      "name": "Sikatuna Village",
+      "psgc": "1381300113"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-121",
+      "kind": "barangay",
+      "lat": 14.627178,
+      "lng": 121.058941,
+      "name": "Silangan",
+      "psgc": "1381300114"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.333333333,
+        "floodComposite": 0.333333333,
+        "landslide": 0.0
+      },
+      "id": "bgy-122",
+      "kind": "barangay",
+      "lat": 14.617902,
+      "lng": 121.056425,
+      "name": "Socorro",
+      "psgc": "1381300115"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 2,
+        "flood_5yr": 2,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.666666667,
+        "floodComposite": 0.666666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-123",
+      "kind": "barangay",
+      "lat": 14.638572,
+      "lng": 121.03542,
+      "name": "South Triangle",
+      "psgc": "1381300116"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 2,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.6,
+        "floodComposite": 0.6,
+        "landslide": 0.0
+      },
+      "id": "bgy-124",
+      "kind": "barangay",
+      "lat": 14.622337,
+      "lng": 121.063915,
+      "name": "Tagumpay",
+      "psgc": "1381300117"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 3,
+        "flood_25yr": 3,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.8,
+        "floodComposite": 0.8,
+        "landslide": 0.0
+      },
+      "id": "bgy-125",
+      "kind": "barangay",
+      "lat": 14.634932,
+      "lng": 121.011128,
+      "name": "Talayan",
+      "psgc": "1381300118"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.333333333,
+        "floodComposite": 0.333333333,
+        "landslide": 0.0
+      },
+      "id": "bgy-126",
+      "kind": "barangay",
+      "lat": 14.686222,
+      "lng": 121.02345,
+      "name": "Talipapa",
+      "psgc": "1381300119"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-127",
+      "kind": "barangay",
+      "lat": 14.68225,
+      "lng": 121.040056,
+      "name": "Tandang Sora",
+      "psgc": "1381300120"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 3,
+        "flood_25yr": 3,
+        "flood_5yr": 3,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 1.0,
+        "floodComposite": 1.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-128",
+      "kind": "barangay",
+      "lat": 14.624122,
+      "lng": 121.014044,
+      "name": "Tatalon",
+      "psgc": "1381300121"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 2,
+        "flood_5yr": 2,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.666666667,
+        "floodComposite": 0.666666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-129",
+      "kind": "barangay",
+      "lat": 14.644136,
+      "lng": 121.059353,
+      "name": "Teachers Village East",
+      "psgc": "1381300122"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 2,
+        "flood_5yr": 2,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.666666667,
+        "floodComposite": 0.666666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-130",
+      "kind": "barangay",
+      "lat": 14.642788,
+      "lng": 121.056089,
+      "name": "Teachers Village West",
+      "psgc": "1381300123"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 2,
+        "flood_5yr": 2,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.666666667,
+        "floodComposite": 0.666666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-131",
+      "kind": "barangay",
+      "lat": 14.650594,
+      "lng": 121.060497,
+      "name": "U.P. Campus",
+      "psgc": "1381300124"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-132",
+      "kind": "barangay",
+      "lat": 14.649061,
+      "lng": 121.056325,
+      "name": "U.P. Village",
+      "psgc": "1381300125"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-133",
+      "kind": "barangay",
+      "lat": 14.595667,
+      "lng": 121.070226,
+      "name": "Ugong Norte",
+      "psgc": "1381300126"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 2,
+        "flood_5yr": 2,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.666666667,
+        "floodComposite": 0.666666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-134",
+      "kind": "barangay",
+      "lat": 14.660385,
+      "lng": 121.00152,
+      "name": "Unang Sigaw",
+      "psgc": "1381300127"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-135",
+      "kind": "barangay",
+      "lat": 14.61072,
+      "lng": 121.036697,
+      "name": "Valencia",
+      "psgc": "1381300128"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 3,
+        "flood_25yr": 2,
+        "flood_5yr": 2,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.833333333,
+        "floodComposite": 0.833333333,
+        "landslide": 0.0
+      },
+      "id": "bgy-136",
+      "kind": "barangay",
+      "lat": 14.658623,
+      "lng": 121.047903,
+      "name": "Vasra",
+      "psgc": "1381300129"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 1,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.266666667,
+        "floodComposite": 0.266666667,
+        "landslide": 0.0
+      },
+      "id": "bgy-137",
+      "kind": "barangay",
+      "lat": 14.654117,
+      "lng": 121.023773,
+      "name": "Veterans Village",
+      "psgc": "1381300130"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 2,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.433333333,
+        "floodComposite": 0.433333333,
+        "landslide": 0.0
+      },
+      "id": "bgy-138",
+      "kind": "barangay",
+      "lat": 14.6167,
+      "lng": 121.068803,
+      "name": "Villa Maria Clara",
+      "psgc": "1381300131"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 3,
+        "flood_25yr": 3,
+        "flood_5yr": 2,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.933333333,
+        "floodComposite": 0.933333333,
+        "landslide": 0.0
+      },
+      "id": "bgy-139",
+      "kind": "barangay",
+      "lat": 14.630481,
+      "lng": 121.049335,
+      "name": "West Kamias",
+      "psgc": "1381300132"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.5,
+        "floodComposite": 0.5,
+        "landslide": 0.0
+      },
+      "id": "bgy-140",
+      "kind": "barangay",
+      "lat": 14.642539,
+      "lng": 121.031732,
+      "name": "West Triangle",
+      "psgc": "1381300133"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "bgy-141",
+      "kind": "barangay",
+      "lat": 14.606313,
+      "lng": 121.072401,
+      "name": "White Plains",
+      "psgc": "1381300134"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "demo-01",
+      "kind": "demo",
+      "lat": 14.6537,
+      "lng": 121.048,
+      "name": "Demo center 1"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 2,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.6,
+        "floodComposite": 0.6,
+        "landslide": 0.0
+      },
+      "id": "demo-02",
+      "kind": "demo",
+      "lat": 14.6869,
+      "lng": 121.1003,
+      "name": "Demo center 2"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 1,
+        "flood_25yr": 1,
+        "flood_5yr": 1,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.333333333,
+        "floodComposite": 0.333333333,
+        "landslide": 0.0
+      },
+      "id": "demo-03",
+      "kind": "demo",
+      "lat": 14.7268,
+      "lng": 121.042,
+      "name": "Demo center 3"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 2,
+        "flood_25yr": 2,
+        "flood_5yr": 2,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.666666667,
+        "floodComposite": 0.666666667,
+        "landslide": 0.0
+      },
+      "id": "demo-04",
+      "kind": "demo",
+      "lat": 14.6262,
+      "lng": 121.0558,
+      "name": "Demo center 4"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 3,
+        "flood_25yr": 2,
+        "flood_5yr": 2,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.833333333,
+        "floodComposite": 0.833333333,
+        "landslide": 0.0
+      },
+      "id": "demo-05",
+      "kind": "demo",
+      "lat": 14.736,
+      "lng": 121.063,
+      "name": "Demo center 5"
+    },
+    {
+      "bands": {
+        "debris_flow": 0,
+        "flood_100yr": 0,
+        "flood_25yr": 0,
+        "flood_5yr": 0,
+        "landslide": 0,
+        "storm_surge": null
+      },
+      "exposure": {
+        "basis": [
+          "floodComposite",
+          "landslide"
+        ],
+        "exposure": 0.0,
+        "floodComposite": 0.0,
+        "landslide": 0.0
+      },
+      "id": "demo-06",
+      "kind": "demo",
+      "lat": 14.67,
+      "lng": 121.018,
+      "name": "Demo center 6"
+    }
+  ],
+  "source": {
+    "archive": "tolong_flutter/datasets/qc_flood.pmtiles",
+    "nationalDataNote": "this archive carries national NOAH extent (millions of polygon features spanning the Philippines), despite the repo note saying clipped-to-QC; band sampling is point-in-polygon against the real geometry so values remain geodetically exact, and sampling stays independent of the archive's clip claims.",
+    "sha256": "f38f3ec96a98dc2e151c04ca8359b8001f628d0dbfea44bcc0a0a221c02a2c21",
+    "sizeBytes": 51054047,
+    "tiles": 169,
+    "zoomRange": [
+      0,
+      14
+    ]
+  },
+  "version": 1
+}

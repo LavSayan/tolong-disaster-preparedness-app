@@ -1,0 +1,583 @@
+{
+  "source": "Philippine Standard Geographic Code (PSGC), Third Quarter 2026 release, masterlist dated 2026-10-12, published by the Philippine Statistics Authority",
+  "obtained_from": "github.com/bendlikeabamboo/barangay datafile barangay_flat.json (data commit 2fac1fb31ae44305f759ae2006c8fea4f01d8be1, CURRENT_VERSION 2026-10-12). psa.gov.ph refuses automated downloads (HTTP 403 from every automated client), so this mirror of the PSA publication datafile was used.",
+  "cross_checked": [
+    "github.com/Tenasia/ph-psgc psgc/areas/1381300000.json (independent mirror, commit 2026-10-02): all 142 code/name pairs identical.",
+    "Rendered tables on psa.gov.ph barangay pages, spot-checked 2026-10-19: 142 count, Aurora 1381300004, Bagong Lipunan Ng Crame 1381300008, Duyan-duyan 1381300034, E. Rodriguez 1381300035, Krus Na Ligas 1381300051, Teachers Village East 1381300122, Teachers Village West 1381300123, correspondence codes 1374040xx, West Kamias 1381300132/137404132."
+  ],
+  "retrieved": "2026-10-19",
+  "city": {
+    "name": "Quezon City",
+    "psgc": "1381300000"
+  },
+  "barangays": [
+    {
+      "psgc": "1381300001",
+      "name": "Alicia"
+    },
+    {
+      "psgc": "1381300002",
+      "name": "Amihan"
+    },
+    {
+      "psgc": "1381300003",
+      "name": "Apolonio Samson"
+    },
+    {
+      "psgc": "1381300004",
+      "name": "Aurora"
+    },
+    {
+      "psgc": "1381300005",
+      "name": "Baesa"
+    },
+    {
+      "psgc": "1381300006",
+      "name": "Bagbag"
+    },
+    {
+      "psgc": "1381300007",
+      "name": "Bagumbuhay"
+    },
+    {
+      "psgc": "1381300008",
+      "name": "Bagong Lipunan Ng Crame"
+    },
+    {
+      "psgc": "1381300009",
+      "name": "Bagong Pag-asa"
+    },
+    {
+      "psgc": "1381300010",
+      "name": "Bagong Silangan"
+    },
+    {
+      "psgc": "1381300011",
+      "name": "Bagumbayan"
+    },
+    {
+      "psgc": "1381300012",
+      "name": "Bahay Toro"
+    },
+    {
+      "psgc": "1381300013",
+      "name": "Balingasa"
+    },
+    {
+      "psgc": "1381300014",
+      "name": "Bayanihan"
+    },
+    {
+      "psgc": "1381300015",
+      "name": "Blue Ridge A"
+    },
+    {
+      "psgc": "1381300016",
+      "name": "Blue Ridge B"
+    },
+    {
+      "psgc": "1381300017",
+      "name": "Botocan"
+    },
+    {
+      "psgc": "1381300018",
+      "name": "Bungad"
+    },
+    {
+      "psgc": "1381300019",
+      "name": "Camp Aguinaldo"
+    },
+    {
+      "psgc": "1381300020",
+      "name": "Central"
+    },
+    {
+      "psgc": "1381300021",
+      "name": "Claro"
+    },
+    {
+      "psgc": "1381300022",
+      "name": "Commonwealth"
+    },
+    {
+      "psgc": "1381300023",
+      "name": "New Era"
+    },
+    {
+      "psgc": "1381300024",
+      "name": "Kristong Hari"
+    },
+    {
+      "psgc": "1381300025",
+      "name": "Culiat"
+    },
+    {
+      "psgc": "1381300026",
+      "name": "Damar"
+    },
+    {
+      "psgc": "1381300027",
+      "name": "Damayan"
+    },
+    {
+      "psgc": "1381300028",
+      "name": "Damayang Lagi"
+    },
+    {
+      "psgc": "1381300029",
+      "name": "Del Monte"
+    },
+    {
+      "psgc": "1381300030",
+      "name": "Dioquino Zobel"
+    },
+    {
+      "psgc": "1381300031",
+      "name": "Doña Imelda"
+    },
+    {
+      "psgc": "1381300032",
+      "name": "Doña Josefa"
+    },
+    {
+      "psgc": "1381300033",
+      "name": "Don Manuel"
+    },
+    {
+      "psgc": "1381300034",
+      "name": "Duyan-duyan"
+    },
+    {
+      "psgc": "1381300035",
+      "name": "E. Rodriguez"
+    },
+    {
+      "psgc": "1381300036",
+      "name": "East Kamias"
+    },
+    {
+      "psgc": "1381300037",
+      "name": "Escopa I"
+    },
+    {
+      "psgc": "1381300038",
+      "name": "Escopa II"
+    },
+    {
+      "psgc": "1381300039",
+      "name": "Escopa III"
+    },
+    {
+      "psgc": "1381300040",
+      "name": "Escopa IV"
+    },
+    {
+      "psgc": "1381300041",
+      "name": "Fairview"
+    },
+    {
+      "psgc": "1381300042",
+      "name": "N.S. Amoranto"
+    },
+    {
+      "psgc": "1381300043",
+      "name": "Gulod"
+    },
+    {
+      "psgc": "1381300044",
+      "name": "Horseshoe"
+    },
+    {
+      "psgc": "1381300045",
+      "name": "Immaculate Concepcion"
+    },
+    {
+      "psgc": "1381300046",
+      "name": "Kaligayahan"
+    },
+    {
+      "psgc": "1381300047",
+      "name": "Kalusugan"
+    },
+    {
+      "psgc": "1381300048",
+      "name": "Kamuning"
+    },
+    {
+      "psgc": "1381300049",
+      "name": "Katipunan"
+    },
+    {
+      "psgc": "1381300050",
+      "name": "Kaunlaran"
+    },
+    {
+      "psgc": "1381300051",
+      "name": "Krus Na Ligas"
+    },
+    {
+      "psgc": "1381300052",
+      "name": "Laging Handa"
+    },
+    {
+      "psgc": "1381300053",
+      "name": "Libis"
+    },
+    {
+      "psgc": "1381300054",
+      "name": "Lourdes"
+    },
+    {
+      "psgc": "1381300055",
+      "name": "Loyola Heights"
+    },
+    {
+      "psgc": "1381300056",
+      "name": "Maharlika"
+    },
+    {
+      "psgc": "1381300057",
+      "name": "Malaya"
+    },
+    {
+      "psgc": "1381300058",
+      "name": "Manresa"
+    },
+    {
+      "psgc": "1381300059",
+      "name": "Mangga"
+    },
+    {
+      "psgc": "1381300060",
+      "name": "Mariana"
+    },
+    {
+      "psgc": "1381300061",
+      "name": "Mariblo"
+    },
+    {
+      "psgc": "1381300062",
+      "name": "Marilag"
+    },
+    {
+      "psgc": "1381300063",
+      "name": "Masagana"
+    },
+    {
+      "psgc": "1381300064",
+      "name": "Masambong"
+    },
+    {
+      "psgc": "1381300065",
+      "name": "Santo Domingo"
+    },
+    {
+      "psgc": "1381300066",
+      "name": "Matandang Balara"
+    },
+    {
+      "psgc": "1381300067",
+      "name": "Milagrosa"
+    },
+    {
+      "psgc": "1381300068",
+      "name": "Nagkaisang Nayon"
+    },
+    {
+      "psgc": "1381300069",
+      "name": "Nayong Kanluran"
+    },
+    {
+      "psgc": "1381300070",
+      "name": "Novaliches Proper"
+    },
+    {
+      "psgc": "1381300071",
+      "name": "Obrero"
+    },
+    {
+      "psgc": "1381300072",
+      "name": "Old Capitol Site"
+    },
+    {
+      "psgc": "1381300073",
+      "name": "Paang Bundok"
+    },
+    {
+      "psgc": "1381300074",
+      "name": "Pag-ibig Sa Nayon"
+    },
+    {
+      "psgc": "1381300075",
+      "name": "Paligsahan"
+    },
+    {
+      "psgc": "1381300076",
+      "name": "Paltok"
+    },
+    {
+      "psgc": "1381300077",
+      "name": "Pansol"
+    },
+    {
+      "psgc": "1381300078",
+      "name": "Paraiso"
+    },
+    {
+      "psgc": "1381300079",
+      "name": "Pasong Putik Proper"
+    },
+    {
+      "psgc": "1381300080",
+      "name": "Pasong Tamo"
+    },
+    {
+      "psgc": "1381300081",
+      "name": "Phil-Am"
+    },
+    {
+      "psgc": "1381300082",
+      "name": "Pinyahan"
+    },
+    {
+      "psgc": "1381300083",
+      "name": "Pinagkaisahan"
+    },
+    {
+      "psgc": "1381300084",
+      "name": "Project 6"
+    },
+    {
+      "psgc": "1381300085",
+      "name": "Quirino 2-A"
+    },
+    {
+      "psgc": "1381300086",
+      "name": "Quirino 2-B"
+    },
+    {
+      "psgc": "1381300087",
+      "name": "Quirino 2-C"
+    },
+    {
+      "psgc": "1381300088",
+      "name": "Quirino 3-A"
+    },
+    {
+      "psgc": "1381300089",
+      "name": "Ramon Magsaysay"
+    },
+    {
+      "psgc": "1381300090",
+      "name": "Roxas"
+    },
+    {
+      "psgc": "1381300091",
+      "name": "Sacred Heart"
+    },
+    {
+      "psgc": "1381300092",
+      "name": "Saint Ignatius"
+    },
+    {
+      "psgc": "1381300093",
+      "name": "Saint Peter"
+    },
+    {
+      "psgc": "1381300094",
+      "name": "Salvacion"
+    },
+    {
+      "psgc": "1381300095",
+      "name": "San Agustin"
+    },
+    {
+      "psgc": "1381300096",
+      "name": "San Antonio"
+    },
+    {
+      "psgc": "1381300097",
+      "name": "San Bartolome"
+    },
+    {
+      "psgc": "1381300098",
+      "name": "San Isidro"
+    },
+    {
+      "psgc": "1381300099",
+      "name": "San Isidro Labrador"
+    },
+    {
+      "psgc": "1381300100",
+      "name": "San Jose"
+    },
+    {
+      "psgc": "1381300101",
+      "name": "San Martin De Porres"
+    },
+    {
+      "psgc": "1381300102",
+      "name": "San Roque"
+    },
+    {
+      "psgc": "1381300103",
+      "name": "San Vicente"
+    },
+    {
+      "psgc": "1381300104",
+      "name": "Santa Cruz"
+    },
+    {
+      "psgc": "1381300105",
+      "name": "Santa Lucia"
+    },
+    {
+      "psgc": "1381300106",
+      "name": "Santa Monica"
+    },
+    {
+      "psgc": "1381300107",
+      "name": "Santa Teresita"
+    },
+    {
+      "psgc": "1381300108",
+      "name": "Santo Cristo"
+    },
+    {
+      "psgc": "1381300109",
+      "name": "Santo Niño"
+    },
+    {
+      "psgc": "1381300110",
+      "name": "Santol"
+    },
+    {
+      "psgc": "1381300111",
+      "name": "Sauyo"
+    },
+    {
+      "psgc": "1381300112",
+      "name": "Sienna"
+    },
+    {
+      "psgc": "1381300113",
+      "name": "Sikatuna Village"
+    },
+    {
+      "psgc": "1381300114",
+      "name": "Silangan"
+    },
+    {
+      "psgc": "1381300115",
+      "name": "Socorro"
+    },
+    {
+      "psgc": "1381300116",
+      "name": "South Triangle"
+    },
+    {
+      "psgc": "1381300117",
+      "name": "Tagumpay"
+    },
+    {
+      "psgc": "1381300118",
+      "name": "Talayan"
+    },
+    {
+      "psgc": "1381300119",
+      "name": "Talipapa"
+    },
+    {
+      "psgc": "1381300120",
+      "name": "Tandang Sora"
+    },
+    {
+      "psgc": "1381300121",
+      "name": "Tatalon"
+    },
+    {
+      "psgc": "1381300122",
+      "name": "Teachers Village East"
+    },
+    {
+      "psgc": "1381300123",
+      "name": "Teachers Village West"
+    },
+    {
+      "psgc": "1381300124",
+      "name": "U.P. Campus"
+    },
+    {
+      "psgc": "1381300125",
+      "name": "U.P. Village"
+    },
+    {
+      "psgc": "1381300126",
+      "name": "Ugong Norte"
+    },
+    {
+      "psgc": "1381300127",
+      "name": "Unang Sigaw"
+    },
+    {
+      "psgc": "1381300128",
+      "name": "Valencia"
+    },
+    {
+      "psgc": "1381300129",
+      "name": "Vasra"
+    },
+    {
+      "psgc": "1381300130",
+      "name": "Veterans Village"
+    },
+    {
+      "psgc": "1381300131",
+      "name": "Villa Maria Clara"
+    },
+    {
+      "psgc": "1381300132",
+      "name": "West Kamias"
+    },
+    {
+      "psgc": "1381300133",
+      "name": "West Triangle"
+    },
+    {
+      "psgc": "1381300134",
+      "name": "White Plains"
+    },
+    {
+      "psgc": "1381300135",
+      "name": "Balong Bato"
+    },
+    {
+      "psgc": "1381300136",
+      "name": "Capri"
+    },
+    {
+      "psgc": "1381300137",
+      "name": "Sangandaan"
+    },
+    {
+      "psgc": "1381300138",
+      "name": "Payatas"
+    },
+    {
+      "psgc": "1381300139",
+      "name": "Batasan Hills"
+    },
+    {
+      "psgc": "1381300140",
+      "name": "Holy Spirit"
+    },
+    {
+      "psgc": "1381300141",
+      "name": "Greater Lagro"
+    },
+    {
+      "psgc": "1381300142",
+      "name": "North Fairview"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 # TolongApp — Setup and Testing (Phase 1)
 
 ## Run without a backend
-The app runs with no configuration. Account sign-up/login will show "Online accounts aren't set up in this build", and **Emergency access** works fully on the device.
+The app runs with no configuration. Account sign-up/login will show "Online accounts are not configured in this build", and **Emergency access** works fully on the device.
 
 ```bash
 flutter pub get
@@ -11,6 +11,19 @@ flutter run
 ```
 
 `--concurrency=1` runs one test file at a time; on an 8 GB laptop the default parallel run runs out of memory. Translations are regenerated automatically on `pub get`/`run`; after editing `lib/l10n/*.arb` you can also run `flutter gen-l10n`.
+
+## Demo builds (admin tools)
+
+```bash
+flutter run --dart-define=DEMO_TOOLS=true
+```
+
+Adds the hidden demo panel: Settings → long-press the version row (or the "Demo tools" tile in
+More). It can fake the location, put a simulated disaster advisory on Home, plan straight-line
+"routes" without an ORS key, switch ranking weights and drive the hazard overlay — every
+simulated surface is labelled, and a "Demo overrides active" banner shows while anything is
+simulated. Details and honesty rules: [`design/DEMO_TOOLS.md`](design/DEMO_TOOLS.md). **Never
+distribute an APK built with this flag.**
 
 ## Connect Supabase (free tier)
 
@@ -49,7 +62,7 @@ The key lives only in Supabase secrets. Never put it in `env.json` or the app.
 
 ### Tol online (Edge Function)
 
-Pick a provider (see `docs/TOL_AI_OPTIONS.md`), then from `tolong_flutter/`:
+Pick a provider (see [`design/TOL_AI_OPTIONS.md`](design/TOL_AI_OPTIONS.md)), then from `tolong_flutter/`:
 
 ```bash
 supabase secrets set TOL_PROVIDER=anthropic TOL_MODEL=claude-haiku-5-5 ANTHROPIC_API_KEY=YOUR_KEY
@@ -75,6 +88,12 @@ flutter build web --release
 ```
 
 Then serve `build/web` with any static file server.
+
+Note: the map's hazard overlay works here too. On first use the page loads the 51 MB
+`datasets/qc_flood.pmtiles` as **one whole-file request** — by design, because plain static
+servers (the dev server included) do not honour HTTP byte ranges. Under `flutter run -d chrome`,
+hot reload does not re-load the vendored archive loader; do a full restart. Details:
+`design/MAP_OPTIONS.md` §4a.
 
 Note: Supabase's built-in email sender is rate limited on the free tier. For heavier testing, configure your own SMTP under Authentication → Emails.
 
@@ -144,8 +163,8 @@ Note: Supabase's built-in email sender is rate limited on the free tier. For hea
 
 | # | Steps | Expected |
 |---|---|---|
-| 48 | Header signal icon | Offline readiness list; alerts and Tol shown as not available; centers flagged as sample |
-| 49 | Prepare → Disaster guidebook → Flood | "Flood preparedness guide coming soon"; switch to Filipino → "Baha" |
+| 48 | Header signal icon | Offline readiness lists only shipped capabilities (map, area data, centres, household, backup); centres flagged as sample |
+| 49 | Prepare tab | Checklist and recommendations render; no guidebook section (removed until cited content exists) |
 | 50 | (Signed in, Supabase configured) check a go-bag item | Within a few seconds Readiness shows "Everything is backed up"; a row appears in `sync_records` |
 | 51 | Airplane mode, edit a contact, reopen Readiness | "1 change waiting to upload"; turn Wi-Fi on → it uploads |
 | 52 | Sign in on a second phone with the same account | After onboarding, contacts/supplies/checklist appear from the backup |
@@ -174,7 +193,32 @@ Note: Supabase's built-in email sender is rate limited on the free tier. For hea
 | 65 | Turn on TalkBack and go through each tab | Every button and icon is read with a meaningful name; order makes sense |
 | 66 | Android Settings → Font size largest + Display size largest | No text is cut off; bottom sheets scroll |
 | 67 | Airplane mode from a fresh start | App opens with correct fonts; Offline readiness shows what is available |
-| 68 | Home → flood alert sound → tap twice | Plays on the first tap, stops on the second |
+| 68 | (Demo build only) Home → simulated advisory → warning sound → tap twice | Plays on the first tap, stops on the second; the card carries the `SIMULATED · NOT LIVE` tag |
+
+### Demo tools (demo build only; `--dart-define=DEMO_TOOLS=true`)
+
+| # | Steps | Expected |
+|---|---|---|
+| 68a | Settings → long-press the version row | The Demo tools panel opens; a "Demo tools" tile also exists in More |
+| 68b | My location → "Batasan Hills" | The Safe places list re-ranks from that point; the banner "Demo overrides active" shows on every tab |
+| 68c | My location → "Outside QC — Manila City Hall" | Safe places shows the outside-service-area message |
+| 68d | Advisory → fill flood sample → "Show on Home" | Home shows the advisory card with `SIMULATED · NOT LIVE`; the header bell opens it; dismiss works; a changed scenario reappears |
+| 68e | Routes → enable fake routes → "Plan route to selected centre" | A straight-line route draws; the card shows `By route`; wheelchair mode reads verified; attribution says simulated |
+| 68f | Ranking weights → "Baseline 45/35/20" | Cards disclose "Default weights"; the diagnostics table updates |
+| 68g | "Reset all demo overrides" → confirm | Banner disappears; Safe places falls back to real GPS behaviour; without the flag none of these entries exist |
+
+### Hazard overlay (Safe places screen; the web side is Chrome-verified 2026-10-20)
+
+Rows 69–71 cover the NOAH hazard button. Data details and the licence caveat:
+`design/MAP_OPTIONS.md` §4a. After pulling new code, run a **full app restart** — under
+`flutter run -d chrome`, hot-reloading an already-open page does not re-load the vendored
+archive loader script.
+
+| # | Steps | Expected |
+|---|---|---|
+| 69 | Safe places → hazard button → "Flood depth" | Legend of modelled-exposure bands (never "safe"); hazard colours shade Quezon City; no "data could not be drawn" note |
+| 70 | Switch to Landslide, then Debris flow, then Storm surge | Colours change per group; debris flow may draw little or nothing (spare in QC is honest); storm surge says it has no data for inland QC and shows no empty key |
+| 71 | (Web) full `flutter run -d chrome` restart, then pick a hazard | One ~51 MB archive fetch on first use per page load, then colours with no error; "colourless legend with no error" on an old tab means the restart step was skipped |
 
 ### Regenerating the database code
 After changing `lib/core/database/app_database.dart`:

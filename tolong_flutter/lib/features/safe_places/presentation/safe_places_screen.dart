@@ -7,13 +7,19 @@ import '../../../l10n/l10n.dart';
 import '../../../shared/widgets/character.dart';
 import '../../../shared/widgets/common.dart';
 import '../../../shared/widgets/form_widgets.dart';
+import '../application/ranking_controller.dart';
 import '../application/safe_places_controller.dart';
+import '../application/submission_controllers.dart';
+import '../../auth/application/session.dart';
 import '../data/evacuation_center_repository.dart';
+import '../data/hazard_layer_service.dart';
 import '../data/location_service.dart';
 import '../data/offline_map_service.dart';
 import '../data/qc_area_repository.dart';
 import '../data/route_service.dart';
 import '../domain/evacuation_center.dart';
+import '../domain/hazard.dart';
+import '../domain/shelter_submission.dart';
 import 'barangay_widgets.dart';
 import 'map_view.dart';
 import 'navigation_screen.dart';
@@ -28,6 +34,13 @@ class SafePlacesScreen extends ConsumerStatefulWidget {
 
 class _SafePlacesScreenState extends ConsumerState<SafePlacesScreen> {
   MapHandle? _map;
+
+  /// What the map last reported about the hazard overlay drawing, from the idle pin in
+  /// `map_view.dart`. Only [HazardDrawState.filterMatchedNothing] is shown: the legend would
+  /// otherwise lie about colours the map never painted. Paired with the group it was measured
+  /// for, because picking a different group makes the report stale until the next idle frame.
+  HazardGroup? _hazardDrawnGroup;
+  HazardDrawState? _hazardDraw;
 
   void _select(EvacuationCenter c) {
     ref.read(safePlacesProvider.notifier).select(c.id);
@@ -51,6 +64,62 @@ class _SafePlacesScreenState extends ConsumerState<SafePlacesScreen> {
     await _map?.focus(b.center, zoom: 15);
   }
 
+  /// Picks which modelled hazard the map overlays. Chosen from a sheet rather than a row of map
+  /// buttons so four groups fit without crowding the map controls.
+Future<void> _pickHazard(HazardOverlayController controller, HazardGroup? current) async {
+    final l = context.l10n;
+    // Report rather than hide: if the archive cannot be read, say so plainly instead of showing a
+    // control that does nothing.
+    final available = ref.read(hazardLayerStatusProvider);
+    final unavailable = available is HazardProtocolMissing;
+    final picked = await showModalBottomSheet<HazardGroup?>(
+      context: context,
+      // Scrollable: four groups plus headings and the "off" row exceed a 360 dp sheet, and the
+      // accessibility checklist requires bottom sheets to scroll at large text sizes.
+      isScrollControlled: true,
+      builder: (sheetContext) => SafeArea(
+        child: SingleChildScrollView(
+          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(AppSpacing.xl, 0, AppSpacing.xl, AppSpacing.sm),
+              child: Text(l.hazardLegendTitle, style: serif(19)),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(AppSpacing.xl, 0, AppSpacing.xl, AppSpacing.md),
+              child: Text(unavailable ? l.hazardUnavailableGeneric : l.hazardLegendNote,
+                  style: sans(12, height: 1.45, color: unavailable ? AppColors.terracotta : AppColors.muted)),
+            ),
+          for (final g in HazardGroup.values)
+            ListTile(
+              // 48 dp so the tap target meets the accessibility test.
+              minTileHeight: 48,
+              // Disabled rather than removed: the user can see what the app supports and is told
+              // why it cannot show it right now.
+              enabled: !unavailable,
+              leading: Icon(Icons.layers_outlined,
+                  size: 20, color: unavailable ? AppColors.muted : AppColors.blue),
+              title: Text(l.hazardGroupName(g),
+                  style: sans(13,
+                      weight: FontWeight.w600, color: unavailable ? AppColors.muted : AppColors.ink)),
+              trailing: current == g
+                  ? const Icon(Icons.check_rounded, size: 18, color: AppColors.sage)
+                  : null,
+              onTap: () => Navigator.of(sheetContext).pop(g),
+            ),
+          ListTile(
+            minTileHeight: 48,
+            leading: const Icon(Icons.visibility_off_outlined, size: 20, color: AppColors.muted),
+            title: Text(l.hazardButton, style: sans(13, color: AppColors.muted)),
+            onTap: () => Navigator.of(sheetContext).pop(),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          ]),
+        ),
+      ),
+    );
+    controller.select(picked);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
@@ -61,10 +130,16 @@ class _SafePlacesScreenState extends ConsumerState<SafePlacesScreen> {
     final user = state.userPoint;
     final anyUnverified = centers.any((c) => !c.verified);
     final boundary = ref.watch(qcBoundaryProvider).value;
+    final hazardGroup = ref.watch(hazardOverlayProvider);
+    final hazardController = ref.read(hazardOverlayProvider.notifier);
+    final hazardDraw = _hazardDrawnGroup == hazardGroup ? _hazardDraw : null;
 
     final selected = centers.where((c) => c.id == state.selectedId).firstOrNull;
     final nearestId =
         user == null || centers.isEmpty || state.outsideServiceArea ? null : byDistance(centers, user).first.$1.id;
+    final ranking = ref.watch(rankedCentersProvider);
+    final rankedSelected =
+        ranking.ranked.where((r) => r.center.id == state.selectedId).firstOrNull;
 
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       const ContextHero(scene: Scene.map, background: AppColors.blueSoft),
@@ -87,6 +162,9 @@ class _SafePlacesScreenState extends ConsumerState<SafePlacesScreen> {
                     final c = centers.where((x) => x.id == id).firstOrNull;
                     if (c != null) _select(c);
                   },
+                  hazardGroup: hazardGroup,
+                  onHazardDrawState: (s) =>
+                      setState(() { _hazardDrawnGroup = hazardGroup; _hazardDraw = s; }),
                   onReady: (handle) => _map = handle,
                 ),
               ),
@@ -112,11 +190,24 @@ class _SafePlacesScreenState extends ConsumerState<SafePlacesScreen> {
                   tooltip: l.mapResetView,
                   onTap: () => _map?.showBounds(boundary?.bounds ?? qcApproxBounds),
                 ),
+                // Always shown. An earlier version hid this on web with `if (!kIsWeb)`, which meant the overlay
+                // was unreachable in exactly the platform it had been wired for. Availability is
+                // now reported by [hazardLayerStatusProvider] instead, so a build that cannot read
+                // the archive says so rather than silently losing the control.
+                const SizedBox(height: 6),
+                _MapButton(
+                  icon: Icons.water_damage_outlined,
+                  tooltip: l.hazardButton,
+                  active: hazardGroup != null,
+                  onTap: () => _pickHazard(hazardController, hazardGroup),
+                ),
               ]),
             ),
           ]),
         ),
       ),
+      if (hazardGroup != null)
+        _HazardLegendCard(group: hazardGroup, drawn: hazardDraw),
       _LocationMessage(state: state),
       if (centersAsync.isLoading)
         const Padding(padding: EdgeInsets.all(AppSpacing.xl), child: Center(child: CircularProgressIndicator()))
@@ -128,6 +219,9 @@ class _SafePlacesScreenState extends ConsumerState<SafePlacesScreen> {
             center: selected,
             heading: selected.id == nearestId ? l.centerNearest : l.centerSelected,
             distanceKm: user?.distanceKm(selected.location),
+            ranked: rankedSelected,
+            weightsTrained: ranking.weightsTrained,
+            profile: state.profile,
           )
         else
           Padding(
@@ -140,7 +234,9 @@ class _SafePlacesScreenState extends ConsumerState<SafePlacesScreen> {
           fromBarangay: user == null ? state.barangay?.name : null,
           selectedId: state.selectedId,
           onSelect: _select,
+          ranking: ranking,
         ),
+        const _AddShelterCard(),
         const _OfflineMapCard(),
       ],
     ]);
@@ -201,6 +297,54 @@ class _BarangayBar extends ConsumerWidget {
   }
 }
 
+class _AddShelterCard extends ConsumerWidget {
+  const _AddShelterCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    final signedIn = ref.watch(sessionProvider.select((s) => s.signedIn));
+    final pendingCount = signedIn
+        ? ref.watch(mySubmissionsProvider).value?.where((s) =>
+            s.status == SubmissionStatus.pending).length
+        : null;
+    return CardBox(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xs),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          onTap: () => context.push('/submit-shelter'),
+          leading: const IconTile(
+            icon: Icons.add_location_alt_outlined,
+            background: AppColors.sageSoft,
+            foreground: AppColors.primary,
+            size: 34,
+            radius: 11,
+          ),
+          title: Text(l.shelterAddTitle, style: sans(13, weight: FontWeight.w600)),
+          subtitle: Text(l.shelterAddSub, style: sans(11, color: AppColors.muted)),
+          trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFFAAB4AD)),
+        ),
+        if (pendingCount != null && pendingCount > 0)
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            onTap: () => context.push('/my-submissions'),
+            leading: const IconTile(
+              icon: Icons.fact_check_outlined,
+              background: AppColors.amberSoft,
+              foreground: Color(0xFF9A7036),
+              size: 34,
+              radius: 11,
+            ),
+            title: Text(l.mySubmissionsTitle, style: sans(13, weight: FontWeight.w600)),
+            subtitle: Text(l.mySubmissionsPending(pendingCount), style: sans(11, color: AppColors.muted)),
+            trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFFAAB4AD)),
+          ),
+      ]),
+    );
+  }
+}
+
 class _OfflineMapCard extends ConsumerWidget {
   const _OfflineMapCard();
 
@@ -229,17 +373,26 @@ class _OfflineMapCard extends ConsumerWidget {
 }
 
 class _MapButton extends StatelessWidget {
-  const _MapButton({required this.icon, required this.tooltip, required this.onTap, this.busy = false});
+  const _MapButton({
+    required this.icon,
+    required this.tooltip,
+    required this.onTap,
+    this.busy = false,
+    this.active = false,
+  });
 
   final IconData icon;
   final String tooltip;
   final VoidCallback onTap;
   final bool busy;
 
+  /// Tints the button so an enabled map layer is obvious without reading the legend.
+  final bool active;
+
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.cream,
+      color: active ? AppColors.sageSoft : AppColors.cream,
       shape: const CircleBorder(side: BorderSide(color: AppColors.line)),
       elevation: 1,
       child: IconButton(
@@ -247,8 +400,75 @@ class _MapButton extends StatelessWidget {
         onPressed: busy ? null : onTap,
         icon: busy
             ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
-            : Icon(icon, size: 20, color: AppColors.ink),
+            : Icon(icon, size: 20, color: active ? AppColors.sage : AppColors.ink),
       ),
+    );
+  }
+}
+
+/// On-screen legend for the active hazard group.
+///
+/// Deliberately a legend rather than tap-a-polygon-to-inspect: every band has to be explainable
+/// without hunting on the map, and the wording has to be readable by someone who is stressed.
+///
+/// [drawn] is what the map reported about actually painting the group. Only
+/// `filterMatchedNothing` is rendered, as a data note: the legend sitting there while the map
+/// draws nothing is exactly the silent failure this once shipped as, and the honest UI says so
+/// instead of leaving a colourless map to be read as "no hazard here".
+class _HazardLegendCard extends StatelessWidget {
+  const _HazardLegendCard({required this.group, this.drawn});
+
+  final HazardGroup group;
+  final HazardDrawState? drawn;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final bands = group.severityBands;
+    return CardBox(
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          const Expanded(child: Eyebrow('MODELLED HAZARD')),
+          Text(l.hazardTitle, style: sans(10, weight: FontWeight.w700, color: AppColors.blue)),
+        ]),
+        const SizedBox(height: AppSpacing.sm),
+        Text(l.hazardLegendNote, style: sans(12, height: 1.45, color: AppColors.muted)),
+        const SizedBox(height: AppSpacing.md),
+        if (drawn == HazardDrawState.filterMatchedNothing)
+          Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.md),
+            child: Text(l.hazardNothingDrawn,
+                style: sans(12, height: 1.45, color: AppColors.terracotta)),
+          ),
+        // Storm surge is a coastal hazard and Quezon City is inland, so the archive has no data
+        // for it here. Say so rather than showing an empty key.
+        if (group == HazardGroup.stormSurge)
+          Text(l.hazardNoData, style: sans(12, height: 1.45, color: AppColors.terracotta))
+        else
+          for (final band in bands)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Row(children: [
+                Container(
+                  width: 22,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    // `band.color` is '#RRGGBB'; Flutter wants AARRGGBB.
+                    color: Color(int.parse('FF${band.color.substring(1)}', radix: 16)),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                    child: Text(l.hazardSeverity(band.level), style: sans(12, weight: FontWeight.w600))),
+              ]),
+            ),
+        const SizedBox(height: AppSpacing.sm),
+        Text(l.hazardLowerExposure, style: sans(11, height: 1.45, color: AppColors.muted)),
+        Text(l.hazardCoverageGap, style: sans(11, height: 1.45, color: AppColors.muted)),
+        const SizedBox(height: AppSpacing.sm),
+        Text(l.hazardSource, style: sans(10, height: 1.4, color: AppColors.muted)),
+      ]),
     );
   }
 }
@@ -289,15 +509,30 @@ class _LocationMessage extends ConsumerWidget {
 }
 
 class _CenterCard extends StatelessWidget {
-  const _CenterCard({required this.center, required this.heading, required this.distanceKm});
+  const _CenterCard({
+    required this.center,
+    required this.heading,
+    required this.distanceKm,
+    required this.profile,
+    this.ranked,
+    this.weightsTrained = false,
+  });
 
   final EvacuationCenter center;
   final String heading;
   final double? distanceKm;
 
+  /// Non-null when the ranking engine has a feature row for this centre, in which case the
+  /// card discloses weights provenance, exposure and travel (spec §6). Null when ranking is
+  /// unavailable, so the card shows no invented numbers.
+  final RankedCenter? ranked;
+  final bool weightsTrained;
+  final RouteProfile profile;
+
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
+    final rankedRow = ranked;
     String orUnverified(String? v) => (v == null || v.trim().isEmpty) ? l.notVerified : v;
 
     return CardBox(
@@ -338,6 +573,28 @@ class _CenterCard extends StatelessWidget {
         _Fact(l.centerStatus, orUnverified(center.status)),
         _Fact(l.centerSource, center.source),
         _Fact(l.centerLastVerified, center.lastVerified == null ? l.notVerified : l.date(center.lastVerified!)),
+        if (rankedRow != null) ...[
+          const Divider(color: AppColors.line),
+          _Fact(l.rankWeightsLabel, weightsTrained ? l.rankWeightsTrained : l.rankWeightsDefault),
+          _Fact(
+            l.rankExposureLabel,
+            rankedRow.exposureUnknown
+                ? l.rankExposureUnknown
+                : l.rankExposureValue(l.number(rankedRow.features.exposure)),
+          ),
+          _Fact(
+            l.rankTravelLabel,
+            rankedRow.features.travelEstimated
+                ? l.rankTravelEstimated(l.number((rankedRow.features.travelSeconds / 60).roundToDouble()))
+                : l.rankTravelByRoute(l.number((rankedRow.features.travelSeconds / 60).roundToDouble())),
+          ),
+          _Fact(
+            l.rankAccessibilityLabel,
+            profile == RouteProfile.walking
+                ? l.rankAccessibilityWalking
+                : _accessibilityText(rankedRow.features.accessibility, l),
+          ),
+        ],
         const SizedBox(height: AppSpacing.md),
         _RouteSection(center: center),
       ]),
@@ -424,6 +681,14 @@ class _RouteSection extends ConsumerWidget {
   }
 }
 
+/// Accessibility fact wording: marks what was actually checked and what is neutral, so a gap
+/// is never shown as a pass (spec §8: checked-not-verified shows as a gap).
+String _accessibilityText(double value, AppLocalizations l) {
+  if (value == 1.0) return l.rankAccessibilityVerified;
+  if (value == 0.0) return l.rankAccessibilityFailed;
+  return l.rankAccessibilityNeutral;
+}
+
 class _Fact extends StatelessWidget {
   const _Fact(this.label, this.value);
 
@@ -455,6 +720,7 @@ class _CenterList extends StatelessWidget {
     required this.fromBarangay,
     required this.selectedId,
     required this.onSelect,
+    required this.ranking,
   });
 
   final List<EvacuationCenter> centers;
@@ -467,13 +733,17 @@ class _CenterList extends StatelessWidget {
   final String? selectedId;
   final ValueChanged<EvacuationCenter> onSelect;
 
+  /// Ranking output; when `ranking.available` the list is score-ordered and discloses its
+  /// provenance and gaps. Otherwise the list stays in distance order and, if a reference
+  /// existed, says why (spec §3 asset failure must never read as "no hazard data").
+  final RankingState ranking;
+
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final rows = reference == null ? [for (final c in centers) (c, null as double?)] : byDistance(centers, reference!);
     return CardBox(
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Eyebrow(l.centersTitle.toUpperCase()),
+        Eyebrow(ranking.available ? l.rankWeightsTitle : l.centersTitle.toUpperCase()),
         if (centers.any((c) => !c.verified)) ...[
           const SizedBox(height: AppSpacing.sm),
           Text(l.centersDemoNote, style: sans(11, height: 1.45, color: AppColors.muted)),
@@ -483,20 +753,55 @@ class _CenterList extends StatelessWidget {
           Text(l.centersFromBarangay(fromBarangay!), style: sans(11, height: 1.45, color: AppColors.blue)),
         ],
         const SizedBox(height: AppSpacing.sm),
-        for (final (c, km) in rows)
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            selected: c.id == selectedId,
-            selectedColor: AppColors.terracotta,
-            onTap: () => onSelect(c),
-            leading: Icon(Icons.location_on_rounded, color: c.id == selectedId ? AppColors.terracotta : AppColors.blue),
-            title: Text(c.name, style: sans(13, weight: FontWeight.w600)),
-            subtitle: Text(
-              km == null ? l.facilityType(c.facilityType) : '${l.facilityType(c.facilityType)} · ≈ ${l.number(km)} km',
-              style: sans(11, color: AppColors.muted),
-            ),
-            trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFFAAB4AD)),
+        if (ranking.available) ...[
+          Text(l.rankNote, style: sans(11, height: 1.45, color: AppColors.muted)),
+          const SizedBox(height: 4),
+          Text(
+            '${l.rankWeightsLabel}: ${ranking.weightsTrained ? l.rankWeightsTrained : l.rankWeightsDefault}',
+            style: sans(10, weight: FontWeight.w600, color: AppColors.blue),
           ),
+          if (ranking.ranked.any((r) => r.exposureUnknown)) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Text(l.rankExposureUnknown, style: sans(11, height: 1.45, color: AppColors.terracotta)),
+          ],
+        ] else if (reference != null) ...[
+          const SizedBox(height: AppSpacing.sm),
+          Text(l.rankDistanceFallback, style: sans(11, height: 1.45, color: AppColors.muted)),
+        ],
+        const SizedBox(height: AppSpacing.sm),
+        if (ranking.available)
+          for (final r in ranking.ranked)
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              selected: r.center.id == selectedId,
+              selectedColor: AppColors.terracotta,
+              onTap: () => onSelect(r.center),
+              leading: Icon(Icons.location_on_rounded,
+                  color: r.center.id == selectedId ? AppColors.terracotta : AppColors.blue),
+              title: Text(r.center.name, style: sans(13, weight: FontWeight.w600)),
+              subtitle: Text(
+                '${l.facilityType(r.center.facilityType)} · ${l.rankScore(l.number(r.score))} · ${r.features.travelEstimated ? l.rankTravelEstimated(l.number((r.features.travelSeconds / 60).roundToDouble())) : l.rankTravelByRoute(l.number((r.features.travelSeconds / 60).roundToDouble()))}',
+                style: sans(11, color: AppColors.muted),
+              ),
+              trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFFAAB4AD)),
+            )
+        else
+          for (final (c, km) in reference == null ? [for (final c in centers) (c, null as double?)] : byDistance(centers, reference!))
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              selected: c.id == selectedId,
+              selectedColor: AppColors.terracotta,
+              onTap: () => onSelect(c),
+              leading: Icon(Icons.location_on_rounded, color: c.id == selectedId ? AppColors.terracotta : AppColors.blue),
+              title: Text(c.name, style: sans(13, weight: FontWeight.w600)),
+              subtitle: Text(
+                km == null
+                    ? l.facilityType(c.facilityType)
+                    : '${l.facilityType(c.facilityType)} · ≈ ${l.number(km)} km',
+                style: sans(11, color: AppColors.muted),
+              ),
+              trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFFAAB4AD)),
+            ),
       ]),
     );
   }

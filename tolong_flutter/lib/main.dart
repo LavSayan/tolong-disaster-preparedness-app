@@ -7,9 +7,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app/router.dart';
+import 'core/config/demo.dart';
 import 'core/config/env.dart';
 import 'core/storage/secure_vault.dart';
 import 'core/theme.dart';
+import 'features/demo/application/demo_session.dart';
+import 'features/demo/data/demo_location_service.dart';
+import 'features/demo/data/demo_route_service.dart';
+import 'features/demo/domain/demo_models.dart';
+import 'features/safe_places/data/hazard_archive.dart';
+import 'features/safe_places/data/hazard_layer_service.dart';
+import 'features/safe_places/data/location_service.dart';
+import 'features/safe_places/data/ranking_weights_repository.dart';
+import 'features/safe_places/data/route_service.dart';
 import 'features/settings/settings.dart';
 import 'l10n/l10n.dart';
 
@@ -27,8 +37,43 @@ Future<void> main() async {
       authOptions: FlutterAuthClientOptions(localStorage: SecureSessionStorage()),
     );
   }
+  // Preparing the hazard archive: on web it registers the `pmtiles://` protocol with MapLibre
+  // GL JS (which the map loads itself, so `maplibregl` does not exist while index.html is
+  // parsed); on Android and iOS it extracts the bundled archive to a seekable file. See
+  // `hazard_archive.dart`.
+  //
+  // This must not stop the app from starting: `prepareHazardArchive` reports `null` on any
+  // failure instead of throwing, and the hazard overlay then reports itself unavailable —
+  // a far better outcome than a blank screen. A missing flood layer is an inconvenience; an
+  // app that will not launch is a disaster in itself.
+  try {
+    final archiveUrl = await prepareHazardArchive();
+    setHazardArchiveUrl(archiveUrl);
+    setPmTilesRegistered(archiveUrl != null);
+  } catch (error) {
+    debugPrint('Hazard archive unavailable, continuing without it: $error');
+    setHazardArchiveUrl(null);
+    setPmTilesRegistered(false);
+  }
   runApp(ProviderScope(
-    overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+    overrides: [
+      sharedPreferencesProvider.overrideWithValue(prefs),
+      // Demo builds only (compiled DEMO_TOOLS define): wrap the real services so location,
+      // routes and ranking weights can be simulated from the /demo panel. Normal builds keep
+      // the plain providers — no demo code runs, and the tree-shaker drops these branches.
+      if (demoToolsEnabled) ...[
+        locationServiceProvider
+            .overrideWith((ref) => DemoLocationService(ref, GeolocatorLocationService())),
+        routeServiceProvider.overrideWith((ref) => DemoRouteService(ref, defaultRouteService())),
+        rankingWeightsProvider.overrideWith((ref) async {
+          final mode = ref.watch(demoSessionProvider.select((s) => s.weightsMode));
+          if (mode == DemoWeightsMode.baseline) {
+            return const RankingDefaults(reason: 'demo: hand-set baseline weights (45/35/20)');
+          }
+          return ref.watch(rankingWeightsRepositoryProvider).load();
+        }),
+      ],
+    ],
     child: const TolongApp(),
   ));
 }

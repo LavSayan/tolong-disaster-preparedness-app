@@ -1,0 +1,58 @@
+pmtiles.js — vendored third-party library
+=======================================
+
+Source:  https://unpkg.com/pmtiles@4.3.0/dist/pmtiles.js
+Project: https://github.com/protomaps/PMTiles
+Version: 4.3.0 (IIFE bundle)
+
+Why it is vendored
+------------------
+MapLibre GL JS cannot read a PMTiles archive without this library: the `pmtiles://` protocol
+handler lives here, not in MapLibre. On Android and iOS MapLibre Native resolves the protocol
+internally and this file is never loaded — see
+`lib/features/safe_places/data/hazard_protocol_stub.dart`.
+
+It is committed to the repo, rather than loaded from a CDN, on purpose:
+
+- The app is offline-first. A CDN `<script>` on the boot path means a slow or unreachable CDN
+  breaks start-up, which would contradict the whole premise of the app.
+- `registerPmTilesProtocol()` runs inside `main()`. Without this library the `pmtiles` global is
+  undefined and the `@JS()` call throws, which would stop the app before its first frame.
+
+Updating
+--------
+Re-download the IIFE bundle and record the new version in the filename and above. The
+`pmtiles://` source URL and the registration in `main()` must stay identical after the
+`pmtiles://` prefix: the library matches archives by `getKey()`, which is the string handed to
+`FetchSource`. See `lib/features/safe_places/data/map_style.dart`.
+
+Licence (BSD-3-Clause)
+----------------------
+Copyright 2021 Protomaps LLC
+
+Redistribution and use in source and binary forms, with or without modification, are permitted
+provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of
+   conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice, this list of
+   conditions and the following disclaimer in the documentation and/or other materials provided
+   with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its contributors may be used to
+   endorse or promote products derived from this software without specific prior written
+   permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY
+WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Note: this licence covers the reference implementation above. The PMTiles *specification* is public
+domain (CC0). Bundled tilesets are governed separately — see `docs/MAP_OPTIONS.md` for the NOAH
+hazard and Protomaps/OpenStreetMap basemap terms.

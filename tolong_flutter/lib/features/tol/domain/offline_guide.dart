@@ -1,5 +1,4 @@
 import '../../../l10n/l10n.dart';
-import '../../guidebook/domain/guidebook.dart';
 import '../../prepare/domain/checklist.dart';
 import '../../readiness/domain/readiness.dart';
 import '../../readiness/domain/recommendations.dart';
@@ -72,14 +71,12 @@ class OfflineSnapshot {
     this.readiness,
     this.recommendations = const [],
     this.contactCount = 0,
-    this.guides = const [],
   });
 
   final List<ChecklistItemView>? checklist;
   final ReadinessReport? readiness;
   final List<Recommendation> recommendations;
   final int contactCount;
-  final List<GuideCategory> guides;
 }
 
 String offlineAnswer(AppLocalizations l, String question, OfflineSnapshot s) {
@@ -119,9 +116,16 @@ String offlineAnswer(AppLocalizations l, String question, OfflineSnapshot s) {
     case TolIntent.contacts:
       return l.tolOffContacts(s.contactCount);
     case TolIntent.guide:
-      final g = s.guides.where((c) => c.id == match.guideId).firstOrNull;
-      final name = g?.title.of(l.localeName) ?? match.guideId!;
-      return g != null && g.hasContent ? l.tolOffGuideReady(name) : l.tolOffGuideSoon(name);
+      // The in-app guidebook is absent until cited content exists, so guide questions get an
+      // honest pointer to the official sources instead of an empty screen reference.
+      final name = switch (match.guideId) {
+        'flood' => l.tolGuideNameFlood,
+        'earthquake' => l.tolGuideNameEarthquake,
+        'fire' => l.tolGuideNameFire,
+        'typhoon' => l.tolGuideNameTyphoon,
+        _ => l.tolGuideNameFirstAid,
+      };
+      return l.tolOffGuideSoon(name);
     case TolIntent.greeting:
       return l.tolOffGreeting;
     case TolIntent.unknown:

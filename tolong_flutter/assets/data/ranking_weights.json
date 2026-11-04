@@ -1,0 +1,31 @@
+{
+  "constraints": {
+    "minExposure": 30,
+    "nonNegative": true,
+    "sum": 100
+  },
+  "dataset": {
+    "pairs": 119,
+    "path": "tools/ranking/data/pairs.jsonl",
+    "sha256": "b52f26e6e42ba02c1776ab4201347cd13fc1919f43aad34f7f9262eb52e86154"
+  },
+  "factors": [
+    "exposure",
+    "travel",
+    "accessibility"
+  ],
+  "fit": {
+    "baselineAccuracy": 0.925,
+    "cvLogLoss": 0.662,
+    "cvPairwiseAccuracy": 0.925,
+    "lambda": 0.0
+  },
+  "fittedAt": "2026-10-25",
+  "method": "pairwise-logistic-slsqp",
+  "version": 1,
+  "weights": {
+    "accessibility": 11.8106,
+    "exposure": 30.0,
+    "travel": 58.1894
+  }
+}

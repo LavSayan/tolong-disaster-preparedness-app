@@ -22,8 +22,6 @@ const guestRoutes = [
   '/settings',
   '/offline-map',
   '/offline-readiness',
-  '/guidebook',
-  '/guidebook/first_aid',
   '/tol',
 ];
 

@@ -7,7 +7,7 @@ void main() {
   testWidgets('without Supabase config the app lands on Welcome and says accounts are unavailable', (tester) async {
     await pumpApp(tester);
     expect(find.text('Your safety starts with preparation.'), findsOneWidget);
-    expect(find.textContaining('aren\'t configured in this build'), findsOneWidget);
+    expect(find.textContaining('are not configured in this build'), findsOneWidget);
   });
 
   testWidgets('login shows an honest error when accounts are not configured', (tester) async {
@@ -20,7 +20,7 @@ void main() {
     await scrollTo(tester, find.widgetWithText(FilledButton, 'Log in'));
     await tester.tap(find.widgetWithText(FilledButton, 'Log in'));
     await tester.pumpAndSettle();
-    expect(find.textContaining('Online accounts aren\'t set up'), findsOneWidget);
+    expect(find.textContaining('Online accounts are not configured'), findsOneWidget);
   });
 
   testWidgets('emergency access opens the dashboard and every tab renders', (tester) async {

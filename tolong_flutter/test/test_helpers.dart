@@ -14,14 +14,23 @@ import 'package:tolong_flutter/features/sync/domain/sync_types.dart';
 import 'package:tolong_flutter/features/tol/data/tol_service.dart';
 import 'package:tolong_flutter/features/tol/domain/tol_models.dart';
 import 'package:tolong_flutter/core/storage/secure_vault.dart';
+import 'package:tolong_flutter/core/config/demo.dart';
 import 'package:tolong_flutter/features/auth/data/auth_repository.dart';
-import 'package:tolong_flutter/features/guidebook/data/guidebook_repository.dart';
+import 'package:tolong_flutter/features/demo/application/demo_session.dart';
+import 'package:tolong_flutter/features/demo/data/demo_location_service.dart';
+import 'package:tolong_flutter/features/demo/data/demo_route_service.dart';
+import 'package:tolong_flutter/features/demo/domain/demo_models.dart';
 import 'package:tolong_flutter/features/household/domain/models.dart';
 import 'package:tolong_flutter/features/safe_places/data/evacuation_center_repository.dart';
+import 'package:tolong_flutter/features/safe_places/data/hazard_bands_repository.dart';
 import 'package:tolong_flutter/features/safe_places/data/location_service.dart';
 import 'package:tolong_flutter/features/safe_places/data/offline_map_service.dart';
 import 'package:tolong_flutter/features/safe_places/data/qc_area_repository.dart';
+import 'package:tolong_flutter/features/safe_places/data/ranking_weights_repository.dart';
 import 'package:tolong_flutter/features/safe_places/data/route_service.dart';
+import 'package:tolong_flutter/features/safe_places/data/shelter_review_repository.dart';
+import 'package:tolong_flutter/features/safe_places/data/shelter_submission_repository.dart';
+import 'package:tolong_flutter/features/safe_places/data/validated_shelter_repository.dart';
 import 'package:tolong_flutter/features/safe_places/domain/evacuation_center.dart';
 import 'package:tolong_flutter/features/safe_places/presentation/map_view.dart';
 import 'package:tolong_flutter/main.dart';
@@ -50,7 +59,9 @@ class FakeMap implements MapHandle {
           required route,
           required outline,
           required onCenterTap,
-          required onReady}) {
+          required onReady,
+          hazardGroup,
+          onHazardDrawState}) {
         WidgetsBinding.instance.addPostFrameCallback((_) => onReady(this));
         // Padded so the fake "pins" don't sit under the real map control buttons on the right.
         return Padding(
@@ -89,7 +100,10 @@ class FakeLocationService implements LocationService {
 
 final fixedNow = DateTime(2026, 10, 18, 9, 30);
 
-/// Boots the real app on a 360x780 dp phone with in-memory storage.
+/// Boots the real app on a 360x780 dp phone with in-memory storage. [demoTools] mirrors a
+/// `--dart-define=DEMO_TOOLS=true` build: it turns the flag provider on and installs the same
+/// demo wrappers around location/routes/weights that `main()` installs, with the same fakes
+/// underneath.
 Future<SharedPreferences> pumpApp(
   WidgetTester tester, {
   Map<String, Object> prefs = const {'language': 'en'},
@@ -102,9 +116,13 @@ Future<SharedPreferences> pumpApp(
   SyncRemote? syncRemote,
   AppDatabase? database,
   OnlineTolService? tol,
+  ValidatedShelterSource? validatedSource,
+  ShelterSubmissionRepository? submissions,
+  ShelterReviewRepository? review,
+  AdminAccountRepository? admin,
   Size logicalSize = const Size(360, 780),
   bool failCenters = false,
-  bool failGuidebook = false,
+  bool demoTools = false,
 }) async {
   tester.view.physicalSize = logicalSize * 3;
   tester.view.devicePixelRatio = 3;
@@ -126,13 +144,24 @@ Future<SharedPreferences> pumpApp(
       evacuationCentersProvider.overrideWith((ref) async => failCenters
           ? throw const FormatException('test: unreadable centers file')
           : EvacuationCenterRepository.parse(File(EvacuationCenterRepository.assetPath).readAsStringSync())),
+      // Ranking inputs pinned to the repo files the same way, deterministically:
+      // hazard bands parse from the shipped asset; trained weights do not exist yet, so the
+      // app must be seen behaving exactly like the pre-ML version (defaults + disclosure).
+      hazardBandsProvider.overrideWith((ref) async =>
+          HazardBands.parse(File(HazardBandsRepository.assetPath).readAsStringSync())),
+      rankingWeightsProvider.overrideWith((ref) async {
+        if (demoTools) {
+          final mode = ref.watch(demoSessionProvider.select((s) => s.weightsMode));
+          if (mode == DemoWeightsMode.baseline) {
+            return const RankingDefaults(reason: 'demo: hand-set baseline weights (45/35/20)');
+          }
+        }
+        return const RankingDefaults(reason: 'test: no trained weights');
+      }),
       qcBoundaryProvider.overrideWith(
           (ref) async => QcAreaRepository.parseBoundary(File(QcAreaRepository.boundaryPath).readAsStringSync())),
       barangaysProvider.overrideWith(
           (ref) async => QcAreaRepository.parseBarangays(File(QcAreaRepository.barangaysPath).readAsStringSync())),
-      guidebookProvider.overrideWith((ref) async => failGuidebook
-          ? throw const FormatException('test: unreadable guidebook')
-          : GuidebookRepository.parse(File(GuidebookRepository.assetPath).readAsStringSync())),
       offlineMapServiceProvider.overrideWithValue(offline ?? FakeOfflineMapService()),
       syncRemoteProvider.overrideWithValue(syncRemote),
       appDatabaseProvider.overrideWith((ref) {
@@ -142,9 +171,24 @@ Future<SharedPreferences> pumpApp(
       }),
       connectivityProvider.overrideWithValue(const Stream.empty()),
       onlineTolServiceProvider.overrideWithValue(tol),
-      locationServiceProvider.overrideWithValue(location ?? FakeLocationService(const LocationDenied())),
-      routeServiceProvider
-          .overrideWithValue(routes ?? FakeRouteService(const RouteFailed(RouteErrorCode.notConfigured))),
+      demoToolsEnabledProvider.overrideWithValue(demoTools),
+      validatedShelterSourceProvider.overrideWithValue(validatedSource ?? UnconfiguredValidatedShelterSource()),
+      shelterSubmissionRepositoryProvider
+          .overrideWithValue(submissions ?? UnconfiguredShelterSubmissionRepository()),
+      shelterReviewRepositoryProvider.overrideWithValue(review ?? UnconfiguredShelterReviewRepository()),
+      adminAccountRepositoryProvider.overrideWithValue(admin ?? UnconfiguredAdminAccountRepository()),
+      // The location/route fakes sit underneath the demo wrappers exactly as the real
+      // Geolocator/ORS services would in a demo build.
+      if (demoTools) ...[
+        locationServiceProvider.overrideWith(
+            (ref) => DemoLocationService(ref, location ?? FakeLocationService(const LocationDenied()))),
+        routeServiceProvider.overrideWith((ref) =>
+            DemoRouteService(ref, routes ?? FakeRouteService(const RouteFailed(RouteErrorCode.notConfigured)))),
+      ] else ...[
+        locationServiceProvider.overrideWithValue(location ?? FakeLocationService(const LocationDenied())),
+        routeServiceProvider
+            .overrideWithValue(routes ?? FakeRouteService(const RouteFailed(RouteErrorCode.notConfigured))),
+      ],
     ],
     child: const TolongApp(),
   ));
@@ -280,6 +324,10 @@ class FakeRouteService implements RouteService {
 }
 
 class FakeAuthRepository implements AuthRepository {
+  FakeAuthRepository({this.role = AppUserRole.user, this.roleFetchFails = false});
+
+  AppUserRole role;
+  bool roleFetchFails;
   UserProfile? synced;
   bool deleted = false;
 
@@ -299,6 +347,9 @@ class FakeAuthRepository implements AuthRepository {
 
   @override
   Stream<AuthEvent> get changes => const Stream.empty();
+
+  @override
+  Future<AppUserRole?> fetchRole() async => roleFetchFails ? null : role;
 
   @override
   Future<void> syncProfile(UserProfile profile) async => synced = profile;

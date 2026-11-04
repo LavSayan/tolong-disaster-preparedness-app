@@ -73,6 +73,34 @@ void main() {
       const s = SessionState(ready: true, user: user, onboardingComplete: true, recoveringPassword: true);
       expect(redirectFor(s, '/home'), '/reset-password');
     });
+
+    test('role-gated routes fail closed', () {
+      const onboarded = SessionState(ready: true, user: user, onboardingComplete: true);
+      expect(redirectFor(onboarded, '/review-shelters'), '/home');
+      expect(redirectFor(onboarded, '/admin'), '/home');
+      // Unverified role is treated as no privilege even when signed in.
+      const unverified = SessionState(ready: true, user: user, onboardingComplete: true, role: AppUserRole.user);
+      expect(redirectFor(unverified, '/review-shelters'), '/home');
+      expect(redirectFor(unverified, '/admin'), '/home');
+    });
+
+    test('submission routes require a signed-in account', () {
+      const guest = SessionState(ready: true, guest: true);
+      expect(redirectFor(guest, '/submit-shelter'), '/welcome');
+      expect(redirectFor(guest, '/my-submissions'), '/welcome');
+      const onboarded = SessionState(ready: true, user: user, onboardingComplete: true);
+      expect(redirectFor(onboarded, '/submit-shelter'), isNull);
+      expect(redirectFor(onboarded, '/my-submissions'), isNull);
+    });
+
+    test('reviewers and admins reach their screens', () {
+      const reviewer = SessionState(ready: true, user: user, onboardingComplete: true, role: AppUserRole.government);
+      expect(redirectFor(reviewer, '/review-shelters'), isNull);
+      expect(redirectFor(reviewer, '/admin'), '/home'); // official is not an admin
+      const admin = SessionState(ready: true, user: user, onboardingComplete: true, role: AppUserRole.admin);
+      expect(redirectFor(admin, '/review-shelters'), isNull); // admin also reviews
+      expect(redirectFor(admin, '/admin'), isNull);
+    });
   });
 
   group('Validators', () {

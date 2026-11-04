@@ -105,7 +105,7 @@ class MapLibreOfflineMapService implements OfflineMapService {
               southwest: ml.LatLng(bounds.southwest.lat, bounds.southwest.lng),
               northeast: ml.LatLng(bounds.northeast.lat, bounds.northeast.lng),
             ),
-            mapStyleUrl: openFreeMapStyle,
+            mapStyleUrl: BasemapStyle.current.styleUrl,
             minZoom: offlineMinZoom.toDouble(),
             maxZoom: offlineMaxZoom.toDouble(),
           ),

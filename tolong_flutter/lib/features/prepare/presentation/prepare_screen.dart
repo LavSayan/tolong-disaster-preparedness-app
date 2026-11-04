@@ -8,7 +8,6 @@ import '../../../l10n/l10n.dart';
 import '../../../shared/widgets/character.dart';
 import '../../../shared/widgets/common.dart';
 import '../../../shared/widgets/form_widgets.dart';
-import '../../guidebook/presentation/guidebook_screens.dart';
 import '../../household/presentation/household_forms.dart';
 import '../../readiness/application/readiness_providers.dart';
 import '../../readiness/presentation/recommendation_list.dart';
@@ -28,7 +27,7 @@ class PrepareScreen extends ConsumerWidget {
     );
     if (!ok) return;
     await ref.read(checklistStateProvider.notifier).resetProgress();
-    if (context.mounted) showSoon(context, l.prepareResetDone);
+    if (context.mounted) showMessage(context, l.prepareResetDone);
   }
 
   @override
@@ -96,7 +95,6 @@ class PrepareScreen extends ConsumerWidget {
           const RecommendationList(hideChecklistItems: true),
         ]),
       ),
-      const GuidebookCard(),
     ]);
   }
 }

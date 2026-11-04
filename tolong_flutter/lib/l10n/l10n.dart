@@ -6,7 +6,10 @@ import '../features/prepare/domain/checklist.dart';
 import '../features/readiness/domain/readiness.dart';
 import '../features/readiness/domain/recommendations.dart';
 import '../features/safe_places/data/route_service.dart';
+import '../features/safe_places/data/shelter_review_repository.dart';
 import '../features/safe_places/domain/evacuation_center.dart';
+import '../features/safe_places/domain/hazard.dart';
+import '../features/safe_places/domain/shelter_submission.dart';
 import '../features/supplies/domain/supplies.dart';
 import 'generated/app_localizations.dart';
 
@@ -146,5 +149,52 @@ extension AppLocalizationsX on AppLocalizations {
         AuthErrorCode.rateLimited => errRateLimited,
         AuthErrorCode.weakPassword => errWeakPassword,
         AuthErrorCode.unknown => errUnknown,
+      };
+
+  String submissionError(SubmissionErrorCode c) => switch (c) {
+        SubmissionErrorCode.notConfigured => errNotConfigured,
+        SubmissionErrorCode.notAuthenticated => subErrNotAuthenticated,
+        SubmissionErrorCode.outsideQc => subErrOutsideQc,
+        SubmissionErrorCode.unknownBarangay => subErrUnknownBarangay,
+        SubmissionErrorCode.duplicateShelter => subErrDuplicateShelter,
+        SubmissionErrorCode.tooManyPending => subErrTooManyPending,
+        SubmissionErrorCode.invalidFields => subErrInvalidFields,
+        SubmissionErrorCode.network => errNetwork,
+        SubmissionErrorCode.unknown => errUnknown,
+      };
+
+  String submissionStatus(SubmissionStatus s) => switch (s) {
+        SubmissionStatus.pending => subStatusPending,
+        SubmissionStatus.approved => subStatusApproved,
+        SubmissionStatus.rejected => subStatusRejected,
+      };
+
+  String roleName(AppUserRole? r) => switch (r) {
+        AppUserRole.government => roleGovernment,
+        AppUserRole.admin => roleAdmin,
+        AppUserRole.user || null => roleUser,
+      };
+
+  String adminError(AdminErrorCode c) => switch (c) {
+        AdminErrorCode.notConfigured => errNotConfigured,
+        AdminErrorCode.notAdmin => adminErrNotAdmin,
+        AdminErrorCode.network => errNetwork,
+        AdminErrorCode.unknown => errUnknown,
+      };
+
+  String hazardGroupName(HazardGroup g) => switch (g) {
+        HazardGroup.flood => hazardGroupFlood,
+        HazardGroup.landslide => hazardGroupLandslide,
+        HazardGroup.stormSurge => hazardGroupStormSurge,
+        HazardGroup.debrisFlow => hazardGroupDebrisFlow,
+      };
+
+  /// Legend wording for a severity band. Bands are ordinal codes in the archive with no labels of
+  /// their own, so the meaning is spelled out here rather than shown as a bare number.
+  String hazardSeverity(int level) => switch (level) {
+        1 => hazardSeverity1,
+        2 => hazardSeverity2,
+        3 => hazardSeverity3,
+        _ => hazardSeverity4,
       };
 }

@@ -1,2 +1,4 @@
-/tolongapp/node_modules/
+# Editor / assistant tooling
 /.claude/launch.json
+/.idea/
+tools/.idea/

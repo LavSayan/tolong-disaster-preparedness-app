@@ -171,7 +171,7 @@ class LoadingButton extends StatelessWidget {
 
 const gap = SizedBox(height: AppSpacing.md);
 
-void showSoon(BuildContext context, String message) {
+void showMessage(BuildContext context, String message) {
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
     ..showSnackBar(SnackBar(content: Text(message)));
