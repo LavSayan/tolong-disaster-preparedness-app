@@ -1,0 +1,22 @@
+{
+    "model_name": "TolongApp_KMeans_Agent",
+    "training_file": "evacuation_centers_dev.json",
+    "cluster_centroids": [
+        [
+            14.7314,
+            121.05250000000001
+        ],
+        [
+            14.649966666666668,
+            121.0406
+        ],
+        [
+            14.6869,
+            121.1003
+        ]
+    ],
+    "features_used": [
+        "lat",
+        "lng"
+    ]
+}
