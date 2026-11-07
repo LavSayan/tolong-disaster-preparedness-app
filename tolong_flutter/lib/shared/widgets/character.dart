@@ -92,37 +92,8 @@ class Character extends StatelessWidget {
               semanticsLabel: context.l10n.characterLabel(mood),
             ),
           ),
-          Positioned(
-            right: large ? 12 : 13,
-            top: large ? 82 : 78,
-            child: _MoodChip(mood),
-          ),
         ],
       ),
-    );
-  }
-}
-
-class _MoodChip extends StatelessWidget {
-  const _MoodChip(this.mood);
-
-  final String mood;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 9),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFFDF7),
-        border: Border.all(color: const Color(0x245D7E65)),
-        borderRadius: BorderRadius.circular(99),
-        boxShadow: const [BoxShadow(color: Color(0x12415A47), blurRadius: 10, offset: Offset(0, 3))],
-      ),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [
-        const Icon(Icons.auto_awesome_outlined, size: 13, color: Color(0xFF4F6B57)),
-        const SizedBox(width: 5),
-        Text(mood, style: sans(10, weight: FontWeight.w700, color: const Color(0xFF4F6B57))),
-      ]),
     );
   }
 }
